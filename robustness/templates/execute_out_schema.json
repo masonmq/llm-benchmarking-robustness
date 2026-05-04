@@ -1,0 +1,97 @@
+{
+
+  "case": {
+    "paper_id": "Unique ID for the paper.",
+    "reference_id": "Unique ID of the human reference analysis used as input.",
+    "reanalyst_id": "ID of the human reanalyst whose path was followed.",
+    "focal_claim": "The focal claim tested in this execution."
+  },
+
+  "execution_overview": {
+    "overall_execution_status": "success, partial_success, or failure.",
+    "target_task_ids": "Task1 or Task2.",
+    "completed_task_ids": "Task1 or Task2.",
+    "failed_task_ids": "Task1 or Task2.",
+    "overall_summary": "Short summary of what the agent executed and what result it obtained."
+  },
+
+  "task_outputs": [
+    {
+      "task_id": "Task1 or Task2.",
+      "task_role": "Role of this task, e.g., conclusion_oriented_reanalysis or comparable_result_oriented_reanalysis.",
+      "execution_status": "success, partial_success, or failure.",
+
+      "executed_analysis": {
+        "path_name": "Name of the executed analysis path.",
+        "software": "Software/language actually used, e.g., R, Stata, Matlab, Python.",
+        "model_family": "Model or test actually executed, e.g., linear_regression, correlation, t_test.",
+        "executed_files": [
+          "Scripts or files actually executed."
+        ],
+        "run_command": "Command actually used to run the analysis, if available.",
+        "code_source": "provided_reference_code, reconstructed_from_summary, modified_reference_code, or other."
+      },
+
+      "method_fidelity": {
+        "followed_reference_path": "yes, partially, or no.",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix, file_path_fix, code_repair, output_extraction_fix, analysis_change, or other.",
+            "description": "What changed from the human reference path.",
+            "reason": "Why the change was made.",
+            "likely_impact": "none, low, medium, high, or unknown."
+          }
+        ],
+        "fidelity_note": "Short judgment of whether the agent followed the intended human reference analysis."
+      },
+
+      "result_raw": {
+        "metric": "Raw result metric, e.g., coefficient, odds_ratio, correlation, mean_difference, t_statistic, f_statistic.",
+        "value": "Main raw numeric result value, or null if missing.",
+        "direction": "positive, negative, zero, mixed, or unclear.",
+        "test_statistics": {
+          "p_value": "p-value, or null.",
+          "t_value": "t-value, or null.",
+          "f_value": "F-value, or null.",
+          "z_value": "z-value, or null.",
+          "standard_error": "standard error, or null.",
+          "confidence_interval": "confidence interval, or null.",
+          "sample_size": "sample size used in the analysis, if available.",
+          "other": "Any other relevant statistic."
+        },
+        "result_text": "Short statement of the raw result."
+      },
+
+      "result_standardized": {
+        "result_metric_std": "Canonical standardized metric, e.g., cohens_d.",
+        "result_value_std": "Converted standardized value, or null if not converted.",
+        "result_std_status": "converted, incomparable, or missing.",
+        "conversion_note": "Brief explanation of how the standardized result was obtained, or why it could not be converted."
+      },
+
+      "conclusion": {
+        "conclusion_class": "support, inconclusive, or opposite.",
+        "conclusion_text": "Short conclusion about whether the executed result supports the focal claim."
+      },
+
+      "artifacts": {
+        "output_files": [
+          "Generated result files, tables, logs, figures, or summaries."
+        ]
+      },
+
+      "failure": {
+        "failure_reason": "Reason for failure, or null if successful.",
+        "failure_stage": "setup, data_loading, code_execution, result_extraction, standardization, conclusion, or null.",
+        "repair_attempts_used": "Number of repair attempts used."
+      }
+    }
+  ],
+
+  "overall_result": {
+    "overall_conclusion_class": "support, inconclusive, opposite, mixed, or unavailable.",
+    "overall_result_summary": "Short summary across Task1 and Task2.",
+    "ready_for_reference_comparison": "true if the output contains enough information to compare with the human reference; false otherwise.",
+    "notes": "Any additional notes."
+  }
+}
