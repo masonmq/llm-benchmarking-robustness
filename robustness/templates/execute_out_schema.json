@@ -90,8 +90,10 @@
 
   "overall_result": {
     "overall_conclusion_class": "support, inconclusive, opposite, mixed, or unavailable.",
+    "robustness_label": "robust, partly_robust, not_robust, or unavailable.",
+    "robustness_basis": "Brief explanation of why this case is judged robust or not, based on the executed Task1 and Task2 results.",
     "overall_result_summary": "Short summary across Task1 and Task2.",
-    "ready_for_reference_comparison": "true if the output contains enough information to compare with the human reference; false otherwise.",
+    "ready_for_reference_comparison": "true if the output contains enough information to compare with the expert reference; false otherwise.",
     "notes": "Any additional notes."
   }
 }
