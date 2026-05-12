@@ -4,14 +4,6 @@
         "description": "Unique ID for the paper or case. Copy this from the input schema.",
         "example": "Bruner_ExpEco_2017_amYY"
       },
-      "reference_id": {
-        "description": "Unique ID for the planned analysis path used as input. If the input uses planned_id instead, copy that value here.",
-        "example": "Bruner_ExpEco_2017_amYY_y2gle"
-      },
-      "reanalyst_id": {
-        "description": "ID associated with the planned analysis path, if provided. Use not_stated if not provided.",
-        "example": "y2gle"
-      },
       "focal_claim": {
         "description": "The focal claim tested by the executed analysis. Copy this from the input schema.",
         "example": "The likelihood of decision error should decrease with the degree of risk aversion."

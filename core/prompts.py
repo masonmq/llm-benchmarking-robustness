@@ -193,10 +193,9 @@ The goal is to prepare the input file for the Execute Agent.
 
 You will have access to the following documents:
 1. original_paper.pdf: The full text of the original paper.
-2. initial_details.txt: A short file containing the focal claim.
-3. planned_analysis_summary.pdf: A summary of the planned Task1 and Task2 analysis paths.
-4. data/ : A folder containing the original dataset.
-5. code/ : A folder containing available analysis code.
+2. planned_analysis_summary.pdf: A summary of the planned Task1 and Task2 analysis paths.
+3. data/ : A folder containing the original dataset.
+4. code/ : A folder containing available analysis code.
 
 Thought: The input schema starts with case information. I need to identify the focal claim and paper information first. I should read initial_details.txt.
 Action: read_txt: initial_details.txt
