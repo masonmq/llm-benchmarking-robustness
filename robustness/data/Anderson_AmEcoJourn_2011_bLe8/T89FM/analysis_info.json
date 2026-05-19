@@ -1,0 +1,239 @@
+{
+  "case": {
+    "paper_id": "Anderson_AmEcoJourn_2011_bLe8",
+    "paper_title": "Caste as an Impediment to Trade",
+    "study_type": "observational",
+    "focal_claim": "The study finds substantially higher income for low-caste households residing in villages dominated by BACs compared to villages dominated by upper caste.",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "household",
+      "filename": "household.dta",
+      "type": "original",
+      "file_format": "dta",
+      "columns": "[hhcode, village, caste, borrow, bihar, literate, totinc, cropincacre, totland, landirr, paddy, wheat, cereal, pulse, bulb, seed, cash, canal, river, noalkal, nolog, nosoil, noflood, bus3, tele3, ps3, pds3, bank3, pps3, ms3, ss3, phc3, hosp3, electric, hhelec, area, pmixdominant, tolaparea, gwdevelopment, rainfall, gwavailability, domlow, dist1, dist2, dist3, dist4, dist5, dist6, dist8, dist9, dist10, dist11, dist12, dist13, dist14, dist16, dist17, dist18, dist19, dist20, dist21, dist22, dist23, dist24, dist25]",
+      "summary_statistics": {
+        "info": "DataFrame with 1666 rows and 85 columns. Mixed types: numeric and categorical (e.g., caste, borrow, electric, ownpump, buywater). Key variables: totinc (float), domlow (0/1 with 371 missing), bihar, literate, totland, landirr, multiple distance and infrastructure controls.",
+        "describe": "totinc: min=45.0, Q1=1118.1, median=2122.9, Q3=4836.7, max=181967.0; domlow: {0 or 1}, 371 missing."
+      },
+      "access": {
+        "url": "robustness/data/Anderson_AmEcoJourn_2011_bLe8/T89FM/data/AEJApp-2009-0289-data/household.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "domlow is missing for 371 observations and is dropped before modeling. Outcome is heavily right-skewed; analysis uses log transformation of totinc."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "Anderson_AmEcoJourn_2011_bLe8_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the analysis without additional restriction.",
+        "analysis_path": {
+          "path_name": "log_income_regression_and_decomposition",
+          "path_description": "Compute log(totinc), perform one-sided t-test comparing BAC-dominated vs. upper-caste dominated villages, fit multiple OLS models with robust SEs predicting log(totinc) from domlow and controls, and perform Blinder-Oaxaca twofold decomposition.",
+          "software": "Python",
+          "model_family": "linear_regression",
+          "preprocessing_steps": [
+            "Load original household.dta from /app/data.",
+            "Drop observations with missing domlow.",
+            "Compute log_totinc = log(totinc)."
+          ],
+          "key_choices": {
+            "outcome_measure": "log(totinc)",
+            "main_predictor_measure": "domlow (1=low-caste dominated village, 0=upper-caste dominated)",
+            "control_variables": [
+              "bihar, literate, borrow, totland, landirr, dist1, dist2, dist3, dist4, dist5, dist6, dist8, dist9, dist10, dist11, dist12, dist13, dist14, dist16, dist17, dist18, dist19, dist20, dist21, dist22, dist23, dist24, dist25, area, pmixdominant, tolaparea, gwdevelopment, rainfall, gwavailability, river, canal, noalkal, nolog, nosoil, noflood, paddy, wheat, cereal, pulse, bulb, seed, cash, bus3, tele3, ps3, pds3, bank3, pps3, ms3, ss3, phc3, hosp3, electric, hhelec, caste"
+            ],
+            "sample_restriction": "Drop observations with missing domlow.",
+            "outlier_rule": "Use log transformation of totinc.",
+            "missing_data_rule": "Listwise deletion by model after excluding missing domlow.",
+            "data_processing": "Create log_totinc and convert categorical variables via formula coding (C()).",
+            "model_choice": "OLS with robust (HC0) standard errors; plus one-sided Welch t-test on log_totinc; Blinder-Oaxaca twofold decomposition with Reimers weights (0.5).",
+            "inference_rule": "p-value threshold 0.05 for domlow coefficient (robust SEs); one-sided t-test p-value for mean difference."
+          },
+          "variables": {
+            "outcome": {
+              "name": "log_totinc",
+              "definition": "Natural log of total household income (totinc)."
+            },
+            "main_predictor": {
+              "name": "domlow",
+              "definition": "Indicator for village dominated by lower castes (BACs): 1=low-caste dominated, 0=upper-caste dominated."
+            },
+            "controls": [
+              {
+                "name": "bihar",
+                "definition": "State indicator (Bihar)."
+              },
+              {
+                "name": "literate",
+                "definition": "Household literacy measure."
+              },
+              {
+                "name": "totland",
+                "definition": "Total land area owned."
+              },
+              {
+                "name": "landirr",
+                "definition": "Irrigated land indicator/amount."
+              },
+              {
+                "name": "paddy",
+                "definition": "Crop control: share/indicator for paddy."
+              },
+              {
+                "name": "electric",
+                "definition": "Village electricity availability."
+              },
+              {
+                "name": "caste",
+                "definition": "Household caste category."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/T89FM_multi100__py.py"
+          ],
+          "entry_file": "data/T89FM_multi100__py.py",
+          "run_command": "python data/T89FM_multi100__py.py",
+          "notes": "Python translation of original R analysis; reads /app/data/AEJApp-2009-0289-data/household.dta. Produces t-test, robust OLS domlow coefficient summaries, and Oaxaca twofold decomposition."
+        },
+        "notes_for_agent": "Follow the planned path; do not change the focal claim, dataset, or analysis goal."
+      },
+      {
+        "task_id": "Task2",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "task_instruction": "Do not use District controls, Crop controls, Distance controls, Groundwater controls, Public goods controls. Do not include Irrigation, credit, and tenancy variables and their interaction terms. Do not use instruments for water buyer status.",
+        "analysis_path": {
+          "path_name": "restricted_log_income_regression",
+          "path_description": "Compute log(totinc) and fit OLS with robust SEs predicting log(totinc) from domlow and allowed controls only.",
+          "software": "Python",
+          "model_family": "linear_regression",
+          "preprocessing_steps": [
+            "Load original household.dta from /app/data.",
+            "Drop observations with missing domlow.",
+            "Compute log_totinc = log(totinc)."
+          ],
+          "key_choices": {
+            "outcome_measure": "log(totinc)",
+            "main_predictor_measure": "domlow (1=low-caste dominated village, 0=upper-caste dominated)",
+            "control_variables": [
+              "bihar, literate, totland, cash, electric, caste"
+            ],
+            "sample_restriction": "Drop observations with missing domlow.",
+            "outlier_rule": "Use log transformation of totinc.",
+            "missing_data_rule": "Listwise deletion by model after excluding missing domlow.",
+            "data_processing": "Create log_totinc and convert categorical variables via formula coding (C()).",
+            "model_choice": "OLS with robust (HC0) standard errors.",
+            "inference_rule": "p-value threshold 0.05 for domlow coefficient (robust SEs)."
+          },
+          "variables": {
+            "outcome": {
+              "name": "log_totinc",
+              "definition": "Natural log of total household income (totinc)."
+            },
+            "main_predictor": {
+              "name": "domlow",
+              "definition": "Indicator for village dominated by lower castes (BACs): 1=low-caste dominated, 0=upper-caste dominated."
+            },
+            "controls": [
+              {
+                "name": "bihar",
+                "definition": "State indicator (Bihar)."
+              },
+              {
+                "name": "literate",
+                "definition": "Household literacy measure."
+              },
+              {
+                "name": "totland",
+                "definition": "Total land area owned."
+              },
+              {
+                "name": "cash",
+                "definition": "Cash crops control."
+              },
+              {
+                "name": "electric",
+                "definition": "Village electricity availability."
+              },
+              {
+                "name": "caste",
+                "definition": "Household caste category."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/T89FM_multi100_2__py.py"
+          ],
+          "entry_file": "data/T89FM_multi100_2__py.py",
+          "run_command": "python data/T89FM_multi100_2__py.py",
+          "notes": "Python translation of the Task 2 restricted R analysis; reads /app/data/AEJApp-2009-0289-data/household.dta."
+        },
+        "notes_for_agent": "Use only the allowed controls and exclusions specified; do not introduce instruments or excluded controls."
+      }
+    ]
+  },
+  "codebase": {
+    "files": {
+      "data/T89FM_multi100__py.py": "Executes Task1: one-sided t-test on log_totinc, multiple OLS models with robust HC0 SEs including domlow and full controls, and Blinder-Oaxaca twofold decomposition.",
+      "data/T89FM_multi100_2__py.py": "Executes Task2: restricted OLS with robust HC0 SEs including domlow and only allowed controls."
+    },
+    "notes": "Original R scripts (T89FM_multi100.R, T89FM_multi100_2.R) were translated to Python to comply with execution policy. All file IO targets /app/data. Ensure statsmodels, scipy, pandas, and patsy are installed."
+  },
+  "docker_specs": {
+    "base_image": "python:3.10-slim",
+    "packages": {
+      "python": [
+        "pandas==2.2.2",
+        "scipy==1.13.1",
+        "statsmodels==0.14.2",
+        "patsy==0.5.6"
+      ],
+      "r": [],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": "false",
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": null
+    },
+    "volumes": [
+      "./robustness/data/Anderson_AmEcoJourn_2011_bLe8/T89FM/data:/app/data"
+    ]
+  },
+  "analysis": {
+    "instructions": "Execute Task1 and Task2 using the original household.dta dataset and the provided Python scripts. Collect and store outputs: one-sided t-test results, domlow coefficient estimates with robust SEs and p-values, and Oaxaca twofold decomposition (Task1).",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "allowed_actions": [
+      "inspect data files",
+      "inspect code files",
+      "run provided code",
+      "make bounded implementation fixes",
+      "write compact result extraction scripts"
+    ],
+    "not_allowed_actions": [
+      "change the focal claim",
+      "change the dataset",
+      "replace the planned path with a different analysis path",
+      "choose a more favorable result"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Task1: one-sided t-test for mean log_totinc difference, domlow coefficient with robust SE and p-value across models, Oaxaca twofold explained/unexplained components; Task2: domlow coefficient with robust SE and p-value."
+  }
+}

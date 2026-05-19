@@ -1,0 +1,177 @@
+{
+  "case": {
+    "paper_id": "Anderson_AmEcoJourn_2011_bLe8",
+    "focal_claim": "\u2026 finds substantially higher income for low-caste households residing in villages dominated by BACs [compared to villages dominated by upper caste]."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Docker was unavailable, so the analysis was executed locally using Python after minor path handling and dependency fixes. Both Task1 and Task2 (Welch t-test of totinc by domlow) ran successfully. Results show significantly higher income in low-caste dominated villages (t=3.8350, p=0.0001363). Outputs written to data/outputs/results_12hio.txt."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "ttest_totinc_by_domlow",
+        "software": "Python",
+        "model_family": "t_test",
+        "executed_files": [
+          "data/analysis_12hio_tasks__py.py"
+        ],
+        "run_command": "python robustness/data/Anderson_AmEcoJourn_2011_bLe8/12HIO/data/analysis_12hio_tasks__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Added local path fallback in the Python script to use the study data directory when /app/data is unavailable.",
+            "reason": "Execution outside Docker required the script to reference the local data path.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Installed compatible versions of numpy, pandas, scipy, and pyreadstat in the local environment.",
+            "reason": "Missing Python libraries in the local environment.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "other",
+            "description": "Executed locally rather than inside a Docker container due to Docker daemon unavailability.",
+            "reason": "Docker build failed: connection refused to the Docker daemon.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Executed the planned Welch two-sample t-test of totinc by domlow with no controls, matching the planned path."
+      },
+      "result_raw": {
+        "metric": "t_statistic",
+        "value": 3.835,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.0001363,
+          "t_value": 3.835,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 816,
+          "other": {
+            "df_approx": 736.3,
+            "mean_difference": 3572.5866,
+            "group_means": {
+              "domlow_1_mean": 9102.7775,
+              "domlow_0_mean": 5530.191
+            },
+            "N1": 488,
+            "N0": 328
+          }
+        },
+        "result_text": "Income is significantly higher in low-caste dominated villages (Welch t=3.8350, p=0.0001363; mean diff=3572.59)."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The result supports the focal claim: low-caste households in low-caste dominated villages have substantially higher income."
+      },
+      "artifacts": {
+        "output_files": [
+          "robustness/data/Anderson_AmEcoJourn_2011_bLe8/12HIO/data/outputs/results_12hio.txt"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 2
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "ttest_totinc_by_domlow_restricted",
+        "software": "Python",
+        "model_family": "t_test",
+        "executed_files": [
+          "data/analysis_12hio_tasks__py.py"
+        ],
+        "run_command": "python robustness/data/Anderson_AmEcoJourn_2011_bLe8/12HIO/data/analysis_12hio_tasks__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Added local path fallback in the Python script to use the study data directory when /app/data is unavailable.",
+            "reason": "Execution outside Docker required the script to reference the local data path.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Installed compatible versions of numpy, pandas, scipy, and pyreadstat in the local environment.",
+            "reason": "Missing Python libraries in the local environment.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "other",
+            "description": "Executed locally rather than inside a Docker container due to Docker daemon unavailability.",
+            "reason": "Docker build failed: connection refused to the Docker daemon.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Executed the planned Welch two-sample t-test of totinc by domlow with no controls or instruments, consistent with Task2."
+      },
+      "result_raw": {
+        "metric": "t_statistic",
+        "value": 3.835,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.0001363,
+          "t_value": 3.835,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 816,
+          "other": {
+            "df_approx": 736.3,
+            "mean_difference": 3572.5866,
+            "group_means": {
+              "domlow_1_mean": 9102.7775,
+              "domlow_0_mean": 5530.191
+            },
+            "N1": 488,
+            "N0": 328
+          }
+        },
+        "result_text": "Income is significantly higher in low-caste dominated villages (Welch t=3.8350, p=0.0001363; mean diff=3572.59)."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The result supports the focal claim: low-caste households in low-caste dominated villages have substantially higher income."
+      },
+      "artifacts": {
+        "output_files": [
+          "robustness/data/Anderson_AmEcoJourn_2011_bLe8/12HIO/data/outputs/results_12hio.txt"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 2
+      }
+    }
+  ]
+}

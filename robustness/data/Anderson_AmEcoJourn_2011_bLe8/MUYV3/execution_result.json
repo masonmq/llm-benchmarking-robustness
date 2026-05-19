@@ -1,0 +1,30 @@
+{
+  "plan_id": "study",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "run-analysis-0",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"task\": \"Task1\",\n  \"n_after_filtering\": 943,\n  \"model1\": {\n    \"formula\": \"log_totinc ~ domlow\",\n    \"coef_domlow\": 0.2959623684995897,\n    \"se_domlow\": 0.11773242601330848,\n    \"z_domlow\": 2.5138560252392494,\n    \"p_domlow\": 0.011941917460837365\n  },\n  \"model2\": {\n    \"formula\": \"log_totinc ~ literate + totland + C(caste) + cropcontrol + bus3 + tele3 + ps3 + pds3 + bank3 + pps3 + ms3 + ss3 + phc3 + hosp3 + gwdevelopment + rainfall + gwavailability + river + canal + noalkal + nolog + nosoil + noflood + area + pmixdominant + tolaparea + domlow\",\n    \"coef_domlow\": 0.11301080512866869,\n    \"se_domlow\": 0.1375577579711232,\n    \"z_domlow\": 0.8215516652458996,\n    \"p_domlow\": 0.411332108008177\n  }\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/Analysis_MUYV3_task1__py.py",
+      "resolved_path": "/workspace/data/Analysis_MUYV3_task1__py.py"
+    },
+    {
+      "name": "run-analysis-1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"task\": \"Task2\",\n  \"n_after_filtering\": 943,\n  \"model1\": {\n    \"formula\": \"log_totinc ~ domlow\",\n    \"coef_domlow\": 0.2424497507695158,\n    \"se_domlow\": 0.14046100556597052,\n    \"z_domlow\": 1.7261000645167963,\n    \"p_domlow\": 0.08432941224183722\n  },\n  \"model2\": {\n    \"formula\": \"log_totinc ~ literate * totland * C(caste) * domlow\",\n    \"coef_domlow\": -0.21710283395495808,\n    \"se_domlow\": 0.1826201363877039,\n    \"z_domlow\": -1.1888219900024997,\n    \"p_domlow\": 0.23450972284391058\n  }\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/Analysis_MUYV_task2__py.py",
+      "resolved_path": "/workspace/data/Analysis_MUYV_task2__py.py"
+    }
+  ],
+  "ok": true
+}

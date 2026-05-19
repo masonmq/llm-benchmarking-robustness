@@ -1,0 +1,143 @@
+{
+  "case": {
+    "paper_id": "Anderson_AmEcoJourn_2011_bLe8",
+    "focal_claim": "The study finds substantially higher income for low-caste households residing in villages dominated by BACs compared to villages dominated by upper caste."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Built a Python-based Docker image and executed both planned tasks. Addressed missing statsmodels by adding runtime pip installations and fixed a temporary syntax error. Results: domlow is positively associated with log income. One-sided t-test shows a strong positive difference. OLS coefficients are positive with marginal p-values near 0.05. Oaxaca decomposition indicates most of the mean difference is explained by covariates."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "log_income_regression_and_decomposition",
+        "software": "Python",
+        "model_family": "linear_regression",
+        "executed_files": [
+          "data/T89FM_multi100__py.py"
+        ],
+        "run_command": "python data/T89FM_multi100__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime pip installation for missing Python packages (statsmodels, patsy, etc.) within the analysis scripts.",
+            "reason": "Container reported ModuleNotFoundError: statsmodels.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Appended user site-packages to sys.path and invalidated import caches to ensure runtime-installed packages are importable.",
+            "reason": "After installation, imports still failed within the container user environment.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Fixed a minor syntax error introduced during edits (duplicate import line).",
+            "reason": "Script crashed with SyntaxError after previous edits.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "The planned analysis path (t-test, OLS with robust SEs across specifications, and Oaxaca decomposition) was preserved; only dependency and minor syntax fixes were applied."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 0.22636137342212764,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.053484447283130156,
+          "t_value": 1.9309887208084233,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": 0.11722563212454172,
+          "confidence_interval": null,
+          "sample_size": null,
+          "other": "T-test (one-sided) on log_totinc by domlow: t=5.1931, p=1.20e-07; Oaxaca twofold (Reimers 0.5): D=0.22484, Explained=0.20893, Unexplained=0.01591. Model2 domlow: coef=0.22636, p=0.05348; Model3 domlow: coef=0.16938, p=0.07505."
+        },
+        "result_text": "Households in low-caste-dominated villages have higher log income. The one-sided mean difference test is strongly significant; OLS domlow coefficients are positive with marginal p-values near 0.05. Oaxaca suggests most of the mean difference is explained by covariates."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "Evidence supports the claim: income is higher in low-caste-dominated villages. The mean difference is strongly significant, and regression estimates are positive and marginally significant."
+      },
+      "artifacts": {
+        "output_files": []
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 3
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "restricted_log_income_regression",
+        "software": "Python",
+        "model_family": "linear_regression",
+        "executed_files": [
+          "data/T89FM_multi100_2__py.py"
+        ],
+        "run_command": "python data/T89FM_multi100_2__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime pip installation for Python packages inside the script.",
+            "reason": "Missing statsmodels in the container environment.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "The restricted OLS with allowed controls was executed as planned; only dependency handling was added."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 0.09689690853671759,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.05601260737355606,
+          "t_value": 1.910937545516786,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": 0.05070647586785113,
+          "confidence_interval": null,
+          "sample_size": null,
+          "other": null
+        },
+        "result_text": "In the restricted model, domlow is positively associated with log income with a marginal p-value (p=0.056)."
+      },
+      "conclusion": {
+        "conclusion_class": "inconclusive",
+        "conclusion_text": "The effect is in the supportive direction but does not reach the 0.05 significance threshold under the restricted controls."
+      },
+      "artifacts": {
+        "output_files": []
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    }
+  ]
+}

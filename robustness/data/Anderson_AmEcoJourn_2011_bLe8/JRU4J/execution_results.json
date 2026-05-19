@@ -1,0 +1,147 @@
+{
+  "case": {
+    "paper_id": "Anderson_AmEcoJourn_2011_bLe8",
+    "focal_claim": "... [the study] finds substantially higher income for low-caste households residing in villages dominated by BACs [compared to villages dominated by upper caste]."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Built a Python 3.10 Docker image and executed the two planned mixed-effects models using the original Stata datasets. Fixed missing dependencies and a minor script syntax error. Both tasks completed and produced outputs. The key ST/SC-by-domhigh interaction was positive and not significant, providing no support for the focal claim; one other low-caste interaction (Back oth) was positive and significant, opposite to the claim."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "lmm_income_caste_dominance",
+        "software": "Python",
+        "model_family": "linear_mixed_effects",
+        "executed_files": [
+          "data/analysis_task_1__py.py"
+        ],
+        "run_command": "python data/analysis_task_1__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added scipy, patsy, pyreadstat, and statsmodels to analysis_info.json; embedded a runtime pip installer into the Python scripts to ensure libraries are available in the container.",
+            "reason": "Container execution initially failed due to missing statsmodels and mismatched environments.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Fixed a duplicated import that caused a syntax error after adding the runtime installer code.",
+            "reason": "A small edit introduced a duplicated import line which broke Python parsing.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "The planned mixed-effects model and data path were followed exactly; only dependency and minor syntax fixes were made."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 2078.162,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.186,
+          "t_value": null,
+          "f_value": null,
+          "z_value": 1.322,
+          "standard_error": 1571.483,
+          "confidence_interval": "[-1001.888, 5158.211]",
+          "sample_size": 1295,
+          "other": "Coefficient corresponds to C(caste)[T.ST/SC]:domhigh from MixedLM with random intercept for village; domhigh=1 is high-caste dominated."
+        },
+        "result_text": "For ST/SC households, the estimated difference between high-caste dominated vs low-caste dominated villages was +2078 income units (z=1.32, p=0.186), not statistically significant."
+      },
+      "conclusion": {
+        "conclusion_class": "opposite",
+        "conclusion_text": "Results do not support the claim; the ST/SC-by-domhigh effect is positive (not negative) and not significant. For Back oth, the interaction is positive and significant, which is opposite to the claim."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/results_task_1.txt",
+          "execution_result.json",
+          "_runtime/Dockerfile",
+          "_log/execute_easy__python.log"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 2
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "lmm_income_caste_dominance_restricted",
+        "software": "Python",
+        "model_family": "linear_mixed_effects",
+        "executed_files": [
+          "data/analysis_task_2__py.py"
+        ],
+        "run_command": "python data/analysis_task_2__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Embedded a runtime pip installer to ensure statsmodels/patsy availability consistent with container permissions.",
+            "reason": "Initial run environment lacked required Python packages.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Same planned MixedLM executed with no prohibited controls added, matching the restrictions."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 2078.162,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.186,
+          "t_value": null,
+          "f_value": null,
+          "z_value": 1.322,
+          "standard_error": 1571.483,
+          "confidence_interval": "[-1001.888, 5158.211]",
+          "sample_size": 1295,
+          "other": "Z-values reported for fixed effects; same MixedLM as Task1. Coefficient is C(caste)[T.ST/SC]:domhigh."
+        },
+        "result_text": "For ST/SC, the domhigh contrast (high vs low caste domination) is +2078 income units (z=1.32, p=0.186)."
+      },
+      "conclusion": {
+        "conclusion_class": "opposite",
+        "conclusion_text": "Again, results do not support the claim. The direction is opposite (positive), and not statistically significant."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/results_task_2.txt",
+          "execution_result.json",
+          "_runtime/Dockerfile",
+          "_log/execute_easy__python.log"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    }
+  ]
+}

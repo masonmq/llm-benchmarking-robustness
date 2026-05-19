@@ -1,0 +1,30 @@
+{
+  "plan_id": "study",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "run-analysis-0",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "T-TEST (one-sided, greater): log_totinc (domlow==1) > (domlow==0)\n{'t_stat': 5.193103668601485, 'p_value_one_sided': 1.2001151364171434e-07, 'mean_low': 8.013162719255144, 'mean_high': 7.67838159390109}\nMODEL 1 RESULTS (robust HC0): domlow coefficient\n{'coef': 0.22636137342212764, 'se_robust': 0.11722563212454172, 't': 1.9309887208084233, 'p': 0.053484447283130156}\nMODEL 2 RESULTS (robust HC0): domlow coefficient\n{'coef': 0.2263613734103272, 'se_robust': 0.11722563212494035, 't': 1.9309887207011927, 'p': 0.053484447296391215}\nMODEL 3 RESULTS (robust HC0): domlow coefficient\n{'coef': 0.1693837855401404, 'se_robust': 0.09515039326341736, 't': 1.7801690537548593, 'p': 0.07504829827383605}\nOAXACA (twofold, Reimers weights=0.5):\n{'D_mean_diff': 0.2248379876147979, 'Explained': 0.20892907598478225, 'Unexplained': 0.015908911629830533}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/T89FM_multi100__py.py",
+      "resolved_path": "/workspace/data/T89FM_multi100__py.py"
+    },
+    {
+      "name": "run-analysis-1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "TASK 2 MODEL (robust HC0): domlow coefficient\n{'coef': 0.09689690853671759, 'se_robust': 0.05070647586785113, 't': 1.910937545516786, 'p': 0.05601260737355606}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/T89FM_multi100_2__py.py",
+      "resolved_path": "/workspace/data/T89FM_multi100_2__py.py"
+    }
+  ],
+  "ok": true
+}

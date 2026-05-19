@@ -1,0 +1,147 @@
+{
+  "case": {
+    "paper_id": "Anderson_AmEcoJourn_2011_bLe8",
+    "focal_claim": "[the study] finds substantially higher income for low-caste households residing in villages dominated by BACs [compared to villages dominated by upper caste]."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Executed MixedLM and OLS models of total income on low-caste village dominance (domlow) using the original household.dta. Full-sample results show a positive and statistically significant association (MixedLM and OLS). Excluding six outlier villages, OLS remains positive but marginally non-significant; MixedLM failed to converge properly with an inflated SE. Overall, results support the focal claim in the main (full data) analysis."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "mixedlm_income_on_lowcaste_dominance",
+        "software": "Python",
+        "model_family": "linear_mixed_effects",
+        "executed_files": [
+          "data/fr167_analysis__py.py"
+        ],
+        "run_command": "python /app/data/fr167_analysis__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime installation fallback for statsmodels and patsy within the Python script.",
+            "reason": "statsmodels was not initially importable inside the container at runtime.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Rewrote MixedLM fitting to align group indices and avoid index misalignment; fully cleaned and rewrote the Python analysis script to remove prior edit corruption.",
+            "reason": "Initial MixedLM call caused index out-of-bounds due to misaligned groups; prior edits introduced syntax duplication.",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "The analysis followed the planned path: fit MixedLM of totinc ~ domlow with random intercept by village and OLS as robustness; repeated excluding six outlier villages. Only implementation fixes were made."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 4435.568640478259,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.0008970918328470466,
+          "t_value": null,
+          "f_value": null,
+          "z_value": 3.3209575420929354,
+          "standard_error": 1335.6294334563738,
+          "confidence_interval": "[1817.7830542121296, 7053.354226744388]",
+          "sample_size": 1295,
+          "other": "MixedLM full sample; OLS full sample coef=3533.416, p=7.50e-07"
+        },
+        "result_text": "MixedLM (full data) shows a positive, statistically significant association between low-caste village dominance (domlow) and total income; OLS corroborates with a significant positive coefficient."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The full-sample results support the focal claim: households in low-caste dominated villages have higher total income. Robustness without six outlier villages weakens evidence (OLS marginal, MixedLM unstable), but the main analysis supports the claim."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/results_fr167.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 3
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "ols_income_on_lowcaste_dominance",
+        "software": "Python",
+        "model_family": "linear_regression",
+        "executed_files": [
+          "data/fr167_analysis__py.py"
+        ],
+        "run_command": "python /app/data/fr167_analysis__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime installation fallback for statsmodels and patsy in the Python script.",
+            "reason": "statsmodels was missing at runtime.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Refactored script for clean OLS execution and reliable result extraction.",
+            "reason": "Prior edits introduced syntax and alignment issues.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Used OLS of totinc on domlow without controls, as planned; repeated excluding six outlier villages."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 3533.415967711374,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 7.502457389311065e-07,
+          "t_value": 4.97236631656927,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": 710.610550943738,
+          "confidence_interval": "[2139.339920851075, 4927.492014571673]",
+          "sample_size": 1295,
+          "other": "No-outliers OLS: coef=924.889, p=0.0533"
+        },
+        "result_text": "OLS (full data) indicates a positive and statistically significant association between low-caste village dominance and total income; excluding six outlier villages yields a smaller, marginally non-significant positive effect."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The OLS full-sample result supports the focal claim that income is higher in low-caste dominated villages; robustness without six outlier villages is weaker but directionally consistent."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/results_fr167.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 3
+      }
+    }
+  ]
+}

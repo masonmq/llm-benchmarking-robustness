@@ -1,0 +1,279 @@
+{
+  "case": {
+    "paper_id": "Anderson_AmEcoJourn_2011_bLe8",
+    "paper_title": "not_stated",
+    "study_type": "observational",
+    "focal_claim": "\u2026 [the study] finds substantially higher income for low-caste households residing in villages dominated by BACs [compared to villages dominated by upper caste].",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "AEJApp-2009-0289 household",
+      "filename": "household.dta",
+      "type": "Use original.",
+      "file_format": "dta",
+      "columns": "[hhcode, village, caste, bihar, literate, totinc, paddy, wheat, cereal, pulse, bulb, seed, cash, bus3, tele3, ps3, pds3, bank3, pps3, ms3, ss3, phc3, hosp3, totland, gwdevelopment, rainfall, gwavailability, river, canal, noalkal, nolog, nosoil, noflood, area, pmixdominant, tolaparea, domlow, dist1, ..., dist25]",
+      "summary_statistics": {
+        "info": "Rows: 1666; Columns: 85; dtypes: category(5), float32(66), float64(10), int16(2), int32(2). Key non-null: totinc (1666), domlow (1295), area (1459).",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/Anderson_AmEcoJourn_2011_bLe8/MUYV3/data/AEJApp-2009-0289-data/household.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Used to construct outcome (totinc) and predictors (domlow, literate, totland, caste, distance/groundwater/public goods controls). Analyst narrative states restriction to low-caste households (BAC, OBC, SC). Complete-case analysis and outlier removal by 1.5*IQR on log(totinc)."
+    },
+    {
+      "name": "AEJApp-2009-0289 village",
+      "filename": "village.dta",
+      "type": "Use original.",
+      "file_format": "dta",
+      "columns": "[village, domhigh, handpump, well, pavedroad, noflood, noalkal, nowaterlog, nosoiler, mpaddy, mwheat, ppaddy, pwheat, bus3, tele3, ps3, pds3, bank3, pps3, ms3, ss3, phc3, hosp3, area, naturalwater, hhelec, illand, niland, hhlless, numhh]",
+      "summary_statistics": {
+        "info": "Rows: 122; Columns: 30; mixed float32/float64 with varying missingness (e.g., domhigh n=90, hhelec n=59).",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/Anderson_AmEcoJourn_2011_bLe8/MUYV3/data/AEJApp-2009-0289-data/village.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Used for village-level comparisons (Mann-Whitney U or t-tests) between high vs low caste dominated villages on infrastructure and area variables. No direct merging required for main GLMM, which relies on household-level domlow."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "Anderson_AmEcoJourn_2011_bLe8_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the analysis without additional restriction.",
+        "analysis_path": {
+          "path_name": "glmm_log_normal_caste_dominance_income_task1",
+          "path_description": "Compare villages on controls; construct district id and cropcontrol; restrict to low-caste households; remove outliers on log(totinc); fit GLMM of income on village low-caste dominance with nested random effects and full controls.",
+          "software": "R (translated to Python for execution)",
+          "model_family": "multilevel",
+          "preprocessing_steps": [
+            "Import village.dta and household.dta.",
+            "Construct district from dist1\u2013dist25 dummies.",
+            "Compute cropcontrol = mean(paddy, wheat, cereal, pulse, bulb, seed, cash).",
+            "Restrict to low-caste households (BAC, OBC, SC).",
+            "Drop incomplete cases (complete-case analysis).",
+            "Log-transform totinc and remove outliers using 1.5*IQR on log(totinc).",
+            "Confirm log-normal fit using Q-Q diagnostics."
+          ],
+          "key_choices": {
+            "outcome_measure": "Total household income (totinc), modeled on log scale.",
+            "main_predictor_measure": "Village-level caste dominance indicator domlow (low-caste dominated vs high-caste dominated).",
+            "control_variables": [
+              "literate",
+              "totland",
+              "caste",
+              "cropcontrol",
+              "bus3",
+              "tele3",
+              "ps3",
+              "pds3",
+              "bank3",
+              "pps3",
+              "ms3",
+              "ss3",
+              "phc3",
+              "hosp3",
+              "gwdevelopment",
+              "rainfall",
+              "gwavailability",
+              "river",
+              "canal",
+              "noalkal",
+              "nolog",
+              "nosoil",
+              "noflood",
+              "area",
+              "pmixdominant",
+              "tolaparea"
+            ],
+            "sample_restriction": "Low-caste households (BAC, OBC, SC).",
+            "outlier_rule": "Remove observations outside 1.5*IQR on log(totinc).",
+            "missing_data_rule": "Drop rows with any missing values in used variables (complete-case).",
+            "data_processing": "Combine district dummies into a single district id; average crop-control variables into cropcontrol.",
+            "model_choice": "Generalized linear mixed model approximated via linear mixed model on log(totinc) with nested random effects.",
+            "inference_rule": "Statistical test of domlow coefficient (z/t test, p-value)."
+          },
+          "variables": {
+            "outcome": {
+              "name": "totinc (modeled as log_totinc)",
+              "definition": "Total household income from household.dta; analyzed on log scale with outliers removed."
+            },
+            "main_predictor": {
+              "name": "domlow",
+              "definition": "Village is low-caste dominated (low-caste majority of land ownership)."
+            },
+            "controls": [
+              {
+                "name": "literate",
+                "definition": "Household literacy measure."
+              },
+              {
+                "name": "totland",
+                "definition": "Total village land."
+              },
+              {
+                "name": "caste",
+                "definition": "Household caste category (BAC, OBC, SC)."
+              },
+              {
+                "name": "cropcontrol",
+                "definition": "Average of crop type indicators (paddy, wheat, cereal, pulse, bulb, seed, cash)."
+              },
+              {
+                "name": "bus3, tele3, ps3, pds3, bank3, pps3, ms3, ss3, phc3, hosp3",
+                "definition": "Distances to infrastructure/public services."
+              },
+              {
+                "name": "gwdevelopment, rainfall, gwavailability, river, canal",
+                "definition": "Groundwater and water access controls."
+              },
+              {
+                "name": "noalkal, nolog, nosoil, noflood",
+                "definition": "Land quality indicators (lack of problems)."
+              },
+              {
+                "name": "area, pmixdominant, tolaparea",
+                "definition": "Public goods and area measures."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/Analysis_MUYV3_task1__py.py"
+          ],
+          "entry_file": "data/Analysis_MUYV3_task1__py.py",
+          "run_command": "python data/Analysis_MUYV3_task1__py.py",
+          "notes": "Python translation of R GLMM approach using statsmodels MixedLM on log(totinc) with variance components to emulate nested random effects (bihar/district/village). IO paths point to /app/data."
+        },
+        "notes_for_agent": "Follow this planned path; do not change the focal claim, dataset, or analysis goal."
+      },
+      {
+        "task_id": "Task2",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "task_instruction": "Do not use District controls, Crop controls, Distance controls, Groundwater controls, Public goods controls; do not include Irrigation, credit, and tenancy variables or their interactions; do not use instruments for water buyer status.",
+        "analysis_path": {
+          "path_name": "glmm_log_normal_caste_dominance_income_task2",
+          "path_description": "Restrict to low-caste households, remove outliers on log(totinc); fit GLMM of income on village low-caste dominance with bihar/village random effects; optionally include allowed controls (literate, totland, caste) and their interactions.",
+          "software": "R (translated to Python for execution)",
+          "model_family": "multilevel",
+          "preprocessing_steps": [
+            "Import village.dta and household.dta.",
+            "Restrict to low-caste households (BAC, OBC, SC).",
+            "Drop incomplete cases (complete-case analysis).",
+            "Log-transform totinc and remove outliers using 1.5*IQR on log(totinc).",
+            "Confirm log-normal fit using Q-Q diagnostics."
+          ],
+          "key_choices": {
+            "outcome_measure": "Total household income (totinc), modeled on log scale.",
+            "main_predictor_measure": "Village-level caste dominance indicator domlow.",
+            "control_variables": [
+              "Allowed: literate, totland, caste (and interactions with domlow)."
+            ],
+            "sample_restriction": "Low-caste households (BAC, OBC, SC).",
+            "outlier_rule": "Remove observations outside 1.5*IQR on log(totinc).",
+            "missing_data_rule": "Drop rows with any missing values in used variables (complete-case).",
+            "data_processing": "No district or crop/distance/groundwater/public goods controls as per instruction.",
+            "model_choice": "Generalized linear mixed model approximated via linear mixed model on log(totinc) with nested random effects.",
+            "inference_rule": "Statistical test of domlow coefficient (z/t test, p-value)."
+          },
+          "variables": {
+            "outcome": {
+              "name": "totinc (modeled as log_totinc)",
+              "definition": "Total household income from household.dta; analyzed on log scale with outliers removed."
+            },
+            "main_predictor": {
+              "name": "domlow",
+              "definition": "Village is low-caste dominated (low-caste majority of land ownership)."
+            },
+            "controls": [
+              {
+                "name": "literate",
+                "definition": "Household literacy measure."
+              },
+              {
+                "name": "totland",
+                "definition": "Total village land."
+              },
+              {
+                "name": "caste",
+                "definition": "Household caste category (BAC, OBC, SC)."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/Analysis_MUYV_task2__py.py"
+          ],
+          "entry_file": "data/Analysis_MUYV_task2__py.py",
+          "run_command": "python data/Analysis_MUYV_task2__py.py",
+          "notes": "Python translation of Task 2 GLMM with bihar/village random effects; includes a base model (domlow only) and a model with allowed controls and interactions."
+        },
+        "notes_for_agent": "Use the planned GLMM path with prohibited controls excluded; do not replace the model with a different analysis."
+      }
+    ]
+  },
+  "codebase": {
+    "files": {
+      "data/Analysis_MUYV3_task1__py.py": "Executes Task 1: loads household and village data from /app/data, preprocesses per plan, fits MixedLM models on log(totinc) with domlow and controls, outputs JSON results.",
+      "data/Analysis_MUYV_task2__py.py": "Executes Task 2: loads data, preprocesses per plan, fits MixedLM with domlow (and allowed controls/interactions in model 2), outputs JSON results."
+    },
+    "notes": "Python rewrites adhere to IO at /app/data. statsmodels MixedLM with variance components is used to approximate nested random effects (bihar/district/village or bihar/village). Ensure pyreadstat is available for reading Stata .dta files via pandas."
+  },
+  "docker_specs": {
+    "base_image": "python:3.10",
+    "packages": {
+      "python": [
+        "pandas==2.0.3",
+        "numpy==1.24.4",
+        "statsmodels==0.14.1",
+        "scipy==1.10.1",
+        "pyreadstat==1.2.2"
+      ],
+      "r": [],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": "false",
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": null
+    },
+    "volumes": [
+      "./robustness/data/Anderson_AmEcoJourn_2011_bLe8/MUYV3/data/AEJApp-2009-0289-data:/app/data"
+    ]
+  },
+  "analysis": {
+    "instructions": "Execute Task1 and Task2 using the original dataset and the provided Python rewrites. Produce structured outputs including parameter estimates and p-values for domlow.",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "allowed_actions": [
+      "inspect data files",
+      "inspect code files",
+      "run provided code",
+      "make bounded implementation fixes",
+      "write compact result extraction scripts"
+    ],
+    "not_allowed_actions": [
+      "change the focal claim",
+      "change the dataset",
+      "replace the planned path with a different analysis path",
+      "choose a more favorable result"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Coefficient and p-value for domlow from multilevel models (both base and full models), test statistic (z or t), and conclusion text on whether results support higher income for low-caste households in low-caste dominated villages."
+  }
+}
