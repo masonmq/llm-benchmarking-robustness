@@ -60,5 +60,6 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
     	study_path=study_path,
         stage_name="execute-gen_gold_analysis",
     	on_final=lambda ans: save_output(ans, study_path, "analysis_info.json", "execute-gen_gold_analysis"),
-    	model_name=model_name
+    	model_name=model_name,
+        logger=logger
     )

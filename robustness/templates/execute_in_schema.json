@@ -82,7 +82,7 @@
     },
     "codebase": {
         "files": {
-            "file_name": "Describe each available code file and how it relates to execution. Example: analysis.R: Runs the regression analysis."
+            "file_name": "Describe each available code file and how it relates to execution. Example: analysis.R: Runs the regression analysis. ONLY include files TO BE EXECUTED HERE. YOU MUST ENSURE THAT NECESSARY FILES FOR EXECUTION EXIST BEFORE FILLING OUT THIS TEMPLATE."
         },
         "notes": "Overall code notes, such as unclear entry file, dependency issues, or folder structure."
     },

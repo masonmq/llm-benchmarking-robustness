@@ -162,7 +162,9 @@ Answer: [Execute necessary next action to help you solve the task]
                 filename="execution_results.json",
                 stage_name="execute"
             ),
-            model_name=model_name
+            model_name=model_name,
+            logger=logger,
+            code_mode=code_mode
         )
     finally:
         ROBUSTNESS_EXECUTE_CONSTANTS["files"] = prev_files

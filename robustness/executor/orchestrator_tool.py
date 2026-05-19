@@ -66,7 +66,7 @@ def shq(s: str) -> str:
     return "'" + s.replace("'", "'\"'\"'") + "'"
 
 # Planner
-def plan_from_analysis_info(analysis_info: Dict) -> ExecutionPlan:
+def plan_from_analysis_info(analysis_info: Dict, code_mode) -> ExecutionPlan:
     claim_id = (
         analysis_info.get("analysis_study", {})
         .get("metadata", {})
@@ -78,26 +78,36 @@ def plan_from_analysis_info(analysis_info: Dict) -> ExecutionPlan:
     if not codebase:
         # Fallback if codebase files empty but entry script might exist physically
         # We'll rely on agent to provide valid entry, or raise error later
-        entry = "main.py" 
+        ordered = ["main.py"]
         lang = "python"
     else:
         # Priority: .R, .py, .sh, else first
         keys = list(codebase.keys())
-        ordered = (
-            [k for k in keys if k.lower().endswith(".r")] +
-            [k for k in keys if k.lower().endswith(".py")] +
-            [k for k in keys if k.lower().endswith(".sh")] +
-            [k for k in keys if not (k.lower().endswith((".r",".py",".sh")))]
-        )
-        entry = ordered[0]
+        if code_mode == "python":
+            ordered = (
+                [k for k in keys if k.lower().endswith(".py")] +
+                # [k for k in keys if k.lower().endswith(".r")] +
+                [k for k in keys if k.lower().endswith(".sh")] +
+                [k for k in keys if not (k.lower().endswith((".r",".py",".sh")))]
+            )
+        else:
+            ordered = (
+                # [k for k in keys if k.lower().endswith(".py")] +
+                [k for k in keys if k.lower().endswith(".r")] +
+                [k for k in keys if k.lower().endswith(".sh")] +
+                [k for k in keys if not (k.lower().endswith((".r",".py",".sh")))]
+            )
+    
+    steps=[
+            PlanStep(name="prepare-env", type="orchestrator")
+    ]
+    for entry_id, entry in enumerate(ordered):
         lang = _detect_lang_from_ext(entry)
-
+        steps.append(PlanStep(name=f"run-analysis-{entry_id}", type="container", lang=lang, entry=entry))
+    
     return ExecutionPlan(
         plan_id=plan_id,
-        steps=[
-            PlanStep(name="prepare-env", type="orchestrator"),
-            PlanStep(name="run-analysis", type="container", lang=lang, entry=entry),
-        ],
+        steps=steps  
     )
 
 def _get_docker_specs(spec: Dict) -> Dict:
@@ -330,10 +340,10 @@ def _exec_file(container_name: str, study_path: str, container_path: str, lang: 
         "artifacts": arts,
     }
 
-def orchestrator_plan(study_path: str) -> str:
+def orchestrator_plan(study_path: str, code_mode: str) -> str:
     try:
         spec = _read_spec(study_path)
-        plan = plan_from_analysis_info(spec)
+        plan = plan_from_analysis_info(spec, code_mode)
         out = {
             "plan_id": plan.plan_id,
             "steps": [{"name": s.name, "type": s.type, "lang": s.lang, "entry": s.entry} for s in plan.steps],
@@ -342,10 +352,10 @@ def orchestrator_plan(study_path: str) -> str:
     except Exception as e:
         return json.dumps({"ok": False, "error": str(e)})
 
-def orchestrator_preview_entry(study_path: str) -> str:
+def orchestrator_preview_entry(study_path: str, code_mode: str) -> str:
     try:
         spec = _read_spec(study_path)
-        plan = plan_from_analysis_info(spec)
+        plan = plan_from_analysis_info(spec, code_mode)
         step = next((s for s in plan.steps if s.type == "container"), None)
         if not step or not step.entry:
             return json.dumps({"ok": False, "error": "No container step or entry file specified."})
@@ -378,31 +388,22 @@ def orchestrator_preview_entry(study_path: str) -> str:
     except Exception as e:
          return json.dumps({"ok": False, "error": str(e)})
 
-def orchestrator_execute_entry(study_path: str) -> str:
+def orchestrator_execute_entry(study_path: str, code_mode: str) -> str:
     try:
         study_dir, _, _, _, _ = _paths(study_path)
         out_path = study_dir / "execution_result.json"
 
         spec = _read_spec(study_path)
-        plan = plan_from_analysis_info(spec)
+        plan = plan_from_analysis_info(spec, code_mode)
 
         results: Dict[str, Any] = {"plan_id": plan.plan_id, "steps": []}
         results["steps"].append({"name": "prepare-env", "ok": True})
-
-        step = next((s for s in plan.steps if s.type == "container"), None)
-        if not step or not step.entry:
-            # Should not happen if preview passed, but safe guard
-            return json.dumps({"ok": False, "error": "No entry file"})
-
-        found = _find_entry(DEFAULT_CONTAINER_NAME, study_path, step.entry)
-        if not found:
-            res = {"ok": False, "error": "Entry not found at runtime", "entry": step.entry}
-            out_path.write_text(json.dumps(res, indent=2))
-            return json.dumps(res)
-
-        ran = _exec_file(DEFAULT_CONTAINER_NAME, study_path, found, step.lang)
         
-        # We append the step details regardless of success so agent can see stderr
+
+        container_steps = [s for s in plan.steps if s.type == "container"]
+
+        if not container_steps:
+            return json.dumps({"ok": False, "error": "No entry files found to execute"})
         
         def _check_long_std(text: str, model_name="gpt-4o"):
             enc = tiktoken.encoding_for_model(model_name if model_name else "gpt-4")
@@ -419,17 +420,49 @@ def orchestrator_execute_entry(study_path: str) -> str:
                 ----------- TRUNCATED OUTPUT STREAM ------------
                 """
                 return f"{warning_message}\n{enc.decode(tokens[:MAX_TOKENS])}"
+
+        for step in container_steps:
+            if not step.entry:
+                continue
+
+            found = _find_entry(DEFAULT_CONTAINER_NAME, study_path, step.entry)
+            if not found:
+                res = {"ok": False, "error": f"Entry not found at runtime: {step.entry}", "entry": step.entry}
+                results["steps"].append(res)
+                continue  # or break, depending on whether you want to abort on failure
+
+            ran = _exec_file(DEFAULT_CONTAINER_NAME, study_path, found, step.lang)
+            
+            results["steps"].append({
+                "name": step.name,
+                "ok": ran.get("ok", False),
+                "exit_code": ran.get("exit_code"),
+                "stdout": _check_long_std(ran.get("stdout")),
+                "stderr": _check_long_std(ran.get("stderr")),
+                "artifacts": ran.get("artifacts", []),
+                "entry": step.entry,
+                "resolved_path": found,
+            })
+
+        # # Compute final status: True only if ALL container steps succeeded
+        # results["ok"] = all(s.get("ok", False) for s in results["steps"] if s["name"] != "prepare-env")
+
+        # out_path.write_text(json.dumps(results, indent=2))
+        # return json.dumps(results)
         
-        results["steps"].append({
-            "name": step.name,
-            "ok": ran.get("ok", False),
-            "exit_code": ran.get("exit_code"),
-            "stdout": _check_long_std(ran.get("stdout")),
-            "stderr": _check_long_std(ran.get("stderr")),
-            "artifacts": ran.get("artifacts", []),
-            "entry": step.entry,
-            "resolved_path": found,
-        })
+        # We append the step details regardless of success so agent can see stderr
+        
+        
+        # results["steps"].append({
+        #     "name": step.name,
+        #     "ok": ran.get("ok", False),
+        #     "exit_code": ran.get("exit_code"),
+        #     "stdout": _check_long_std(ran.get("stdout")),
+        #     "stderr": _check_long_std(ran.get("stderr")),
+        #     "artifacts": ran.get("artifacts", []),
+        #     "entry": step.entry,
+        #     "resolved_path": found,
+        # })
         results["ok"] = all(s.get("ok", False) for s in results["steps"] if s["name"] != "prepare-env")
 
         out_path.write_text(json.dumps(results, indent=2))

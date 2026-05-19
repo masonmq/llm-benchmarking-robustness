@@ -377,7 +377,7 @@ RUN POLICY (DESIGN)
 - Translate every non-Python analysis script (.R/.do/etc.) into Python. Any necessary translation must be performed BEFORE filling out the given JSON template.
 - Keep originals unchanged; write new files like: <basename>__py.py
 - Ensure all IO uses /app/data.
-- Write the python script to replication_data inside the study path.
+- Write the python script to the /data subfolder inside the study path.
 - If the original code is incompatible with the data, rewrite the code so that it is compatible. 
 - Set the executed entrypoint to the Python rewrite (or a Python wrapper that runs the translated scripts in order).
 - Preserve logic, outputs, and seeds as closely as possible.

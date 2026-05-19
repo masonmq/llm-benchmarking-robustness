@@ -18,7 +18,7 @@ def main():
         run_gen_gold_analysis(args.study_path,
         	tier=args.tier,
         	code_mode=args.code_mode,
-        	model_name=args.model_name
+        	model_name=args.model_name,
         )
 
     elif args.stage == "execute":
