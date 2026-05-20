@@ -1,0 +1,30 @@
+{
+  "plan_id": "study",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "run-analysis-0",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Task1 OLS results (standardized outcome):\n{'n_obs': 2293, 'r_squared': 0.24416831876854517, 'coef_first_A': 0.015396584159805077, 'p_first_A': 0.7849495494846355, 'coef_num_names_z': 0.49269355832009865, 'p_num_names_z': 1.7387035218184324e-131}\nSaved Task1 results to /app/data/task1_results.json\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/analysis_task1__py.py",
+      "resolved_path": "/workspace/data/analysis_task1__py.py"
+    },
+    {
+      "name": "run-analysis-1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Task2 OLS results (standardized outcome) with F-test for first_A:\n{'n_obs': 2293, 'r_squared': 0.24416831876854517, 'coef_first_A': 0.015396584159805077, 't_first_A': 0.27290669168460013, 'F_first_A': 0.0744780623662334, 'p_first_A': 0.7849495494846355, 'coef_num_names_z': 0.49269355832009865, 'p_num_names_z': 1.7387035218184324e-131}\nSaved Task2 results to /app/data/task2_results.json\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/analysis_task2__py.py",
+      "resolved_path": "/workspace/data/analysis_task2__py.py"
+    }
+  ],
+  "ok": true
+}

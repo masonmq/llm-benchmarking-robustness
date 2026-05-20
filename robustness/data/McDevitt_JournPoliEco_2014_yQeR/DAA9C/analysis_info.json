@@ -1,0 +1,203 @@
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "paper_title": "\"A\" Business by Any Other Name: Firm Name Choice as a Signal of Firm Quality",
+    "study_type": "observational",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms.",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "final_data",
+      "filename": "final_data.dta",
+      "type": "original",
+      "file_format": "dta",
+      "columns": [
+        "firm_id",
+        "chicago",
+        "complaints_2008",
+        "num_names_2008",
+        "emp_size",
+        "ad_spending",
+        "firm_age",
+        "fixedfee",
+        "hourlyrate",
+        "emergency",
+        "multiple_names",
+        "ad_spend_k",
+        "first_A",
+        "deflated_complaints",
+        "has_fixed_fee",
+        "total_price",
+        "in_survey",
+        "emergency_A",
+        "on_google"
+      ],
+      "summary_statistics": {
+        "info": "Rows: 2293; Columns: 19. Types: firm_id (object), others numeric (float32). Key analysis variables are complaints_2008 and first_A.",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/McDevitt_JournPoliEco_2014_yQeR/DAA9C/data/final_data.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Dataset appears to be a cleaned, aggregated file matching counts in the paper appendix for Illinois plumbing firms. Outcome uses overall complaints (complaints_2008). The indicator first_A denotes firm names beginning with 'A' or a number."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "McDevitt_JournPoliEco_2014_yQeR_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the analysis without additional restriction.",
+        "analysis_path": {
+          "path_name": "group_mean_comparison_firstA_complaints",
+          "path_description": "Compute mean overall complaints (complaints_2008) by first_A group and report difference/ratio.",
+          "software": "Python",
+          "model_family": "not_stated",
+          "preprocessing_steps": [
+            "Import original data from final_data.dta.",
+            "Select variables complaints_2008 and first_A.",
+            "Treat first_A as a nominal/binary indicator.",
+            "Drop missing values for the selected variables."
+          ],
+          "key_choices": {
+            "outcome_measure": "Overall complaints in 2008 (complaints_2008).",
+            "main_predictor_measure": "Name begins with 'A' or a number (first_A).",
+            "control_variables": [],
+            "sample_restriction": null,
+            "outlier_rule": null,
+            "missing_data_rule": "Drop rows with missing complaints_2008 or first_A.",
+            "data_processing": "Group by first_A and compute means, standard deviations, and counts.",
+            "model_choice": "Descriptive mean comparison (no formal model).",
+            "inference_rule": "not_stated"
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Total number of BBB complaints recorded in 2008 for the firm."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator that firm name begins with 'A' or a number (1=yes, 0=no)."
+            },
+            "controls": []
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/task1_DAA9C__py.py"
+          ],
+          "entry_file": "data/task1_DAA9C__py.py",
+          "run_command": "python /app/data/task1_DAA9C__py.py",
+          "notes": "Computes group means and ratio for complaints_2008 by first_A. Reads /app/data/final_data.dta and writes /app/data/task1_output.json."
+        },
+        "notes_for_agent": "Follow this planned path; do not change the focal claim, dataset, or analysis goal."
+      },
+      {
+        "task_id": "Task2",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "task_instruction": "Use only the data of Illinois plumbing firms; do not restrict to metro Chicago; do not include Yelp, Angie's List, or Consumer's Checkbook reviews; use overall complaints (not per employee).",
+        "analysis_path": {
+          "path_name": "t_test_firstA_overall_complaints",
+          "path_description": "Run a two-sample t-test (Welch) comparing overall complaints between first_A groups.",
+          "software": "Python",
+          "model_family": "t_test",
+          "preprocessing_steps": [
+            "Import original data from final_data.dta.",
+            "Select variables complaints_2008 and first_A.",
+            "Treat first_A as a nominal/binary indicator.",
+            "Exclude review-related variables and do not restrict to Chicago.",
+            "Drop missing values for the selected variables."
+          ],
+          "key_choices": {
+            "outcome_measure": "Overall complaints in 2008 (complaints_2008).",
+            "main_predictor_measure": "Name begins with 'A' or a number (first_A).",
+            "control_variables": [],
+            "sample_restriction": "None beyond using the Illinois plumbing firm dataset.",
+            "outlier_rule": null,
+            "missing_data_rule": "Drop rows with missing complaints_2008 or first_A.",
+            "data_processing": "Convert first_A to binary indicator and split into two groups.",
+            "model_choice": "Welch two-sample t-test.",
+            "inference_rule": "Two-sided p-value from t-test."
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Total number of BBB complaints recorded in 2008 for the firm."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator that firm name begins with 'A' or a number (1=yes, 0=no)."
+            },
+            "controls": []
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/task2_DAA9C__py.py"
+          ],
+          "entry_file": "data/task2_DAA9C__py.py",
+          "run_command": "python /app/data/task2_DAA9C__py.py",
+          "notes": "Implements the JMP Oneway t-test in Python using Welch's t-test. Reads /app/data/final_data.dta and writes /app/data/task2_output.json."
+        },
+        "notes_for_agent": "Use the planned t-test path; do not add controls or alternate outcomes; do not restrict the sample to Chicago."
+      }
+    ]
+  },
+  "codebase": {
+    "files": {
+      "data/task1_DAA9C__py.py": "Python script to compute group means and ratio of complaints_2008 by first_A for Task1.",
+      "data/task2_DAA9C__py.py": "Python script to run a Welch two-sample t-test of complaints_2008 by first_A for Task2."
+    },
+    "notes": "Original reanalysis artifacts include a Jupyter Notebook (Multi100_analysis_DAA9C.ipynb) and a JMP script (Multi100_analysis_DAA9C_step2.jsl). Per run policy, these have been translated to Python scripts that read from /app/data/final_data.dta."
+  },
+  "docker_specs": {
+    "base_image": "python:3.10-slim",
+    "packages": {
+      "python": [
+        "pandas==2.0.3",
+        "numpy==1.25.2",
+        "scipy==1.11.2"
+      ],
+      "r": [],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": "false",
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": null
+    },
+    "volumes": [
+      "./robustness/data/McDevitt_JournPoliEco_2014_yQeR/DAA9C/data:/app/data"
+    ]
+  },
+  "analysis": {
+    "instructions": "Execute Task1 and Task2 using the original dataset final_data.dta and produce structured outputs in /app/data. Do not modify the dataset or analysis paths.",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "allowed_actions": [
+      "inspect data files",
+      "inspect code files",
+      "run provided Python rewrites",
+      "make bounded implementation fixes",
+      "write compact result extraction scripts"
+    ],
+    "not_allowed_actions": [
+      "change the focal claim",
+      "change the dataset",
+      "replace the planned path with a different analysis path",
+      "choose a more favorable result"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Task1: group means, difference in means, ratio of means. Task2: t-statistic and two-sided p-value from Welch's t-test."
+  }
+}

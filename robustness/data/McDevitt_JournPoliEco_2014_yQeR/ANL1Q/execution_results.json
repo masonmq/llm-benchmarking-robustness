@@ -1,0 +1,135 @@
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Executed the planned negative binomial analyses in Python. Found a positive, statistically significant association between A/number-leading firm names (first_A) and total 2008 complaints. The effect persists with controls. Poisson vs NB LLR strongly favors the NB model. Chi-square and Welch t-test are also significant in the expected direction."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "negative_binomial_complaints_on_firstA",
+        "software": "Python",
+        "model_family": "negative_binomial",
+        "executed_files": [
+          "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+        ],
+        "run_command": "python data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Rewrote Poisson and Negative Binomial estimation to MLE via SciPy to remove the statsmodels dependency and ensured results are saved to /app/artifacts/execution_result.json.",
+            "reason": "Execution failed due to ModuleNotFoundError: statsmodels in the container.",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "Followed the planned path (chi-square, Poisson, NB, model comparison, NB with controls, t-test). Zero-inflated models were optional and skipped."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 1.685236,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": "<1e-6",
+          "t_value": null,
+          "f_value": null,
+          "z_value": 5.508488,
+          "standard_error": 0.305934,
+          "confidence_interval": null,
+          "sample_size": 2293,
+          "other": "LLR Poisson vs NB: LLR=3100.621, p<1e-6; Chi-square (binary complaints by first_A): chi2=62.597, p<1e-6; Poisson GOF p\u22481.12e-191 (overdispersion)."
+        },
+        "result_text": "In the NB model without controls, first_A is positively associated with complaints (coef\u22481.685, z\u22485.51, p<1e-6), indicating A/number-leading firms receive more complaints."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The result supports the focal claim: firms with names beginning with A or a number receive more complaints."
+      },
+      "artifacts": {
+        "output_files": [
+          "execution_result.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "nb_regression_controls_illinois_overall_complaints",
+        "software": "Python",
+        "model_family": "negative_binomial",
+        "executed_files": [
+          "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+        ],
+        "run_command": "python data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Implemented NB (and Poisson) MLE using SciPy to avoid the missing statsmodels package; saved standardized outputs.",
+            "reason": "Original Python translation relied on statsmodels which was not available at runtime.",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "Ran NB with controls on overall complaints including chicago as a control as instructed."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 0.675981,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.001343,
+          "t_value": null,
+          "f_value": null,
+          "z_value": 3.206559,
+          "standard_error": 0.210812,
+          "confidence_interval": null,
+          "sample_size": null,
+          "other": "Controls included: multiple_names, on_google, ad_spend_k, firm_age, chicago, emp_size; NB alpha\u22487.612."
+        },
+        "result_text": "In the NB model with controls, first_A remains positively associated with complaints (coef\u22480.676, z\u22483.21, p\u22480.0013)."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The controlled NB model indicates that A/number-leading firms receive more complaints, supporting the focal claim."
+      },
+      "artifacts": {
+        "output_files": [
+          "execution_result.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    }
+  ]
+}

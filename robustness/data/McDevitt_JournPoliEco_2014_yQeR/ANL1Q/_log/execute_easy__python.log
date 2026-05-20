@@ -1,0 +1,372 @@
+2026-05-20 14:42:30,278 - robustness - DEBUG - [core.utils] File logging configured: robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q/_log/execute_easy__python.log
+2026-05-20 14:42:30,278 - robustness - INFO - [agent] dynamic orchestrator run loop for: robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q
+2026-05-20 14:42:30,441 - robustness - INFO - 
+--- Turn 1 ---
+2026-05-20 14:42:30,441 - robustness - INFO - ***Agent input:
+Your goal is to successfully execute the analysis of a given claim in social science inside a Docker container.
+You are operating in a DEBUG LOOP. You must assess the result of every action. 
+
+RUN POLICY (EXECUTE)
+- Execute using Python.
+- Any missing code should be written to "data" folder inside the study path.
+- If the original code is incompatible with the data, rewrite the code to Python so that it is compatible. 
+- If analysis_info.json points to a non-.py entrypoint, create/complete the Python translations (keeping originals unchanged),
+  create a single Python entrypoint, and update analysis_info.json to that .py entrypoint.
+- If it fails, fix the Python rewrite / deps (don’t switch back to the original language).
+
+File operations policy:
+ - To modify existing files: ALWAYS call read_file first, then use edit_file for targeted changes.
+ - write_file is for creating new files. It will refuse to overwrite unless overwrite=True.
+ - Only use write_file(overwrite=True) when you intend to replace the entire file contents.
+
+If an action fails (e.g., Docker build error, Missing Dependency, Code crash), you MUST:
+1. Analyze the error message in the Observation.
+2. Use `write_file` to FIX the issue (e.g., rewrite `analysis_info.json` to add packages, or rewrite the code files). Remember that write_file will overwrite any existing content in the provided file_path if existing. When you use the tool, the provided path file_path to the tool MUST be the study path given to you. But to access other files within the file_content argument, you MUST use the container's directories "app/data". 
+3. RETRY the failed step.
+
+**Phases of Execution:**
+
+PHASE 1: BUILD ENVIRONMENT
+1. `orchestrator_generate_dockerfile`: Creates _runtime/Dockerfile from analysis_info.json.
+2. `orchestrator_build_image`: Builds the image.
+   * IF BUILD FAILS: Read the error log. It usually means a missing system package or R/Python library. Edit `analysis_info.json` to add the missing dependency, regenerate the Dockerfile, and rebuild.
+
+PHASE 2: PREPARE RUNTIME
+3. `orchestrator_run_container`: Mounts the code and data and starts the container.
+4. `orchestrator_plan` & `orchestrator_preview_entry`: Verify what will run.
+
+PHASE 3: HUMAN APPROVAL (Strict Check)
+5. Before running the actual analysis code, you MUST Ask the human:
+   Action: ask_human_input: "Ready to execute command: <COMMAND>. Approve? (yes/no)"
+   * If they say "no", stop the container and fill the output JSON with status "cancelled".
+   * If they say "yes", proceed to Phase 4.
+
+PHASE 4: EXECUTE & DEBUG
+6. `orchestrator_execute_entry`: Runs the code.
+   * IF EXECUTION FAILS (exit_code != 0): 
+     - Read the `stderr` in the observation.
+     - Identify if it is a code error or missing library.
+     - Use `write_file` to fix the script or `analysis_info.json`.
+     - If you changed dependencies, you must go back to Phase 1 (Rebuild).
+     - If you only changed code, you can retry `orchestrator_execute_entry`.
+
+PHASE 5: FINALIZE
+7. `orchestrator_stop_container`: Cleanup.
+8. Parse `execution_result.json` and output the Answer in the following required JSON schema.
+"{\n  \"case\": {\n    \"paper_id\": {\n      \"description\": \"Unique ID for the paper or case. Copy this from the input schema.\",\n      \"example\": \"Bruner_ExpEco_2017_amYY\"\n    },\n    \"focal_claim\": {\n      \"description\": \"The focal claim tested by the executed analysis. Copy this from the input schema.\",\n      \"example\": \"The likelihood of decision error should decrease with the degree of risk aversion.\"\n    }\n  },\n  \"execution_overview\": {\n    \"overall_execution_status\": {\n      \"description\": \"Overall execution status across all attempted tasks.\",\n      \"allowed_values\": [\n        \"success\",\n        \"partial_success\",\n        \"failure\"\n      ],\n      \"example\": \"success\"\n    },\n    \"target_task_ids\": {\n      \"description\": \"List of task IDs the agent attempted, copied from the input schema.\",\n      \"example\": [\n        \"Task1\",\n        \"Task2\"\n      ]\n    },\n    \"completed_task_ids\": {\n      \"description\": \"List of task IDs that produced usable outputs.\",\n      \"example\": [\n        \"Task1\",\n        \"Task2\"\n      ]\n    },\n    \"failed_task_ids\": {\n      \"description\": \"List of task IDs that failed. Use an empty list if none failed.\",\n      \"example\": []\n    },\n    \"overall_summary\": {\n      \"description\": \"Short summary of what the agent executed and what result it obtained.\",\n      \"example\": \"The agent executed both planned tasks and found a negative association between risk aversion and decision error.\"\n    }\n  },\n  \"task_outputs\": [\n    {\n      \"task_id\": {\n        \"description\": \"Task ID for this output entry.\",\n        \"example\": \"Task2\"\n      },\n      \"task_role\": {\n        \"description\": \"Role of the task, copied from the input schema.\",\n        \"example\": \"comparable_...
+2026-05-20 14:42:33,843 - robustness - INFO - ***Agent output (Thought):
+Thought: I need to inspect the study folder to find analysis_info.json and any provided code or data before generating the Dockerfile. I will list files in the current study path.
+2026-05-20 14:42:33,843 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: list_files_in_folder [Checkpoint: 0. Initialization]
+2026-05-20 14:42:33,844 - robustness - INFO - ***Observation (list_files_in_folder):
+Folder path: robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q
+All files:
+_log/execute_easy__python.log
+_log/gen_gold_analysis.log
+analysis_info.json
+anl1q_McDevitt_JournPoliEco_2014_yQeR_review.pdf
+data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q-Task2.r
+data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q.r
+data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py
+data/final_data.dta
+mcdevitt-abusinessname-2014__1_.pdf
+2026-05-20 14:42:33,844 - robustness - INFO - 
+--- Turn 2 ---
+2026-05-20 14:42:35,638 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: read_file [Checkpoint: 0. Initialization]
+2026-05-20 14:42:35,641 - robustness - INFO - ***Observation (read_file):
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "paper_title": "A Business by Any Other Name: Firm Name Choice as Product Differentiation",
+    "study_type": "observational",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms.",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "final_data",
+      "filename": "final_data.dta",
+      "type": "original",
+      "file_format": "dta",
+      "columns": "[firm_id, chicago, complaints_2008, num_names_2008, emp_size, ad_spending, firm_age, fixedfee, hourlyrate, emergency, multiple_names, ad_spend_k, first_A, deflated_complaints, has_fixed_fee, total_price, in_survey, emergency_A, on_google]",
+      "summary_statistics": {
+        "info": "2293 rows, 19 columns. firm_id: object; others float32. Key variables: complaints_2008 (count), first_A (indicator), multiple_names, on_google, ad_spend_k, firm_age, chicago, emp_size.",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q/data/final_data.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Data appear to include Illinois plumbing firms with overall complaint counts. No additional filtering required for Task2 per provided instructions."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "McDevitt_JournPoliEco_2014_yQeR_ANL1Q_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the analysis without additional restriction.",
+        "analysis_path": {
+          "path_name": "negative_binomial_complaints_on_firstA",
+          "path_description": "Load final_data.dta. Explore distribution, create complaints_binary, run chi-square test, fit Poisson and negative binomial models for complaints_2008 ~ first_A, compare fit, optionally fit zero-inflated models, 
+... (truncated)
+2026-05-20 14:42:35,641 - robustness - INFO - 
+--- Turn 3 ---
+2026-05-20 14:42:40,081 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: read_file [Checkpoint: 0. Initialization]
+2026-05-20 14:42:40,082 - robustness - INFO - ***Observation (read_file):
+import pandas as pd
+import numpy as np
+from scipy import stats
+import statsmodels.api as sm
+from statsmodels.discrete.discrete_model import NegativeBinomial, Poisson
+from statsmodels.discrete.count_model import ZeroInflatedPoisson, ZeroInflatedNegativeBinomialP
+
+# All IO uses /app/data
+DATA_PATH = "/app/data/final_data.dta"
+
+
+def load_data(path=DATA_PATH):
+    dta = pd.read_stata(path)
+    return dta
+
+
+def chi_square_complaints_binary(dta):
+    df = dta[["complaints_2008", "first_A"]].dropna()
+    df["complaints_binary"] = np.where(df["complaints_2008"] == 0, 0, 1)
+    contingency = pd.crosstab(df["first_A"], df["complaints_binary"])  # rows: first_A
+    chi2, p, dof, expected = stats.chi2_contingency(contingency.values)
+    return contingency, chi2, p, dof
+
+
+def fit_poisson(dta):
+    df = dta[["complaints_2008", "first_A"]].dropna()
+    y = df["complaints_2008"].astype(float)
+    X = sm.add_constant(df[["first_A"]].astype(float))
+    # Use GLM Poisson for deviance and llf
+    model = sm.GLM(y, X, family=sm.families.Poisson())
+    res = model.fit()
+    # Goodness of fit p-value
+    deviance = res.deviance
+    df_resid = res.df_resid
+    gof_p = 1 - stats.chi2.cdf(deviance, df_resid)
+    return res, gof_p
+
+
+def fit_nb(dta):
+    df = dta[["complaints_2008", "first_A"]].dropna()
+    y = df["complaints_2008"].astype(float)
+    X = sm.add_constant(df[["first_A"]].astype(float))
+    model = NegativeBinomial(y, X)
+    res = model.fit(method="newton", disp=False)
+    return res
+
+
+def model_comparison_llr(res_nb, res_pois):
+    # Likelihood ratio test: 2*(LL_NB - LL_Pois) ~ chi2(1)
+    llr = 2 * (res_nb.llf - res_pois.llf)
+    p = stats.chi2.sf(llr, df=1)
+    return llr, p
+
+
+def fit_zero_inflated_models(dta):
+    df = dta[["complaints_2008", "first_A"]].dropna()
+    y = df["complaints_2008"].astype(float)
+    X = sm.add_constant(df[["first_A"]].astype(float))
+    # Zero-Inflated Poisson with constant inflation
+    zip_model = ZeroInflatedPoisson(endog=y, exog=X, exog_infl=np
+... (truncated)
+2026-05-20 14:42:40,082 - robustness - INFO - 
+--- Turn 4 ---
+2026-05-20 14:42:44,923 - robustness - INFO - ***Agent output (Thought):
+Thought: I will generate the Dockerfile from analysis_info.json to begin environment setup.
+2026-05-20 14:42:44,923 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_generate_dockerfile [Checkpoint: 1. Generate Dockerfile]
+2026-05-20 14:42:44,926 - robustness - INFO - ***Observation (orchestrator_generate_dockerfile):
+{"ok": true, "dockerfile": "/Users/isham/project/RobustnessProject/llm-benchmarking-robustness/robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q/_runtime/Dockerfile", "content": "FROM python:3.10-slim\nRUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git wget ca-certificates && rm -rf /var/lib/apt/lists/*\nRUN command -v python3 || (apt-get update && apt-get install -y python3 python3-pip)\nRUN pip3 install --no-cache-dir pandas==2.0.3 numpy==1.24.4 scipy==1.10.1 statsmodels==0.14.0\nWORKDIR /workspace\nRUN useradd -m runner && mkdir -p /app/data /app/artifacts /app/tmp && chown -R runner:runner /workspace /app\nUSER runner\nCMD [\"bash\"]"}
+2026-05-20 14:42:44,926 - robustness - INFO - 
+--- Turn 5 ---
+2026-05-20 14:43:14,998 - robustness - INFO - ***Agent output (Thought):
+Thought: The Dockerfile is generated. Next, I will build the Docker image.
+2026-05-20 14:43:15,001 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_build_image [Checkpoint: 2. Build Image]
+2026-05-20 14:43:36,527 - robustness - INFO - ***Observation (orchestrator_build_image):
+{"ok": true, "image": "robustness_mcd_yqer_anl1q_py"}
+2026-05-20 14:43:36,528 - robustness - INFO - 
+--- Turn 6 ---
+2026-05-20 14:43:38,237 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_run_container [Checkpoint: 3. Start Container]
+2026-05-20 14:43:38,441 - robustness - INFO - ***Observation (orchestrator_run_container):
+{"ok": true, "container": "analysis-runner"}
+2026-05-20 14:43:38,441 - robustness - INFO - 
+--- Turn 7 ---
+2026-05-20 14:43:40,099 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_plan [Checkpoint: 4. Plan & Preview]
+2026-05-20 14:43:40,100 - robustness - INFO - ***Observation (orchestrator_plan):
+{"plan_id": "study", "steps": [{"name": "prepare-env", "type": "orchestrator", "lang": "", "entry": null}, {"name": "run-analysis-0", "type": "container", "lang": "python", "entry": "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"}]}
+2026-05-20 14:43:40,100 - robustness - INFO - 
+--- Turn 8 ---
+2026-05-20 14:44:07,070 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: ask_human_input [Checkpoint: 5. Human Approval]
+2026-05-20 14:44:11,783 - robustness - INFO - ***Observation (ask_human_input):
+yes
+2026-05-20 14:44:11,783 - robustness - INFO - 
+--- Turn 9 ---
+2026-05-20 14:44:14,922 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_execute_entry [Checkpoint: 6. Execute Code]
+2026-05-20 14:44:16,165 - robustness - INFO - ***Observation (orchestrator_execute_entry):
+{"plan_id": "study", "steps": [{"name": "prepare-env", "ok": true}, {"name": "run-analysis-0", "ok": false, "exit_code": 1, "stdout": "", "stderr": "Traceback (most recent call last):\n  File \"/workspace/data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py\", line 4, in <module>\n    import statsmodels.api as sm\nModuleNotFoundError: No module named 'statsmodels'\n", "artifacts": [], "entry": "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py", "resolved_path": "/workspace/data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"}], "ok": false}
+2026-05-20 14:44:16,165 - robustness - INFO - 
+--- Turn 10 ---
+2026-05-20 14:45:31,815 - robustness - INFO - ***Agent output (Thought):
+Thought: The container failed due to missing statsmodels. To comply with the run policy, I'll rewrite the Python script to remove the statsmodels dependency by implementing Poisson and Negative Binomial regressions via SciPy's optimization, and make it save a results JSON for later parsing. Then I'll rerun the execution.
+2026-05-20 14:45:31,818 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: write_file [Checkpoint: 6. Execute Code]
+2026-05-20 14:45:34,210 - robustness - INFO - ***Observation (write_file):
+✅ Successfully wrote content to /Users/isham/project/RobustnessProject/llm-benchmarking-robustness/robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q/data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py
+2026-05-20 14:45:34,210 - robustness - INFO - 
+--- Turn 11 ---
+2026-05-20 14:45:38,301 - robustness - INFO - ***Agent output (Thought):
+Thought: I rewrote the script to remove the statsmodels dependency and save results to /app/artifacts/execution_result.json. I'll rerun the execution inside the existing container.
+2026-05-20 14:45:38,302 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_execute_entry [Checkpoint: 6. Execute Code]
+2026-05-20 14:45:39,607 - robustness - INFO - ***Observation (orchestrator_execute_entry):
+{"plan_id": "study", "steps": [{"name": "prepare-env", "ok": true}, {"name": "run-analysis-0", "ok": true, "exit_code": 0, "stdout": "Loaded data with shape: (2293, 19)\nChi-square test (complaints_binary ~ first_A): chi2=62.597, df=1, p=0.000000\nContingency table (rows=first_A, cols=complaints_binary):\n complaints_binary     0    1\nfirst_A                     \n0.0                1821  177\n1.0                 223   72\nPoisson MLE results (complaints_2008 ~ first_A):\n{'params': [-1.393326, 1.685236], 'se': [0.062025, 0.06058], 'z': [-22.463785, 27.818437], 'p': [0.0, 0.0], 'llf': -2775.957813305815, 'deviance': 4905.5034964969855, 'gof_p': 1.1232765801345264e-191}\nNB2 MLE results (complaints_2008 ~ first_A):\n{'params': [-1.393326, 1.685236], 'se': [0.089486, 0.305934], 'z': [-15.570307, 5.508488], 'p': [0.0, 0.0], 'alpha': 15.528620778855602, 'llf': -1225.6473832969516}\nLR test Poisson vs NB: LLR=3100.621, p=0.000000\nNB2 MLE with controls results (complaints_2008 ~ first_A + controls):\n{'params': [-2.758639, 0.675981, 1.491624, 0.851168, 0.037936, -0.011964, 0.832848, 0.017422], 'se': [0.418134, 0.210812, 0.151204, 0.213705, 0.04423, 0.0175, 0.269742, 0.026606], 'z': [-6.5975, 3.206559, 9.865007, 3.982921, 0.857706, -0.683667, 3.087568, 0.654799], 'p': [0.0, 0.001343, 0.0, 6.8e-05, 0.391055, 0.494186, 0.002018, 0.512597], 'alpha': 7.611876222876656, 'llf': -1122.649661199437}\nt-test (complaints_2008 by first_A): t=3.852, p=0.000142\nMeans: first_A=1 -> 1.339 (n=295), first_A=0 -> 0.248 (n=1998)\nSaved results to /app/artifacts/execution_result.json\n", "stderr": "", "artifacts": ["execution_result.json"], "entry": "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py", "resolved_path": "/workspace/data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"}], "ok": true}
+2026-05-20 14:45:39,607 - robustness - INFO - 
+--- Turn 12 ---
+2026-05-20 14:45:41,334 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: orchestrator_stop_container [Checkpoint: 7. Stop Container]
+2026-05-20 14:45:41,481 - robustness - INFO - ***Observation (orchestrator_stop_container):
+{"ok": true}
+2026-05-20 14:45:41,482 - robustness - INFO - 
+--- Turn 13 ---
+2026-05-20 14:46:46,846 - robustness - INFO - ***Agent output (Thought):
+Thought: I generated the Dockerfile, built the image, and started the container. On first execution, the script failed due to a missing statsmodels package. Following the run policy, I repaired the Python code to remove the statsmodels dependency by implementing Poisson and Negative Binomial MLE via SciPy and ensured it writes standardized results to /app/artifacts/execution_result.json. I then reran the analysis successfully. The results show a positive and statistically significant association between first_A and complaints in both the simple negative binomial and the controlled negative binomial models, supporting the focal claim. I now provide the required JSON output.
+
+Answer: {
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Executed the planned negative binomial analyses in Python. Found a positive, statistically significant association between A/number-leading firm names (first_A) and total 2008 complaints. The effect persists with controls. Poisson vs NB LLR strongly favors the NB model. Chi-square and Welch t-test are also significant in the expected direction."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "negative_binomial_complaints_on_firstA",
+        "software": "Python",
+        "model_family": "negative_binomial",
+        "executed_files": [
+          "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+        ],
+        "run_command": "python data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Rewrote Poisson and Negative Binomial estimation to MLE via SciPy to remove the statsmodels dependency and ensured results are saved to /app/artifacts/execution_result.json.",
+            "reason": "Execution failed due to ModuleNotFoundError: statsmodels in the container.",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "Followed the planned path (chi-square, Poisson, NB, model comparison, NB with controls, t-test). Zero-inflated models were optional and skipped."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 1.685236,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": "<1e-6",
+          "t_value": null,
+          "f_value": null,
+          "z_value": 5.508488,
+          "standard_error": 0.305934,
+          "confidence_interval": null,
+          "sample_size": 2293,
+          "other": "LLR Poisson vs NB: LLR=3100.621, p<1e-6; Chi-square (binary complaints by first_A): chi2=62.597, p<1e-6; Poisson GOF p≈1.12e-191 (overdispersion)."
+        },
+        "result_text": "In the NB model without controls, first_A is positively associated with complaints (coef≈1.685, z≈5.51, p<1e-6), indicating A/number-leading firms receive more complaints."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The result supports the focal claim: firms with names beginning with A or a number receive more complaints."
+      },
+      "artifacts": {
+        "output_files": [
+          "execution_result.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "nb_regression_controls_illinois_overall_complaints",
+        "software": "Python",
+        "model_family": "negative_binomial",
+        "executed_files": [
+          "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+        ],
+        "run_command": "python data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Implemented NB (and Poisson) MLE using SciPy to avoid the missing statsmodels package; saved standardized outputs.",
+            "reason": "Original Python translation relied on statsmodels which was not available at runtime.",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "Ran NB with controls on overall complaints including chicago as a control as instructed."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 0.675981,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.001343,
+          "t_value": null,
+          "f_value": null,
+          "z_value": 3.206559,
+          "standard_error": 0.210812,
+          "confidence_interval": null,
+          "sample_size": null,
+          "other": "Controls included: multiple_names, on_google, ad_spend_k, firm_age, chicago, emp_size; NB alpha≈7.612."
+        },
+        "result_text": "In the NB model with controls, first_A remains positively associated with complaints (coef≈0.676, z≈3.21, p≈0.0013)."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "The controlled NB model indicates that A/number-leading firms receive more complaints, supporting the focal claim."
+      },
+      "artifacts": {
+        "output_files": [
+          "execution_result.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    }
+  ]
+}
+2026-05-20 14:46:46,850 - robustness - INFO - 
+--- Final Answer Found ---

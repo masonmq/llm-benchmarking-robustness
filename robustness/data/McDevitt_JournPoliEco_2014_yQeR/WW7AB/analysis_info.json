@@ -1,0 +1,201 @@
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "paper_title": "A Business by Any Other Name: Firm Name Choice as a Signal of Firm Quality",
+    "study_type": "observational",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms.",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "final_data",
+      "filename": "final_data.dta",
+      "type": "original",
+      "file_format": "dta",
+      "columns": [
+        "firm_id",
+        "chicago",
+        "complaints_2008",
+        "num_names_2008",
+        "emp_size",
+        "ad_spending",
+        "firm_age",
+        "fixedfee",
+        "hourlyrate",
+        "emergency",
+        "multiple_names",
+        "ad_spend_k",
+        "first_A",
+        "deflated_complaints",
+        "has_fixed_fee",
+        "total_price",
+        "in_survey",
+        "emergency_A",
+        "on_google"
+      ],
+      "summary_statistics": {
+        "info": "2293 rows x 19 columns. Dtypes: 18 float32, 1 object. Key non-null counts: firm_id (2293), complaints_2008 (2293), first_A (2293), ad_spend_k (2293), multiple_names (2293), chicago (2293), emp_size (2293), firm_age (2293); some price variables have 543 non-missing.",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/McDevitt_JournPoliEco_2014_yQeR/WW7AB/data/final_data.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Illinois plumbing firms dataset. Outcome is count of complaints in 2008. Binary predictor first_A indicates firm names beginning with 'A' or a number. Control variables include ad_spend_k, firm_age, chicago, emp_size, multiple_names."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "McDevitt_JournPoliEco_2014_yQeR_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the planned comparisons and count models of complaints on first_A with and without controls.",
+        "analysis_path": {
+          "path_name": "count_models_Aname_complaints",
+          "path_description": "Import the Illinois plumbing dataset; test differences in complaints by first_A; fit logit for any complaint; fit Poisson, zero-inflated Poisson, and negative binomial models of complaint counts with and without controls; compute margins where applicable.",
+          "software": "Python",
+          "model_family": "negative_binomial",
+          "preprocessing_steps": [
+            "Import original data from /app/data/data/final_data.dta.",
+            "Construct complaints_2008_bin = complaints_2008 > 0.",
+            "Run tests of association and fit regression models."
+          ],
+          "key_choices": {
+            "outcome_measure": "complaints_2008 (count of BBB complaints in 2008); complaints_2008_bin for binary models.",
+            "main_predictor_measure": "first_A (indicator for firm names beginning with 'A' or a number).",
+            "control_variables": [
+              "ad_spend_k",
+              "firm_age",
+              "chicago",
+              "emp_size",
+              "multiple_names"
+            ],
+            "sample_restriction": null,
+            "outlier_rule": null,
+            "missing_data_rule": null,
+            "data_processing": "Create binary outcome for any complaint; use controls as listed in multivariate models.",
+            "model_choice": "logistic_regression, poisson, zero_inflated_poisson, negative_binomial",
+            "inference_rule": "Coefficient z/t-tests and p-values; margins at means for selected models."
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Count of customer complaints recorded in 2008; binary variant complaints_2008_bin = complaints_2008 > 0 for logit."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator for firm names beginning with 'A' or a number."
+            },
+            "controls": [
+              {"name": "ad_spend_k", "definition": "Advertising spend in thousands."},
+              {"name": "firm_age", "definition": "Firm age in years."},
+              {"name": "chicago", "definition": "Indicator for metro Chicago area."},
+              {"name": "emp_size", "definition": "Number of employees."},
+              {"name": "multiple_names", "definition": "Indicator for firms using multiple names."}
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": ["data/replication__py.py"],
+          "entry_file": "data/replication__py.py",
+          "run_command": "python /app/data/data/replication__py.py",
+          "notes": "Translated from Stata do-file (replication.do) to Python. Script prints a JSON summary to stdout."
+        },
+        "notes_for_agent": "Follow this planned path; do not change the focal claim, dataset, or analysis goal."
+      },
+      {
+        "task_id": "Task2",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "task_instruction": "Produce a single main result using standard test statistics; use overall complaints and do not restrict to Chicago-only firms or online-review outcomes.",
+        "analysis_path": {
+          "path_name": "nbreg_comparable_test_Aname",
+          "path_description": "Import the dataset; run a Welch t-test of complaints by first_A and a negative binomial regression of complaints_2008 on first_A; report the z-statistic and p-value for first_A.",
+          "software": "Python",
+          "model_family": "negative_binomial",
+          "preprocessing_steps": [
+            "Import original data from /app/data/data/final_data.dta.",
+            "Run Welch t-test of complaints_2008 by first_A.",
+            "Fit negative binomial GLM: complaints_2008 ~ first_A and extract z-statistic."
+          ],
+          "key_choices": {
+            "outcome_measure": "complaints_2008 (count of BBB complaints in 2008).",
+            "main_predictor_measure": "first_A (indicator for firm names beginning with 'A' or a number).",
+            "control_variables": [],
+            "sample_restriction": null,
+            "outlier_rule": null,
+            "missing_data_rule": null,
+            "data_processing": "No additional processing beyond constructing group subsets for t-test.",
+            "model_choice": "negative_binomial",
+            "inference_rule": "z-statistic and p-value for first_A coefficient; Welch t-test p-value."
+          },
+          "variables": {
+            "outcome": {"name": "complaints_2008", "definition": "Count of customer complaints recorded in 2008."},
+            "main_predictor": {"name": "first_A", "definition": "Indicator for firm names beginning with 'A' or a number."},
+            "controls": []
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": ["data/replication_task2__py.py"],
+          "entry_file": "data/replication_task2__py.py",
+          "run_command": "python /app/data/data/replication_task2__py.py",
+          "notes": "Translated from Stata do-file (replication_task2.do) to Python. Script prints a JSON summary including t-test and NB z-statistics."
+        },
+        "notes_for_agent": "Use the planned negative binomial model for the main result; do not substitute outcomes from online review sites."
+      }
+    ]
+  },
+  "codebase": {
+    "files": {
+      "data/replication__py.py": "Python translation of replication.do. Loads final_data.dta, runs t-test, chi-square, logit, Poisson, ZIP with margins, and negative binomial with margins; prints JSON.",
+      "data/replication_task2__py.py": "Python translation of replication_task2.do. Runs Welch t-test and a negative binomial GLM on complaints_2008 ~ first_A; prints JSON with key test statistics."
+    },
+    "notes": "Non-Python scripts were translated to Python per policy. All file I/O points to /app/data. The Stata do-files are not executed directly."
+  },
+  "docker_specs": {
+    "base_image": "python:3.10-slim",
+    "packages": {
+      "python": [
+        "pandas==2.0.3",
+        "numpy==1.24.4",
+        "scipy==1.11.1",
+        "patsy==0.5.6",
+        "statsmodels==0.14.1"
+      ],
+      "r": [],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": "false",
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": null
+    },
+    "volumes": [
+      "./robustness/data/McDevitt_JournPoliEco_2014_yQeR/WW7AB:/app/data"
+    ]
+  },
+  "analysis": {
+    "instructions": "Execute Task1 and Task2 using the provided Python scripts against the original dataset and capture the printed JSON outputs for standardized result extraction.",
+    "target_task_ids": ["Task1", "Task2"],
+    "allowed_actions": [
+      "inspect data files",
+      "inspect code files",
+      "run provided Python code",
+      "make bounded implementation fixes",
+      "write compact result extraction scripts"
+    ],
+    "not_allowed_actions": [
+      "change the focal claim",
+      "change the dataset",
+      "replace the planned path with a different analysis path",
+      "choose a more favorable result"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Group means and Welch t-test for complaints_2008 by first_A; chi-square test for binary complaints; coefficients, standard errors, z/t-statistics, and p-values for first_A in logit, Poisson, ZIP, and negative binomial models; margins at means for selected models."
+  }
+}

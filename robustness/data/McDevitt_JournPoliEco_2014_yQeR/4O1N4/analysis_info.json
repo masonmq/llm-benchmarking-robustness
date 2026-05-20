@@ -1,0 +1,277 @@
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "paper_title": "A Business by Any Other Name: Firm Name Choice as a Signal of Firm Quality",
+    "study_type": "observational",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms.",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "final_data",
+      "filename": "final_data.dta",
+      "type": "Use original.",
+      "file_format": "dta",
+      "columns": [
+        "firm_id",
+        "chicago",
+        "complaints_2008",
+        "num_names_2008",
+        "emp_size",
+        "ad_spending",
+        "firm_age",
+        "fixedfee",
+        "hourlyrate",
+        "emergency",
+        "multiple_names",
+        "ad_spend_k",
+        "first_A",
+        "deflated_complaints",
+        "has_fixed_fee",
+        "total_price",
+        "in_survey",
+        "emergency_A",
+        "on_google"
+      ],
+      "summary_statistics": {
+        "info": "2293 rows, 19 columns. Numeric columns stored as float32; firm_id is object. Key non-null counts: complaints_2008, first_A, chicago, emp_size, ad_spending, firm_age, multiple_names, on_google (2293 non-null); fixedfee, hourlyrate, total_price, has_fixed_fee (543 non-null); emergency, emergency_A (728 non-null).",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/McDevitt_JournPoliEco_2014_yQeR/4O1N4/data/final_data.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Dataset contains Illinois plumbing firms with BBB complaints and covariates. Some variables (pricing and emergency indicators) are only observed for subsamples. Main outcome complaints_2008 is available for full sample."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "McDevitt_JournPoliEco_2014_yQeR_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the analysis without any restrictions.",
+        "analysis_path": {
+          "path_name": "negative_binomial_poisson_robust_complaints_on_Aname",
+          "path_description": "Import final_data.dta, center continuous covariates and effect-code binary indicators, fit Poisson GLM with robust SE and then Negative Binomial regression of complaints_2008 on first_A and controls, report IRR and inference.",
+          "software": "Python",
+          "model_family": "negative_binomial",
+          "preprocessing_steps": [
+            "Import original data.",
+            "Center continuous variables: ad_spending, firm_age, log(emp_size), num_names_2008.",
+            "Effect-code binary indicators: first_A, multiple_names, chicago, on_google as -0.5/0.5.",
+            "Construct design matrix with constant."
+          ],
+          "key_choices": {
+            "outcome_measure": "complaints_2008 (BBB complaint counts in 2008).",
+            "main_predictor_measure": "first_A indicating firm name begins with 'A' or a number, effect-coded (-0.5, 0.5).",
+            "control_variables": [
+              "firm_ageC",
+              "emp_sizeC (log employee size centered)",
+              "num_names_2008C",
+              "multiple_names (effect-coded)",
+              "chicago (effect-coded)",
+              "ad_spendingC",
+              "on_google (effect-coded)"
+            ],
+            "sample_restriction": null,
+            "outlier_rule": null,
+            "missing_data_rule": null,
+            "data_processing": "Center continuous variables; log-transform emp_size; effect-code categorical variables.",
+            "model_choice": "Negative binomial regression (with Poisson GLM and robust SE for comparison).",
+            "inference_rule": "p-value and 95% confidence interval; conventional 0.05 threshold."
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Count of BBB service complaints in 2008 per firm."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator that firm name begins with 'A' or a number; analyzed with effect coding (-0.5, 0.5)."
+            },
+            "controls": [
+              {
+                "name": "firm_ageC",
+                "definition": "Centered firm age."
+              },
+              {
+                "name": "emp_sizeC",
+                "definition": "Centered log of employee size."
+              },
+              {
+                "name": "num_names_2008C",
+                "definition": "Centered number of names used by the firm in 2008."
+              },
+              {
+                "name": "multiple_names",
+                "definition": "Indicator for multiple names; effect-coded."
+              },
+              {
+                "name": "chicago",
+                "definition": "Indicator for metro Chicago; effect-coded."
+              },
+              {
+                "name": "ad_spendingC",
+                "definition": "Centered ad spending."
+              },
+              {
+                "name": "on_google",
+                "definition": "Indicator for advertising on Google; effect-coded."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/plumber_study__py.py"
+          ],
+          "entry_file": "data/plumber_study__py.py",
+          "run_command": "python data/plumber_study__py.py",
+          "notes": "Translated from data/plumber_study.Rmd (R) to Python. Reads /app/data/final_data.dta and writes /app/data/task1_results.json."
+        },
+        "notes_for_agent": "Follow this planned path; do not change the focal claim, dataset, or analysis goal."
+      },
+      {
+        "task_id": "Task2",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "task_instruction": "Use only the data of Illinois Plumbing Firms. Do not restrict to metro Chicago. Do not include Yelp, Angie's List, or Consumer's Checkbook reviews. Use overall complaints number instead of complaints per employee.",
+        "analysis_path": {
+          "path_name": "poisson_robust_complaints_on_Aname",
+          "path_description": "Import final_data.dta, center continuous covariates and effect-code binary indicators, fit Poisson GLM with robust SE predicting complaints_2008 from first_A and controls.",
+          "software": "Python",
+          "model_family": "poisson",
+          "preprocessing_steps": [
+            "Import original data.",
+            "Center continuous variables: ad_spending, firm_age, log(emp_size), num_names_2008.",
+            "Effect-code binary indicators: first_A, multiple_names, chicago, on_google as -0.5/0.5.",
+            "Construct design matrix with constant."
+          ],
+          "key_choices": {
+            "outcome_measure": "complaints_2008 (BBB complaint counts in 2008).",
+            "main_predictor_measure": "first_A indicating firm name begins with 'A' or a number, effect-coded (-0.5, 0.5).",
+            "control_variables": [
+              "firm_ageC",
+              "emp_sizeC (log employee size centered)",
+              "num_names_2008C",
+              "ad_spendingC",
+              "multiple_names (effect-coded)",
+              "chicago (effect-coded)",
+              "on_google (effect-coded)"
+            ],
+            "sample_restriction": null,
+            "outlier_rule": null,
+            "missing_data_rule": null,
+            "data_processing": "Center continuous variables; log-transform emp_size; effect-code categorical variables.",
+            "model_choice": "Poisson GLM with robust (HC0) standard errors.",
+            "inference_rule": "p-value and 95% confidence interval based on robust SE."
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Count of BBB service complaints in 2008 per firm."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator that firm name begins with 'A' or a number; analyzed with effect coding (-0.5, 0.5)."
+            },
+            "controls": [
+              {
+                "name": "firm_ageC",
+                "definition": "Centered firm age."
+              },
+              {
+                "name": "emp_sizeC",
+                "definition": "Centered log of employee size."
+              },
+              {
+                "name": "num_names_2008C",
+                "definition": "Centered number of names used by the firm in 2008."
+              },
+              {
+                "name": "ad_spendingC",
+                "definition": "Centered ad spending."
+              },
+              {
+                "name": "multiple_names",
+                "definition": "Indicator for multiple names; effect-coded."
+              },
+              {
+                "name": "chicago",
+                "definition": "Indicator for metro Chicago; effect-coded."
+              },
+              {
+                "name": "on_google",
+                "definition": "Indicator for advertising on Google; effect-coded."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/plumber_study_task2__py.py"
+          ],
+          "entry_file": "data/plumber_study_task2__py.py",
+          "run_command": "python data/plumber_study_task2__py.py",
+          "notes": "Translated from data/plumber_study_task2.Rmd (R) to Python. Reads /app/data/final_data.dta and writes /app/data/task2_results.json."
+        },
+        "notes_for_agent": "Use the Poisson GLM with robust SE as planned; do not change the focal claim or dataset."
+      }
+    ]
+  },
+  "codebase": {
+    "files": {
+      "data/plumber_study__py.py": "Python translation of Task1 Rmd. Loads /app/data/final_data.dta, constructs centered/effect-coded variables, fits Poisson GLM with robust SE and Negative Binomial, and writes /app/data/task1_results.json.",
+      "data/plumber_study_task2__py.py": "Python translation of Task2 Rmd. Loads /app/data/final_data.dta, constructs centered/effect-coded variables, fits Poisson GLM with robust SE, and writes /app/data/task2_results.json."
+    },
+    "notes": "Original Rmd files (plumber_study.Rmd, plumber_study_task2.Rmd) were translated to Python per RUN POLICY. Execution should use the Python scripts. Ensure statsmodels, pandas, numpy, and scipy are installed."
+  },
+  "docker_specs": {
+    "base_image": "python:3.10",
+    "packages": {
+      "python": [
+        "pandas==2.0.3",
+        "numpy==1.26.4",
+        "statsmodels==0.14.1",
+        "scipy==1.11.4"
+      ],
+      "r": [],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": "false",
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": "2"
+    },
+    "volumes": [
+      "./data:/app/data"
+    ]
+  },
+  "analysis": {
+    "instructions": "Execute Task1 and Task2 using the original dataset and translated Python scripts to produce structured outputs (JSON) with coefficients, robust SE, IRR, and CIs for the main predictor.",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "allowed_actions": [
+      "inspect data files",
+      "inspect code files",
+      "run provided code",
+      "make bounded implementation fixes",
+      "write compact result extraction scripts"
+    ],
+    "not_allowed_actions": [
+      "change the focal claim",
+      "change the dataset",
+      "replace the planned path with a different analysis path",
+      "choose a more favorable result"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Coefficient (log IRR) for first_A, IRR for first_A, robust SE, z/t statistic, p-value, 95% CI, model type used (Poisson robust vs Negative Binomial), and conclusion text."
+  }
+}

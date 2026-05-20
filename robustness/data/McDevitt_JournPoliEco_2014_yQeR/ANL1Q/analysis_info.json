@@ -1,0 +1,244 @@
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "paper_title": "A Business by Any Other Name: Firm Name Choice as Product Differentiation",
+    "study_type": "observational",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms.",
+    "case_mode": "planned_path_execution"
+  },
+  "original_datasets": [
+    {
+      "name": "final_data",
+      "filename": "final_data.dta",
+      "type": "original",
+      "file_format": "dta",
+      "columns": "[firm_id, chicago, complaints_2008, num_names_2008, emp_size, ad_spending, firm_age, fixedfee, hourlyrate, emergency, multiple_names, ad_spend_k, first_A, deflated_complaints, has_fixed_fee, total_price, in_survey, emergency_A, on_google]",
+      "summary_statistics": {
+        "info": "2293 rows, 19 columns. firm_id: object; others float32. Key variables: complaints_2008 (count), first_A (indicator), multiple_names, on_google, ad_spend_k, firm_age, chicago, emp_size.",
+        "describe": null
+      },
+      "access": {
+        "url": "robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q/data/final_data.dta",
+        "restrictions": "not_stated"
+      },
+      "notes": "Data appear to include Illinois plumbing firms with overall complaint counts. No additional filtering required for Task2 per provided instructions."
+    }
+  ],
+  "planned_method": {
+    "planned_id": "McDevitt_JournPoliEco_2014_yQeR_ANL1Q_path01",
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "task_role": "conclusion_oriented_reanalysis",
+        "task_instruction": "Conduct the analysis without additional restriction.",
+        "analysis_path": {
+          "path_name": "negative_binomial_complaints_on_firstA",
+          "path_description": "Load final_data.dta. Explore distribution, create complaints_binary, run chi-square test, fit Poisson and negative binomial models for complaints_2008 ~ first_A, compare fit, optionally fit zero-inflated models, and fit NB with controls.",
+          "software": "Python",
+          "model_family": "negative_binomial",
+          "preprocessing_steps": [
+            "Import original data file final_data.dta.",
+            "Inspect distribution of complaints_2008.",
+            "Create complaints_binary = 1 if complaints_2008 > 0 else 0."
+          ],
+          "key_choices": {
+            "outcome_measure": "complaints_2008 (total number of complaints in 2008).",
+            "main_predictor_measure": "first_A (indicator if firm name begins with 'A' or a number).",
+            "control_variables": [
+              "multiple_names",
+              "on_google",
+              "ad_spend_k",
+              "firm_age",
+              "chicago",
+              "emp_size"
+            ],
+            "sample_restriction": null,
+            "outlier_rule": "Dichotomized robustness check using complaints_binary with chi-square test.",
+            "missing_data_rule": "not_stated",
+            "data_processing": "Construct complaints_binary for robustness; no additional recoding.",
+            "model_choice": "Negative binomial regression; Poisson and zero-inflated models used for model fit assessment; Welch t-test as descriptive robustness check.",
+            "inference_rule": "Significance of coefficient for first_A (z-test) in negative binomial regression."
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Total number of complaints recorded in 2008 for each firm."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator equals 1 if firm name begins with 'A' or a number; 0 otherwise."
+            },
+            "controls": [
+              {
+                "name": "multiple_names",
+                "definition": "Indicator for whether the firm uses multiple names."
+              },
+              {
+                "name": "on_google",
+                "definition": "Indicator for whether the firm advertises on Google."
+              },
+              {
+                "name": "ad_spend_k",
+                "definition": "Advertising spending in thousands."
+              },
+              {
+                "name": "firm_age",
+                "definition": "Age of the firm in years."
+              },
+              {
+                "name": "chicago",
+                "definition": "Indicator for metro Chicago area."
+              },
+              {
+                "name": "emp_size",
+                "definition": "Number of employees."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+          ],
+          "entry_file": "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+          "run_command": "python data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+          "notes": "Python translation of the provided R scripts. Reads /app/data/final_data.dta and runs chi-square, Poisson, NB, zero-inflated, NB with controls, and t-test."
+        },
+        "notes_for_agent": "Follow this planned path; do not change the focal claim, dataset, or analysis goal."
+      },
+      {
+        "task_id": "Task2",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "task_instruction": "Use only Illinois Plumbing Firms. Do not restrict to metro Chicago. Do not use Yelp/Angie's List/Checkbook reviews. Use overall complaint counts (not per employee).",
+        "analysis_path": {
+          "path_name": "nb_regression_controls_illinois_overall_complaints",
+          "path_description": "Use the same data file and fit negative binomial regression of complaints_2008 on first_A with controls (multiple_names, on_google, ad_spend_k, firm_age, chicago, emp_size).",
+          "software": "Python",
+          "model_family": "negative_binomial",
+          "preprocessing_steps": [
+            "Import original data file final_data.dta.",
+            "Confirm outcome complaints_2008 (overall complaints).",
+            "No restriction to metro Chicago; include chicago as a control."
+          ],
+          "key_choices": {
+            "outcome_measure": "complaints_2008 (overall complaints).",
+            "main_predictor_measure": "first_A (A/number-leading firm name indicator).",
+            "control_variables": [
+              "multiple_names",
+              "on_google",
+              "ad_spend_k",
+              "firm_age",
+              "chicago",
+              "emp_size"
+            ],
+            "sample_restriction": "None beyond Illinois firms in final_data.dta.",
+            "outlier_rule": "not_stated",
+            "missing_data_rule": "not_stated",
+            "data_processing": "No additional processing beyond variable selection.",
+            "model_choice": "Negative binomial regression with controls.",
+            "inference_rule": "Significance of first_A coefficient (z-test)."
+          },
+          "variables": {
+            "outcome": {
+              "name": "complaints_2008",
+              "definition": "Total number of complaints recorded in 2008 for each firm."
+            },
+            "main_predictor": {
+              "name": "first_A",
+              "definition": "Indicator equals 1 if firm name begins with 'A' or a number; 0 otherwise."
+            },
+            "controls": [
+              {
+                "name": "multiple_names",
+                "definition": "Indicator for whether the firm uses multiple names."
+              },
+              {
+                "name": "on_google",
+                "definition": "Indicator for whether the firm advertises on Google."
+              },
+              {
+                "name": "ad_spend_k",
+                "definition": "Advertising spending in thousands."
+              },
+              {
+                "name": "firm_age",
+                "definition": "Age of the firm in years."
+              },
+              {
+                "name": "chicago",
+                "definition": "Indicator for metro Chicago area."
+              },
+              {
+                "name": "emp_size",
+                "definition": "Number of employees."
+              }
+            ]
+          }
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+          ],
+          "entry_file": "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+          "run_command": "python data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+          "notes": "Same Python script executes the negative binomial model with controls that satisfies Task2 instructions."
+        },
+        "notes_for_agent": "Use the planned negative binomial regression with controls; do not include review-based variables and do not subselect metro Chicago only."
+      }
+    ]
+  },
+  "codebase": {
+    "files": {
+      "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py": "Python translation of the R analyses. Loads /app/data/final_data.dta, computes chi-square on complaints_binary, fits Poisson and negative binomial models, compares fit, optionally fits zero-inflated models, fits NB with controls, and runs a Welch t-test."
+    },
+    "notes": "Original R scripts are present but the execution entrypoint is the Python translation to comply with the run policy. Ensure the dataset is mounted to /app/data inside the container."
+  },
+  "docker_specs": {
+    "base_image": "python:3.10-slim",
+    "packages": {
+      "python": [
+        "pandas==2.0.3",
+        "numpy==1.24.4",
+        "scipy==1.10.1",
+        "statsmodels==0.14.0"
+      ],
+      "r": [],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": "false",
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": null
+    },
+    "volumes": [
+      "./robustness/data/McDevitt_JournPoliEco_2014_yQeR/ANL1Q/data:/app/data"
+    ]
+  },
+  "analysis": {
+    "instructions": "Execute Task1 and Task2 using the original dataset final_data.dta and the Python rewrite to produce standardized outputs and model summaries.",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "allowed_actions": [
+      "inspect data files",
+      "inspect code files",
+      "run provided Python code",
+      "make bounded implementation fixes",
+      "write compact result extraction scripts"
+    ],
+    "not_allowed_actions": [
+      "change the focal claim",
+      "change the dataset",
+      "replace the planned path with a different analysis path",
+      "choose a more favorable result"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Negative binomial coefficient for first_A (estimate, z, p); Poisson vs NB LLR and p; chi-square test for complaints_binary; Welch t-test for mean complaints by first_A; NB with controls summary."
+  }
+}

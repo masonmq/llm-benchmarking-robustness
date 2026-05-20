@@ -1,0 +1,149 @@
+{
+  "case": {
+    "paper_id": "McDevitt_JournPoliEco_2014_yQeR",
+    "focal_claim": "The average plumbing firm whose name begins with A or a number receives more service complaints than other firms."
+  },
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Executed both tasks in Python inside Docker using the original final_data.dta. The regression of standardized complaints on first_A and standardized num_names_2008 shows first_A has a small positive but non-significant coefficient (p\u22480.785); num_names_2008 is strongly positive and significant. Results do not support the focal claim."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "linear_regression_complaints_on_name_and_aliases",
+        "software": "Python",
+        "model_family": "linear_regression",
+        "executed_files": [
+          "data/analysis_task1__py.py"
+        ],
+        "run_command": "DATA_PATH=/app/data python data/analysis_task1__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Pinned compatible Python packages in analysis_info.json (numpy 1.26.4, pandas 2.0.3, statsmodels 0.14.1, patsy 0.5.6) and rebuilt the Docker image.",
+            "reason": "Resolve missing library and binary incompatibility errors.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Adjusted Task1 script to import only required statsmodels submodules (OLS, add_constant) to avoid nonparametric import path that conflicted with numpy.",
+            "reason": "Prevent binary incompatibility when importing statsmodels.api that triggered optional modules.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Followed the planned path exactly; only dependency and import handling were adjusted."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 0.015396584159805077,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.7849495494846355,
+          "t_value": null,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 2293,
+          "other": {
+            "r_squared": 0.24416831876854517,
+            "coef_num_names_z": 0.49269355832009865,
+            "p_num_names_z": 1.7387035218184324e-131
+          }
+        },
+        "result_text": "First_A coefficient is small and not statistically significant (p\u22480.785). Number of names is strongly positive and significant."
+      },
+      "conclusion": {
+        "conclusion_class": "inconclusive",
+        "conclusion_text": "The result does not support the focal claim; firms with names beginning with A/number do not show more complaints in a statistically significant way."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/task1_results.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 2
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "linear_regression_Ftest_firstA",
+        "software": "Python",
+        "model_family": "linear_regression",
+        "executed_files": [
+          "data/analysis_task2__py.py"
+        ],
+        "run_command": "DATA_PATH=/app/data python data/analysis_task2__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Pinned compatible versions in analysis_info.json and rebuilt Docker.",
+            "reason": "Fix binary incompatibility for statsmodels/numpy.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Followed the planned regression and F-test reporting; only dependency versions were fixed."
+      },
+      "result_raw": {
+        "metric": "regression_coefficient",
+        "value": 0.015396584159805077,
+        "direction": "positive",
+        "test_statistics": {
+          "p_value": 0.7849495494846355,
+          "t_value": 0.27290669168460013,
+          "f_value": 0.0744780623662334,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 2293,
+          "other": {
+            "r_squared": 0.24416831876854517,
+            "coef_num_names_z": 0.49269355832009865,
+            "p_num_names_z": 1.7387035218184324e-131
+          }
+        },
+        "result_text": "First_A coefficient is small and not significant (t\u22480.273, F\u22480.074, p\u22480.785)."
+      },
+      "conclusion": {
+        "conclusion_class": "inconclusive",
+        "conclusion_text": "No significant evidence that firms with A/number-leading names receive more complaints."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/task2_results.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 2
+      }
+    }
+  ]
+}

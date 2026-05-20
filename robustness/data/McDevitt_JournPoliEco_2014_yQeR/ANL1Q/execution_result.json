@@ -1,0 +1,22 @@
+{
+  "plan_id": "study",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "run-analysis-0",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Loaded data with shape: (2293, 19)\nChi-square test (complaints_binary ~ first_A): chi2=62.597, df=1, p=0.000000\nContingency table (rows=first_A, cols=complaints_binary):\n complaints_binary     0    1\nfirst_A                     \n0.0                1821  177\n1.0                 223   72\nPoisson MLE results (complaints_2008 ~ first_A):\n{'params': [-1.393326, 1.685236], 'se': [0.062025, 0.06058], 'z': [-22.463785, 27.818437], 'p': [0.0, 0.0], 'llf': -2775.957813305815, 'deviance': 4905.5034964969855, 'gof_p': 1.1232765801345264e-191}\nNB2 MLE results (complaints_2008 ~ first_A):\n{'params': [-1.393326, 1.685236], 'se': [0.089486, 0.305934], 'z': [-15.570307, 5.508488], 'p': [0.0, 0.0], 'alpha': 15.528620778855602, 'llf': -1225.6473832969516}\nLR test Poisson vs NB: LLR=3100.621, p=0.000000\nNB2 MLE with controls results (complaints_2008 ~ first_A + controls):\n{'params': [-2.758639, 0.675981, 1.491624, 0.851168, 0.037936, -0.011964, 0.832848, 0.017422], 'se': [0.418134, 0.210812, 0.151204, 0.213705, 0.04423, 0.0175, 0.269742, 0.026606], 'z': [-6.5975, 3.206559, 9.865007, 3.982921, 0.857706, -0.683667, 3.087568, 0.654799], 'p': [0.0, 0.001343, 0.0, 6.8e-05, 0.391055, 0.494186, 0.002018, 0.512597], 'alpha': 7.611876222876656, 'llf': -1122.649661199437}\nt-test (complaints_2008 by first_A): t=3.852, p=0.000142\nMeans: first_A=1 -> 1.339 (n=295), first_A=0 -> 0.248 (n=1998)\nSaved results to /app/artifacts/execution_result.json\n",
+      "stderr": "",
+      "artifacts": [
+        "execution_result.json"
+      ],
+      "entry": "data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py",
+      "resolved_path": "/workspace/data/McDevitt_JournPoliEco_2014_yQeR--ANL1Q__py.py"
+    }
+  ],
+  "ok": true
+}
