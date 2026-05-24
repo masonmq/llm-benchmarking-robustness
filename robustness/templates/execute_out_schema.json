@@ -1,14 +1,4 @@
 {
-    "case": {
-      "paper_id": {
-        "description": "Unique ID for the paper or case. Copy this from the input schema.",
-        "example": "Bruner_ExpEco_2017_amYY"
-      },
-      "focal_claim": {
-        "description": "The focal claim tested by the executed analysis. Copy this from the input schema.",
-        "example": "The likelihood of decision error should decrease with the degree of risk aversion."
-      }
-    },
     "execution_overview": {
       "overall_execution_status": {
         "description": "Overall execution status across all attempted tasks.",

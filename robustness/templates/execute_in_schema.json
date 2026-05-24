@@ -1,11 +1,4 @@
 {
-    "case": {
-        "paper_id": "Extract or assign a unique case ID. Example: Bruner_ExpEco_2017_amYY.",
-        "paper_title": "Extract the original paper title. Example: Does decision error decrease with risk aversion?",
-        "study_type": "Extract the study type. Example: experimental, observational, survey, meta-analysis, other, or not_stated.",
-        "focal_claim": "Copy the focal claim being tested. Example: The likelihood of decision error should decrease with the degree of risk aversion.",
-        "case_mode": "Use the execution mode. Example: planned_path_execution."
-    },
     "original_datasets": [
         {
             "name": "Dataset name used for the robustness reanalysis. Example: RiskData.",
