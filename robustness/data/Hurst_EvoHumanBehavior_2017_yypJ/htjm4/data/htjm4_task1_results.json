@@ -1,0 +1,31 @@
+{
+  "task": "Task1",
+  "analyses": {
+    "spearman": {
+      "DSM5_vs_MiniK": {
+        "n": 138,
+        "r_s": -0.5896345397786912,
+        "p": null
+      },
+      "DSM5_vs_HKSS": {
+        "n": 138,
+        "r_s": -0.527020225017068,
+        "p": null
+      }
+    },
+    "kendall_tau": {
+      "DSM5_vs_MiniK": {
+        "n": 138,
+        "tau_b": -0.4312907689077494,
+        "p": null
+      },
+      "DSM5_vs_HKSS": {
+        "n": 138,
+        "tau_b": -0.37339367455980116,
+        "p": null
+      }
+    }
+  },
+  "partial_sensitivity": null,
+  "notes": "Alpha=0.005 threshold; p-values not computed due to minimal environment; Bayes factors not computed."
+}

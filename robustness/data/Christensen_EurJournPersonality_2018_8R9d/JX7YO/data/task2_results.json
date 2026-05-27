@@ -1,0 +1,22 @@
+{
+  "welch_t_by_gender": {
+    "t_value": -1.1389954921318544,
+    "p_value": 0.2564297672088357,
+    "group_sizes": {
+      " ": 13,
+      "0": 103,
+      "1": 396
+    },
+    "groups_compared": [
+      " ",
+      "0"
+    ]
+  },
+  "notes": {
+    "filter": "cpl < 10 and d_gender != '-1'",
+    "data_rows": 516,
+    "vf_columns": 50,
+    "denominator_rows_for_cooccurrence": 516,
+    "node_retention": "90% (removed top 10% by eigenvector centrality)"
+  }
+}

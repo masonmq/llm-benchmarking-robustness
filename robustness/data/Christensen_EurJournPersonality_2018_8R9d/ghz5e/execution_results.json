@@ -1,0 +1,165 @@
+{
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Built a Python Docker environment, updated the entrypoint to a new Python script using the original CSVs, and executed both planned tasks. Results indicate High openness has lower ASPL and lower modularity Q than Low (supporting greater interconnectivity and lower modularity), while CC for High is slightly lower (not higher) than Low. Both tasks completed successfully."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "semantic_network_bootstrap_high_vs_low_openness",
+        "software": "Python",
+        "model_family": "network_analysis",
+        "executed_files": [
+          "data/entry.py"
+        ],
+        "run_command": "python data/entry.py --task both",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Replaced corrupted original Python script with a new Python entry script that merges FINAL fluency.csv with FINAL open.csv and implements the planned semantic network and partial bootstrap analyses.",
+            "reason": "Original code referenced a non-existent .sav file and contained syntax/logic corruption, preventing execution.",
+            "likely_impact": "low"
+          },
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added lightweight runtime pip installation in entry.py for numpy/pandas/scikit-learn/networkx/python-louvain if missing.",
+            "reason": "Container execution initially failed due to ModuleNotFoundError: numpy.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "file_path_fix",
+            "description": "Switched merge source from a missing .sav to the available FINAL open.csv for openness scores.",
+            "reason": "The .sav file referenced in the old code was not present; FINAL open.csv contained suitable openness measures (LATENT/AVERAGE/no_int).",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "Followed the planned path: used original verbal fluency and openness data, split by openness, built cosine networks, computed ASPL/CC/Q, and ran partial node-retention bootstraps (50\u201390%)."
+      },
+      "result_raw": {
+        "metric": "mean_difference_high_minus_low_ASPL_at_prop_0.9",
+        "value": -0.02552612793725901,
+        "direction": "negative",
+        "test_statistics": {
+          "p_value": null,
+          "t_value": -33.513788028130115,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 516,
+          "other": {
+            "n_bootstrap": 200,
+            "bootstrap_prop": 0.9,
+            "CC_mean_diff_high_minus_low": -0.006606286308194109,
+            "Q_mean_diff_high_minus_low": -0.03628903690157752
+          }
+        },
+        "result_text": "At 90% node retention, High openness had lower ASPL than Low (mean diff = -0.0255; t-like \u2248 -33.51), lower CC (mean diff \u2248 -0.0066), and lower modularity Q (mean diff \u2248 -0.0363)."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "Task1 supports the focal claim that higher openness relates to more interconnected semantic networks (lower ASPL) and lower modularity (lower Q); clustering coefficient (CC) was lower for High, not higher, indicating partial but substantial support."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/execution_result.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "semantic_network_bootstrap_90pct_nodes",
+        "software": "Python",
+        "model_family": "network_analysis",
+        "executed_files": [
+          "data/entry.py"
+        ],
+        "run_command": "python data/entry.py --task both",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "code_repair",
+            "description": "Used new Python entry script and updated analysis_info.json to point to data/entry.py.",
+            "reason": "Original code was incompatible/corrupted and referenced missing .sav.",
+            "likely_impact": "low"
+          },
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime dependency bootstrap to entry.py.",
+            "reason": "Resolved missing numpy error during container execution.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "file_path_fix",
+            "description": "Merged with FINAL open.csv instead of missing .sav.",
+            "reason": "Ensure openness measure is available for group split.",
+            "likely_impact": "low"
+          }
+        ],
+        "fidelity_note": "Followed the planned 90% node-retention bootstrap exactly using the same preprocessing, graph construction, and metrics."
+      },
+      "result_raw": {
+        "metric": "mean_difference_high_minus_low_ASPL_at_prop_0.9",
+        "value": -0.02552612793725901,
+        "direction": "negative",
+        "test_statistics": {
+          "p_value": null,
+          "t_value": -33.513788028130115,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 516,
+          "other": {
+            "n_bootstrap": 200,
+            "bootstrap_prop": 0.9,
+            "CC_mean_diff_high_minus_low": -0.006606286308194109,
+            "Q_mean_diff_high_minus_low": -0.036412083873023436
+          }
+        },
+        "result_text": "With 90% nodes retained, High openness showed lower ASPL than Low (mean diff = -0.0255; t-like \u2248 -33.51), lower CC (\u2248 -0.0066), and lower Q (\u2248 -0.0364)."
+      },
+      "conclusion": {
+        "conclusion_class": "support",
+        "conclusion_text": "Task2 supports the focal claim on interconnectivity and modularity (ASPL and Q lower for High), though CC was lower for High rather than higher."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/execution_result.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "plan_id": "study",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "run-analysis-0",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"descriptives\": {\n    \"MiniK_Total\": {\n      \"mean\": 14.622028985507246,\n      \"sd\": 11.251540505032189,\n      \"n\": 138\n    },\n    \"HKSS_Total\": {\n      \"mean\": 87.3445652173913,\n      \"sd\": 13.635969507450667,\n      \"n\": 138\n    },\n    \"DSM5_Total\": {\n      \"mean\": 40.10021739130435,\n      \"sd\": 14.56943538362594,\n      \"n\": 138\n    }\n  },\n  \"partial_correlations\": {\n    \"MiniK_Total_with_DSM5_Total_ctrl_Age\": {\n      \"r\": -0.5133967089581962,\n      \"t\": -6.951140248734193,\n      \"df\": 135,\n      \"p\": 1.4066721060768704e-10\n    },\n    \"HKSS_Total_with_DSM5_Total_ctrl_Age\": {\n      \"r\": -0.40875361824389805,\n      \"t\": -5.203873418231201,\n      \"df\": 135,\n      \"p\": 7.090178815755034e-07\n    }\n  }\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/task1__py.py",
+      "resolved_path": "/workspace/data/task1__py.py"
+    },
+    {
+      "name": "run-analysis-1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"grouping_rule\": \"fast <= -1, slow >= 1, exclude -1 < MiniK < 1\",\n  \"descriptives\": {\n    \"n_fast\": 16,\n    \"n_slow\": 120,\n    \"median_fast\": 60.5,\n    \"median_slow\": 33.0\n  },\n  \"levene_equal_var\": {\n    \"stat\": 0.2822084636706951,\n    \"p\": 0.5961368167981378\n  },\n  \"shapiro\": {\n    \"fast\": {\n      \"W\": 0.9745345711708069,\n      \"p\": 0.9056187868118286\n    },\n    \"slow\": {\n      \"W\": 0.84648597240448,\n      \"p\": 8.053944178243455e-10\n    }\n  },\n  \"mann_whitney_u\": {\n    \"U\": 1671.0,\n    \"p\": 1.5645092267668433e-06\n  }\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "data/task2__py.py",
+      "resolved_path": "/workspace/data/task2__py.py"
+    }
+  ],
+  "ok": true
+}

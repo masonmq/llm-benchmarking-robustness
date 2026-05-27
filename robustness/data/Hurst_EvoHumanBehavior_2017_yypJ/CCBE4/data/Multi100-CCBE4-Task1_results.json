@@ -1,0 +1,59 @@
+{
+  "task": "Task1",
+  "input": "/app/data/Dataset.csv",
+  "outputs": {
+    "partial_correlations_age_controlled": {
+      "MiniK_Total__DSM5_Total": {
+        "r": -0.5133967089581961,
+        "p": 1.2028701275289963e-10,
+        "N": 138
+      },
+      "HKSS_Total__DSM5_Total": {
+        "r": -0.4087536182438981,
+        "p": 6.448527619730456e-07,
+        "N": 138
+      },
+      "MiniK_Total__HKSS_Total": {
+        "r": 0.6694729208588182,
+        "p": 2.7946220970226827e-19,
+        "N": 138
+      }
+    },
+    "pca": {
+      "explained_variance_ratio": 0.8526863723325442,
+      "loadings": {
+        "MiniK_Total": -0.7071067811865477,
+        "HKSS_Total": -0.7071067811865474
+      }
+    },
+    "pca_partial_corr": {
+      "compscores__DSM5_Total": {
+        "r": 0.5041376691983952,
+        "p": 2.904953922698542e-10,
+        "N": 138
+      }
+    },
+    "partial_corr_network": {
+      "n": 138,
+      "p": 11,
+      "alpha_bonf": 0.0009090909090909091,
+      "pairs": {
+        "MiniK_Total__DSM5_Total": {
+          "r": -0.3032851938844625,
+          "p": 0.00047620953928251275,
+          "significant_bonf": true
+        },
+        "HKSS_Total__DSM5_Total": {
+          "r": 0.009806094073775877,
+          "p": 0.9121758984420978,
+          "significant_bonf": false
+        },
+        "MiniK_Total__HKSS_Total": {
+          "r": 0.5558050360429403,
+          "p": 8.074430013493838e-12,
+          "significant_bonf": true
+        }
+      }
+    }
+  }
+}

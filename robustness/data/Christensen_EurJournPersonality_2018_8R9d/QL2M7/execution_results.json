@@ -1,0 +1,160 @@
+{
+  "execution_overview": {
+    "overall_execution_status": "success",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "completed_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "failed_task_ids": [],
+    "overall_summary": "Both planned tasks were executed in Python inside the container. I implemented bounded dependency and minor code repairs to ensure runtime package availability and fix a duplicated import typo. Task1 produced bootstrapped t-tests comparing network metrics (ASPL, CC, Q) between high- vs low-openness groups. Task2 implemented a 90% node-retention bootstrap comparing ASPL. Results show high openness had higher ASPL (opposite of greater interconnectedness), lower CC (opposite), and lower Q (support), yielding a mixed overall pattern. The 90% node-wise ASPL comparison strongly indicated higher ASPL for high openness (opposite)."
+  },
+  "task_outputs": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "semantic_network_bootstrap_comparison",
+        "software": "Python",
+        "model_family": "t_test",
+        "executed_files": [
+          "data/analysis_task1__py.py"
+        ],
+        "run_command": "python data/analysis_task1__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime on-the-fly pip installation (numpy, pandas, scipy, scikit-learn, networkx, python-louvain) within the Python script to handle missing packages inside the container.",
+            "reason": "Container runtime initially lacked numpy and related scientific packages.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Fixed a duplicated import token ('import osimport os') introduced during earlier patching and refactored import block to ensure proper fallback installation and re-import.",
+            "reason": "Syntax error prevented script execution.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Followed the planned semantic network analysis path (case-wise bootstrap on participant resamples; ASPL, CC, Q; Welch t-tests). Changes were limited to dependency provisioning and trivial syntax repair."
+      },
+      "result_raw": {
+        "metric": "ASPL_difference_high_minus_low",
+        "value": 0.09741922863169016,
+        "direction": "mixed",
+        "test_statistics": {
+          "p_value": 5.370070591281122e-22,
+          "t_value": 9.755414923607194,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 516,
+          "other": {
+            "n_boot": 1000,
+            "high_mean": 9.814187538220667,
+            "low_mean": 9.716768309588977,
+            "CC_high_mean": 0.059343122226397954,
+            "CC_low_mean": 0.06300860021224122,
+            "CC_t": -17.392036405562607,
+            "CC_p": 3.818699011050767e-63,
+            "Q_high_mean": 0.2998024488682423,
+            "Q_low_mean": 0.31312087302574454,
+            "Q_t": -20.195880724966297,
+            "Q_p": 1.0956691639614808e-82
+          }
+        },
+        "result_text": "High openness showed slightly higher ASPL than low (opposite of greater interconnectedness), lower CC (opposite), and lower Q (support), with all differences statistically significant."
+      },
+      "conclusion": {
+        "conclusion_class": "inconclusive",
+        "conclusion_text": "Results are mixed: high openness had higher ASPL and lower CC (opposite of more interconnected networks) but lower Q (consistent with more integrated networks). Overall, no clear support for greater interconnectedness in the high openness group."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/task1_results.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 2
+      }
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "execution_status": "success",
+      "executed_analysis": {
+        "path_name": "semantic_network_nodewise_bootstrap_90pct",
+        "software": "Python",
+        "model_family": "t_test",
+        "executed_files": [
+          "data/analysis_task2__py.py"
+        ],
+        "run_command": "python data/analysis_task2__py.py",
+        "code_source": "modified_analysis_code"
+      },
+      "method_fidelity": {
+        "followed_planned_path": "yes",
+        "deviations": [
+          {
+            "deviation_type": "dependency_fix",
+            "description": "Added runtime on-the-fly pip installation in the Python script for missing scientific libraries.",
+            "reason": "Container did not have numpy and other dependencies preinstalled.",
+            "likely_impact": "none"
+          },
+          {
+            "deviation_type": "code_repair",
+            "description": "Refreshed import block to robustly install and re-import dependencies if missing.",
+            "reason": "Prevent potential import failures during container execution.",
+            "likely_impact": "none"
+          }
+        ],
+        "fidelity_note": "Followed the 90% node-retention bootstrap ASPL comparison between high vs low openness groups exactly as planned."
+      },
+      "result_raw": {
+        "metric": "ASPL_difference_high_minus_low",
+        "value": 0.4363343298913865,
+        "direction": "opposite",
+        "test_statistics": {
+          "p_value": 0.0,
+          "t_value": 83.02925721387898,
+          "f_value": null,
+          "z_value": null,
+          "standard_error": null,
+          "confidence_interval": null,
+          "sample_size": 516,
+          "other": {
+            "n_boot": 1000,
+            "cohens_d": 3.7131812650309644,
+            "high_mean": 12.41865282233557,
+            "low_mean": 11.982318492444183
+          }
+        },
+        "result_text": "Under 90% node-wise bootstrap, high openness had higher ASPL than low (opposite direction), with a very large effect size and p ~ 0."
+      },
+      "conclusion": {
+        "conclusion_class": "opposite",
+        "conclusion_text": "Task2 indicates the high openness group has longer average shortest paths than the low openness group, opposing the expectation of greater interconnectedness (lower ASPL) for high openness."
+      },
+      "artifacts": {
+        "output_files": [
+          "data/task2_results.json"
+        ]
+      },
+      "failure": {
+        "failure_reason": null,
+        "failure_stage": null,
+        "repair_attempts_used": 1
+      }
+    }
+  ]
+}

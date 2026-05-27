@@ -1,0 +1,517 @@
+{
+  "execute-gen_gold_analysis": {
+    "status": "Success",
+    "total_time_seconds": 299.35,
+    "total_tokens": 274864,
+    "prompt_tokens": 266205,
+    "completion_tokens": 8659,
+    "total_turns": 14,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 219.8220911026001,
+        "tokens": 233567,
+        "prompt_tokens": 230204,
+        "completion_tokens": 3363,
+        "turns": 13
+      },
+      "8. Final Output & Parsing": {
+        "time": 79.52920484542847,
+        "tokens": 41297,
+        "prompt_tokens": 36001,
+        "completion_tokens": 5296,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 7.18,
+        "prompt_tokens": 4968,
+        "completion_tokens": 357,
+        "total_tokens": 5325
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.88,
+        "prompt_tokens": 5118,
+        "completion_tokens": 151,
+        "total_tokens": 5269
+      },
+      {
+        "turn": 3,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 7.89,
+        "prompt_tokens": 5316,
+        "completion_tokens": 565,
+        "total_tokens": 5881
+      },
+      {
+        "turn": 4,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 12.29,
+        "prompt_tokens": 6179,
+        "completion_tokens": 944,
+        "total_tokens": 7123
+      },
+      {
+        "turn": 5,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 1.81,
+        "prompt_tokens": 7079,
+        "completion_tokens": 57,
+        "total_tokens": 7136
+      },
+      {
+        "turn": 6,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 33.02,
+        "prompt_tokens": 7930,
+        "completion_tokens": 187,
+        "total_tokens": 8117
+      },
+      {
+        "turn": 7,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.01,
+        "prompt_tokens": 11278,
+        "completion_tokens": 48,
+        "total_tokens": 11326
+      },
+      {
+        "turn": 8,
+        "action": "load_dataset",
+        "checkpoint": "Running Action",
+        "duration_seconds": 15.57,
+        "prompt_tokens": 30000,
+        "completion_tokens": 802,
+        "total_tokens": 30802
+      },
+      {
+        "turn": 9,
+        "action": "get_dataset_shape",
+        "checkpoint": "Running Action",
+        "duration_seconds": 26.99,
+        "prompt_tokens": 30140,
+        "completion_tokens": 50,
+        "total_tokens": 30190
+      },
+      {
+        "turn": 10,
+        "action": "get_dataset_columns",
+        "checkpoint": "Running Action",
+        "duration_seconds": 29.22,
+        "prompt_tokens": 30208,
+        "completion_tokens": 50,
+        "total_tokens": 30258
+      },
+      {
+        "turn": 11,
+        "action": "get_dataset_head",
+        "checkpoint": "Running Action",
+        "duration_seconds": 27.53,
+        "prompt_tokens": 30483,
+        "completion_tokens": 50,
+        "total_tokens": 30533
+      },
+      {
+        "turn": 12,
+        "action": "load_dataset",
+        "checkpoint": "Running Action",
+        "duration_seconds": 26.64,
+        "prompt_tokens": 30699,
+        "completion_tokens": 53,
+        "total_tokens": 30752
+      },
+      {
+        "turn": 13,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 26.78,
+        "prompt_tokens": 30806,
+        "completion_tokens": 49,
+        "total_tokens": 30855
+      }
+    ]
+  },
+  "generate-execute": {
+    "status": "Success",
+    "total_time_seconds": 1552.82,
+    "total_tokens": 805719,
+    "prompt_tokens": 786989,
+    "completion_tokens": 18730,
+    "total_turns": 34,
+    "checkpoint_stats": {
+      "0. Initialization": {
+        "time": 523.3624925613403,
+        "tokens": 247041,
+        "prompt_tokens": 238041,
+        "completion_tokens": 9000,
+        "turns": 16
+      },
+      "1. Generate Dockerfile": {
+        "time": 125.18393778800964,
+        "tokens": 104639,
+        "prompt_tokens": 100824,
+        "completion_tokens": 3815,
+        "turns": 4
+      },
+      "2. Build Image": {
+        "time": 25.574647426605225,
+        "tokens": 29212,
+        "prompt_tokens": 29156,
+        "completion_tokens": 56,
+        "turns": 1
+      },
+      "3. Start Container": {
+        "time": 28.072697401046753,
+        "tokens": 29288,
+        "prompt_tokens": 29242,
+        "completion_tokens": 46,
+        "turns": 1
+      },
+      "4. Plan & Preview": {
+        "time": 26.490721702575684,
+        "tokens": 29360,
+        "prompt_tokens": 29315,
+        "completion_tokens": 45,
+        "turns": 1
+      },
+      "5. Human Approval": {
+        "time": 37.85274362564087,
+        "tokens": 29477,
+        "prompt_tokens": 29438,
+        "completion_tokens": 39,
+        "turns": 1
+      },
+      "6. Execute Code": {
+        "time": 695.81067943573,
+        "tokens": 255437,
+        "prompt_tokens": 253950,
+        "completion_tokens": 1487,
+        "turns": 8
+      },
+      "7. Stop Container": {
+        "time": 37.40756821632385,
+        "tokens": 39555,
+        "prompt_tokens": 38479,
+        "completion_tokens": 1076,
+        "turns": 1
+      },
+      "8. Final Output & Parsing": {
+        "time": 53.0621235370636,
+        "tokens": 41710,
+        "prompt_tokens": 38544,
+        "completion_tokens": 3166,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 3.63,
+        "prompt_tokens": 6095,
+        "completion_tokens": 152,
+        "total_tokens": 6247
+      },
+      {
+        "turn": 2,
+        "action": "read_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 2.4,
+        "prompt_tokens": 6347,
+        "completion_tokens": 53,
+        "total_tokens": 6400
+      },
+      {
+        "turn": 3,
+        "action": "read_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 3.05,
+        "prompt_tokens": 9134,
+        "completion_tokens": 251,
+        "total_tokens": 9385
+      },
+      {
+        "turn": 4,
+        "action": "load_dataset",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 7.35,
+        "prompt_tokens": 11971,
+        "completion_tokens": 554,
+        "total_tokens": 12525
+      },
+      {
+        "turn": 5,
+        "action": "get_dataset_columns",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 30.48,
+        "prompt_tokens": 12119,
+        "completion_tokens": 50,
+        "total_tokens": 12169
+      },
+      {
+        "turn": 6,
+        "action": "load_dataset",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 3.22,
+        "prompt_tokens": 12394,
+        "completion_tokens": 51,
+        "total_tokens": 12445
+      },
+      {
+        "turn": 7,
+        "action": "get_dataset_columns",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 2.29,
+        "prompt_tokens": 12495,
+        "completion_tokens": 52,
+        "total_tokens": 12547
+      },
+      {
+        "turn": 8,
+        "action": "load_dataset",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 26.9,
+        "prompt_tokens": 14341,
+        "completion_tokens": 48,
+        "total_tokens": 14389
+      },
+      {
+        "turn": 9,
+        "action": "get_dataset_columns",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 1.36,
+        "prompt_tokens": 14436,
+        "completion_tokens": 49,
+        "total_tokens": 14485
+      },
+      {
+        "turn": 10,
+        "action": "read_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 3.26,
+        "prompt_tokens": 14695,
+        "completion_tokens": 245,
+        "total_tokens": 14940
+      },
+      {
+        "turn": 11,
+        "action": "write_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 120.56,
+        "prompt_tokens": 15105,
+        "completion_tokens": 6725,
+        "total_tokens": 21830
+      },
+      {
+        "turn": 12,
+        "action": "read_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 2.16,
+        "prompt_tokens": 19263,
+        "completion_tokens": 47,
+        "total_tokens": 19310
+      },
+      {
+        "turn": 13,
+        "action": "edit_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 11.85,
+        "prompt_tokens": 22050,
+        "completion_tokens": 210,
+        "total_tokens": 22260
+      },
+      {
+        "turn": 14,
+        "action": "edit_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 113.46,
+        "prompt_tokens": 22321,
+        "completion_tokens": 150,
+        "total_tokens": 22471
+      },
+      {
+        "turn": 15,
+        "action": "edit_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 28.14,
+        "prompt_tokens": 22532,
+        "completion_tokens": 150,
+        "total_tokens": 22682
+      },
+      {
+        "turn": 16,
+        "action": "edit_file",
+        "checkpoint": "0. Initialization",
+        "duration_seconds": 163.24,
+        "prompt_tokens": 22743,
+        "completion_tokens": 213,
+        "total_tokens": 22956
+      },
+      {
+        "turn": 17,
+        "action": "orchestrator_generate_dockerfile",
+        "checkpoint": "1. Generate Dockerfile",
+        "duration_seconds": 4.76,
+        "prompt_tokens": 23017,
+        "completion_tokens": 48,
+        "total_tokens": 23065
+      },
+      {
+        "turn": 18,
+        "action": "read_file",
+        "checkpoint": "1. Generate Dockerfile",
+        "duration_seconds": 2.18,
+        "prompt_tokens": 23108,
+        "completion_tokens": 53,
+        "total_tokens": 23161
+      },
+      {
+        "turn": 19,
+        "action": "write_file",
+        "checkpoint": "1. Generate Dockerfile",
+        "duration_seconds": 116.11,
+        "prompt_tokens": 25840,
+        "completion_tokens": 3666,
+        "total_tokens": 29506
+      },
+      {
+        "turn": 20,
+        "action": "orchestrator_generate_dockerfile",
+        "checkpoint": "1. Generate Dockerfile",
+        "duration_seconds": 2.13,
+        "prompt_tokens": 28859,
+        "completion_tokens": 48,
+        "total_tokens": 28907
+      },
+      {
+        "turn": 21,
+        "action": "orchestrator_build_image",
+        "checkpoint": "2. Build Image",
+        "duration_seconds": 25.57,
+        "prompt_tokens": 29156,
+        "completion_tokens": 56,
+        "total_tokens": 29212
+      },
+      {
+        "turn": 22,
+        "action": "orchestrator_run_container",
+        "checkpoint": "3. Start Container",
+        "duration_seconds": 28.07,
+        "prompt_tokens": 29242,
+        "completion_tokens": 46,
+        "total_tokens": 29288
+      },
+      {
+        "turn": 23,
+        "action": "orchestrator_plan",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 26.49,
+        "prompt_tokens": 29315,
+        "completion_tokens": 45,
+        "total_tokens": 29360
+      },
+      {
+        "turn": 24,
+        "action": "ask_human_input",
+        "checkpoint": "5. Human Approval",
+        "duration_seconds": 37.85,
+        "prompt_tokens": 29438,
+        "completion_tokens": 39,
+        "total_tokens": 29477
+      },
+      {
+        "turn": 25,
+        "action": "orchestrator_execute_entry",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 27.49,
+        "prompt_tokens": 29491,
+        "completion_tokens": 46,
+        "total_tokens": 29537
+      },
+      {
+        "turn": 26,
+        "action": "edit_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 34.79,
+        "prompt_tokens": 29681,
+        "completion_tokens": 770,
+        "total_tokens": 30451
+      },
+      {
+        "turn": 27,
+        "action": "edit_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 140.61,
+        "prompt_tokens": 30018,
+        "completion_tokens": 338,
+        "total_tokens": 30356
+      },
+      {
+        "turn": 28,
+        "action": "orchestrator_execute_entry",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 1.97,
+        "prompt_tokens": 30417,
+        "completion_tokens": 46,
+        "total_tokens": 30463
+      },
+      {
+        "turn": 29,
+        "action": "read_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 27.02,
+        "prompt_tokens": 30590,
+        "completion_tokens": 53,
+        "total_tokens": 30643
+      },
+      {
+        "turn": 30,
+        "action": "edit_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 188.69,
+        "prompt_tokens": 34426,
+        "completion_tokens": 104,
+        "total_tokens": 34530
+      },
+      {
+        "turn": 31,
+        "action": "edit_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 17.23,
+        "prompt_tokens": 34591,
+        "completion_tokens": 84,
+        "total_tokens": 34675
+      },
+      {
+        "turn": 32,
+        "action": "orchestrator_execute_entry",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 258.01,
+        "prompt_tokens": 34736,
+        "completion_tokens": 46,
+        "total_tokens": 34782
+      },
+      {
+        "turn": 33,
+        "action": "orchestrator_stop_container",
+        "checkpoint": "7. Stop Container",
+        "duration_seconds": 37.41,
+        "prompt_tokens": 38479,
+        "completion_tokens": 1076,
+        "total_tokens": 39555
+      }
+    ]
+  }
+}

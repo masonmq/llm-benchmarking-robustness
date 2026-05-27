@@ -1,0 +1,32 @@
+{
+  "random_seed": 12345,
+  "n_participants": 516,
+  "n_nodes_equated": 186,
+  "metrics": {
+    "ASPL": {
+      "high_mean": 9.814187538220667,
+      "low_mean": 9.716768309588977,
+      "t_stat": 9.755414923607194,
+      "p_value": 5.370070591281122e-22,
+      "n_boot_high": 1000,
+      "n_boot_low": 1000
+    },
+    "CC": {
+      "high_mean": 0.059343122226397954,
+      "low_mean": 0.06300860021224122,
+      "t_stat": -17.392036405562607,
+      "p_value": 3.818699011050767e-63,
+      "n_boot_high": 1000,
+      "n_boot_low": 1000
+    },
+    "Q": {
+      "high_mean": 0.2998024488682423,
+      "low_mean": 0.31312087302574454,
+      "t_stat": -20.195880724966297,
+      "p_value": 1.0956691639614808e-82,
+      "n_boot_high": 1000,
+      "n_boot_low": 1000
+    }
+  },
+  "notes": "Approximate Python translation. TMFG filtering and small-world model test not implemented. Networks built from positive Pearson correlations."
+}

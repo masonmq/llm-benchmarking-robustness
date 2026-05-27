@@ -1,0 +1,27 @@
+{
+  "grouping_rule": "fast <= -1, slow >= 1, exclude -1 < MiniK < 1",
+  "descriptives": {
+    "n_fast": 16,
+    "n_slow": 120,
+    "median_fast": 60.5,
+    "median_slow": 33.0
+  },
+  "levene_equal_var": {
+    "stat": 0.2822084636706951,
+    "p": 0.5961368167981378
+  },
+  "shapiro": {
+    "fast": {
+      "W": 0.9745345711708069,
+      "p": 0.9056187868118286
+    },
+    "slow": {
+      "W": 0.84648597240448,
+      "p": 8.053944178243455e-10
+    }
+  },
+  "mann_whitney_u": {
+    "U": 1671.0,
+    "p": 1.5645092267668433e-06
+  }
+}

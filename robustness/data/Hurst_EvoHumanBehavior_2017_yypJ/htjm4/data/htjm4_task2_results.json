@@ -1,0 +1,21 @@
+{
+  "task": "Task2",
+  "analyses": {
+    "kendall_tau": {
+      "DSM5_vs_MiniK": {
+        "n": 138,
+        "tau_b": -0.4312907689077494,
+        "p": null
+      }
+    },
+    "spearman": {
+      "DSM5_vs_MiniK": {
+        "n": 138,
+        "r_s": -0.5896345397786912,
+        "p": null
+      }
+    }
+  },
+  "alpha": 0.005,
+  "notes": "P-values not computed due to minimal environment."
+}
