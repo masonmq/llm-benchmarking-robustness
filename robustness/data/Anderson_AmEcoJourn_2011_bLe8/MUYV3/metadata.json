@@ -468,5 +468,85 @@
         "total_tokens": 20599
       }
     ]
+  },
+  "evaluate-execute-capability": {
+    "status": "Success",
+    "total_time_seconds": 66.28,
+    "total_tokens": 68536,
+    "prompt_tokens": 64599,
+    "completion_tokens": 3937,
+    "total_turns": 7,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 52.06684446334839,
+        "tokens": 48815,
+        "prompt_tokens": 46571,
+        "completion_tokens": 2244,
+        "turns": 6
+      },
+      "8. Final Output & Parsing": {
+        "time": 14.216732263565063,
+        "tokens": 19721,
+        "prompt_tokens": 18028,
+        "completion_tokens": 1693,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 4.53,
+        "prompt_tokens": 2166,
+        "completion_tokens": 466,
+        "total_tokens": 2632
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 1.87,
+        "prompt_tokens": 2293,
+        "completion_tokens": 86,
+        "total_tokens": 2379
+      },
+      {
+        "turn": 3,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.83,
+        "prompt_tokens": 2621,
+        "completion_tokens": 276,
+        "total_tokens": 2897
+      },
+      {
+        "turn": 4,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 4.63,
+        "prompt_tokens": 8640,
+        "completion_tokens": 430,
+        "total_tokens": 9070
+      },
+      {
+        "turn": 5,
+        "action": "read_json",
+        "checkpoint": "Running Action",
+        "duration_seconds": 6.32,
+        "prompt_tokens": 14685,
+        "completion_tokens": 544,
+        "total_tokens": 15229
+      },
+      {
+        "turn": 6,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 31.89,
+        "prompt_tokens": 16166,
+        "completion_tokens": 442,
+        "total_tokens": 16608
+      }
+    ]
   }
 }

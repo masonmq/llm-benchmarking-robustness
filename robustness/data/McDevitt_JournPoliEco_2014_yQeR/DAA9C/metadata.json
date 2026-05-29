@@ -279,5 +279,94 @@
         "total_tokens": 10088
       }
     ]
+  },
+  "evaluate-execute-capability": {
+    "status": "Success",
+    "total_time_seconds": 64.25,
+    "total_tokens": 48847,
+    "prompt_tokens": 46267,
+    "completion_tokens": 2580,
+    "total_turns": 8,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 30.4899845123291,
+        "tokens": 38460,
+        "prompt_tokens": 36549,
+        "completion_tokens": 1911,
+        "turns": 7
+      },
+      "8. Final Output & Parsing": {
+        "time": 33.75699281692505,
+        "tokens": 10387,
+        "prompt_tokens": 9718,
+        "completion_tokens": 669,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 5.67,
+        "prompt_tokens": 2166,
+        "completion_tokens": 409,
+        "total_tokens": 2575
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 1.88,
+        "prompt_tokens": 2294,
+        "completion_tokens": 73,
+        "total_tokens": 2367
+      },
+      {
+        "turn": 3,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.26,
+        "prompt_tokens": 2415,
+        "completion_tokens": 86,
+        "total_tokens": 2501
+      },
+      {
+        "turn": 4,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.1,
+        "prompt_tokens": 2678,
+        "completion_tokens": 102,
+        "total_tokens": 2780
+      },
+      {
+        "turn": 5,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 14.47,
+        "prompt_tokens": 8306,
+        "completion_tokens": 1147,
+        "total_tokens": 9453
+      },
+      {
+        "turn": 6,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 1.44,
+        "prompt_tokens": 9221,
+        "completion_tokens": 47,
+        "total_tokens": 9268
+      },
+      {
+        "turn": 7,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.67,
+        "prompt_tokens": 9469,
+        "completion_tokens": 47,
+        "total_tokens": 9516
+      }
+    ]
   }
 }

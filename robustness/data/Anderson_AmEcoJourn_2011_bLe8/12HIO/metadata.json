@@ -359,5 +359,76 @@
         "total_tokens": 13324
       }
     ]
+  },
+  "evaluate-execute-capability": {
+    "status": "Success",
+    "total_time_seconds": 93.47,
+    "total_tokens": 53840,
+    "prompt_tokens": 49197,
+    "completion_tokens": 4643,
+    "total_turns": 6,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 79.33262801170349,
+        "tokens": 34621,
+        "prompt_tokens": 31671,
+        "completion_tokens": 2950,
+        "turns": 5
+      },
+      "8. Final Output & Parsing": {
+        "time": 14.140411853790283,
+        "tokens": 19219,
+        "prompt_tokens": 17526,
+        "completion_tokens": 1693,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 3.6,
+        "prompt_tokens": 2166,
+        "completion_tokens": 280,
+        "total_tokens": 2446
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.68,
+        "prompt_tokens": 2299,
+        "completion_tokens": 99,
+        "total_tokens": 2398
+      },
+      {
+        "turn": 3,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 4.9,
+        "prompt_tokens": 2615,
+        "completion_tokens": 404,
+        "total_tokens": 3019
+      },
+      {
+        "turn": 4,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 55.89,
+        "prompt_tokens": 8361,
+        "completion_tokens": 641,
+        "total_tokens": 9002
+      },
+      {
+        "turn": 5,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 12.26,
+        "prompt_tokens": 16230,
+        "completion_tokens": 1526,
+        "total_tokens": 17756
+      }
+    ]
   }
 }

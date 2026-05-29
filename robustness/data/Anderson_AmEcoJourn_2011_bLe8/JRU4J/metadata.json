@@ -531,5 +531,67 @@
         "total_tokens": 23607
       }
     ]
+  },
+  "evaluate-execute-capability": {
+    "status": "Success",
+    "total_time_seconds": 27.87,
+    "total_tokens": 40878,
+    "prompt_tokens": 38108,
+    "completion_tokens": 2770,
+    "total_turns": 5,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 17.00251030921936,
+        "tokens": 22226,
+        "prompt_tokens": 20765,
+        "completion_tokens": 1461,
+        "turns": 4
+      },
+      "8. Final Output & Parsing": {
+        "time": 10.867466926574707,
+        "tokens": 18652,
+        "prompt_tokens": 17343,
+        "completion_tokens": 1309,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 4.38,
+        "prompt_tokens": 2166,
+        "completion_tokens": 288,
+        "total_tokens": 2454
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 1.54,
+        "prompt_tokens": 2307,
+        "completion_tokens": 156,
+        "total_tokens": 2463
+      },
+      {
+        "turn": 3,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 6.71,
+        "prompt_tokens": 2644,
+        "completion_tokens": 531,
+        "total_tokens": 3175
+      },
+      {
+        "turn": 4,
+        "action": "read_json",
+        "checkpoint": "Running Action",
+        "duration_seconds": 4.38,
+        "prompt_tokens": 13648,
+        "completion_tokens": 486,
+        "total_tokens": 14134
+      }
+    ]
   }
 }
