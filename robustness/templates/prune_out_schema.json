@@ -1,0 +1,61 @@
+{
+  "pruning_output": {
+    "case_id": "ID of the paper or case. Example: Bruner_ExpEco_2017_amYY.",
+    "planned_id": "ID of the candidate path reviewed by the Pruning Agent.",
+
+    "decision": "accepted | rejected",
+
+    "decision_summary": "Short explanation of why the path was accepted or rejected.",
+
+    "check_results": {
+      "same_focal_claim": {
+        "status": "pass | fail",
+        "note": "Whether the path tests the same focal claim."
+      },
+      "same_dataset": {
+        "status": "pass | fail",
+        "note": "Whether the path uses the authorized original dataset."
+      },
+      "not_duplicate": {
+        "status": "pass | fail",
+        "closest_memory_path_id": "Path ID of the closest existing memory record, or null.",
+        "note": "Whether the path repeats an existing path."
+      },
+      "task_completeness": {
+        "status": "pass | fail",
+        "note": "Whether Task1 and Task2 are clearly specified."
+      },
+      "method_justification": {
+        "status": "pass | fail",
+        "note": "Whether the path explains why the model, variables, and inference rule are reasonable."
+      },
+      "executable_in_principle": {
+        "status": "pass | fail",
+        "note": "Whether the path looks possible to execute from the available data and instructions."
+      }
+    },
+
+    "memory_record": {
+      "path_id": "Same as planned_id.",
+      "case_id": "Same as case_id.",
+      "status": "accepted | rejected",
+      "task_scope": ["Task1", "Task2"],
+      "path_summary": "Short summary copied from the planning output.",
+      "path_signature": {
+        "model_family": "Main model or test family.",
+        "outcome": "Outcome variable or constructed outcome.",
+        "main_predictor": "Main predictor, treatment, or grouping variable.",
+        "controls": ["List of control variables, or empty list."],
+        "sample_restriction": "Sample inclusion or exclusion rule, or null.",
+        "missing_data_rule": "Missing data handling rule, or null.",
+        "variable_construction": "How the main variables are created or changed before analysis, or null.",
+        "inference_rule": "How the result will be judged."
+      },
+      "status_reason": "Short reason for accepting or rejecting this path.",
+      "source_agent": "pruning_agent",
+      "iteration": "Planning or pruning round number."
+    },
+
+    "next_step": "send_to_execution | return_to_planning"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "original_study": {
+    "original_paper_id": "Unique ID for this paper. Example: Bruner_ExpEco_2017_amYY.",
+    "original_paper_title": "Title of the original paper.",
+    "paper_file": "File name or local path of the original paper.",
+    "focal_claim": "Exact focal claim that the agent must test. The agent cannot change this claim.",
+    "study_type": "Experimental, Observational, Meta-Analysis, or Other."
+  },
+
+  "tasks_info": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "task_instruction": "Instruction for Task1. Example: Conduct an analysis to test whether the focal claim is supported."
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "task_instruction": "Instruction for Task2. Example: Produce one statistical result that is comparable to the original paper's focal result."
+    }
+  ],
+
+  "original_datasets": [
+    {
+      "name": "Dataset name. Example: RiskData.",
+      "file_name": "Exact data file name. Example: RiskData.dta.",
+      "file_path": "Local path to the data file, if available.",
+      "dataset_role": "original_dataset",
+      "file_format": "csv, dta, rdata, rds, xlsx, json, parquet, or other.",
+      "columns": ["List key variable names if available. If unknown, use not_stated."],
+      "notes": "Any caveats about the data, such as unclear variables, missing metadata, or required preprocessing."
+    }
+  ],
+
+  "codebase": {
+    "code_available": "true if original paper source code is available; false otherwise.",
+    "files": [
+      {
+        "file_name": "Source code file name, or null if not known.",
+        "file_path": "Local path to the code file, or null if not known.",
+        "description": "Short description of what this source code file does.",
+        "entry_file": "true if this seems to be the main file to run; false otherwise; null if unknown."
+      }
+    ],
+    "notes": "Overall code notes, such as unclear entry file, dependency issues, or folder structure."
+  },
+
+  "shared_memory": {
+    "case_id": "Same ID as original_paper_id.",
+    "memory_records": [
+      {
+        "path_id": "Unique ID for this analysis path. Example: Bruner_ExpEco_2017_amYY_path01.",
+        "case_id": "ID of the paper or case.",
+        "status": "rejected | accepted | executed_success | execution_failed_retryable | abandoned",
+        "task_scope": ["Task1", "Task2"],
+        "path_summary": "Short summary of the analysis path.",
+        "path_signature": {
+          "model_family": "Main model or test family.",
+          "outcome": "Outcome variable or constructed outcome.",
+          "main_predictor": "Main predictor or treatment variable.",
+          "controls": ["List of control variables, or empty list."],
+          "sample_restriction": "Sample inclusion or exclusion rule, or null.",
+          "missing_data_rule": "Missing data handling rule, or null.",
+          "variable_construction": "How the main variables are created or changed before analysis, or null.",
+          "inference_rule": "How the result will be judged."
+        },
+        "status_reason": "Short reason explaining why this status was assigned.",
+        "source_agent": "pruning_agent | execution_agent",
+        "iteration": "Planning or execution round number."
+      }
+    ]
+  },
+
+  "planning_rules": {
+    "allowed_actions": [
+      "Read the original paper.",
+      "Inspect the original dataset metadata.",
+      "Inspect original paper source code if available.",
+      "Use shared memory to avoid repeated paths.",
+      "Propose exactly one new analysis path."
+    ],
+    "not_allowed_actions": [
+      "Do not change the focal claim.",
+      "Do not change the dataset.",
+      "Do not run analysis.",
+      "Do not output multiple candidate paths.",
+      "Do not propose a path that repeats shared memory."
+    ],
+    "novelty_rule": "The proposed path must be different from rejected, accepted, executed_success, execution_failed_retryable, and abandoned paths in shared memory.",
+    "output_rule": "Return one candidate path using plan_out_schema.json."
+  }
+}

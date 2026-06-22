@@ -1,0 +1,107 @@
+{
+  "planning_output": {
+    "case_id": "ID of the paper or case. Example: Bruner_ExpEco_2017_amYY.",
+    "planned_id": "Unique ID for this planned path. Example: Bruner_ExpEco_2017_amYY_path04.",
+    "task_scope": ["Task1", "Task2"],
+
+    "path_summary": "Short summary of the proposed analysis path.",
+
+    "path_signature": {
+      "model_family": "Main model or test family.",
+      "outcome": "Outcome variable or constructed outcome.",
+      "main_predictor": "Main predictor, treatment, or grouping variable.",
+      "controls": ["List of control variables, or empty list."],
+      "sample_restriction": "Sample inclusion or exclusion rule, or null.",
+      "missing_data_rule": "Missing data handling rule, or null.",
+      "variable_construction": "How the main variables are created or changed before analysis, or null.",
+      "inference_rule": "How the result will be judged."
+    },
+
+    "hypothesis": "Focal hypothesis for the claim, phrased as a testable statement.",
+    "study_type": "Experimental, Observational, Meta-Analysis, or Other.",
+
+    "data_plan": {
+      "dataset_identifier": "Dataset name or version.",
+      "source_type": "Data source, such as survey, experiment, database, or archive.",
+      "wave_or_subset": "Specific waves, subsets, or sample restrictions, if applicable.",
+      "sample_size": "Expected sample size if known, otherwise not_stated.",
+      "unit_of_analysis": "Unit of analysis, such as individual, household, country, firm, or trial.",
+      "access_details": "Local path, repository link, access restriction, or not_stated.",
+      "notes": "Important caveats about the data."
+    },
+
+    "planned_method": {
+      "steps": [
+        "Ordered step 1 for preparing and analyzing the data.",
+        "Ordered step 2 for preparing and analyzing the data."
+      ],
+
+      "tasks": [
+        {
+          "task_id": "Task1",
+          "task_role": "conclusion_oriented_reanalysis",
+          "task_instruction": "Task1 instruction from plan_in.",
+          "task_goal": "Test whether the focal claim is supported."
+        },
+        {
+          "task_id": "Task2",
+          "task_role": "comparable_result_oriented_reanalysis",
+          "task_instruction": "Task2 instruction from plan_in.",
+          "task_goal": "Produce one statistical result comparable to the original paper's focal result."
+        }
+      ],
+
+      "models": [
+        {
+          "type": "Model or statistical approach. Example: linear regression, logistic regression, t-test, correlation.",
+          "model_id": "Unique model ID. Example: model_1.",
+          "used_for_tasks": ["Task1", "Task2"],
+          "planned_estimation": "Main quantity to estimate. Example: coefficient, mean difference, odds ratio, correlation.",
+          "inference_criteria": "Rule for judging the result. Example: expected direction and p < 0.05.",
+          "deviation": "true if this uses a meaningful different choice from the original paper, otherwise false.",
+          "qualification": "Explain why this model is a valid way to test the focal claim."
+        }
+      ],
+
+      "variables": [
+        {
+          "type": "Dependent, Independent, Control, Grouping, or Weight.",
+          "name": "Variable name or constructed variable name.",
+          "description": "What the variable means and how it is used.",
+          "variable_construction": "How this variable is created, recoded, scaled, transformed, or aggregated. Use null if the raw variable is used.",
+          "missing_data_handling": "Rule for missing data, such as listwise deletion or imputation.",
+          "deviation": "true if this uses a meaningful different choice from the original paper, otherwise false.",
+          "qualification": "Explain why this variable choice is valid for the focal claim.",
+          "models": ["List of model_id values that use this variable."]
+        }
+      ],
+
+      "tools_software": "Software or tools expected for execution, such as R, Python, Stata, or specific packages."
+    },
+
+    "method_justification": {
+      "claim_alignment": "Explain how the path tests the same focal claim.",
+      "dataset_alignment": "Explain how the path uses the original dataset, or null if not applicable.",
+      "method_reason": "Explain why the model, variables, and inference rule are reasonable.",
+      "novelty_reason": "Explain why this path is different from paths already in shared memory."
+    },
+
+    "codebase": {
+      "files": {
+        "file_name": "Short description of each original source code file relevant to this plan. Use null if no code is available."
+      },
+      "notes": "Notes about code availability, unclear entry files, dependencies, or folder structure."
+    },
+
+    "self_check": {
+      "same_focal_claim": "pass | fail",
+      "same_dataset": "pass | fail",
+      "task1_specified": "pass | fail",
+      "task2_specified": "pass | fail",
+      "method_justification_present": "pass | fail",
+      "not_duplicate_of_shared_memory": "pass | fail",
+      "closest_memory_path_id": "Path ID of closest existing path, or null.",
+      "self_check_note": "Short explanation of the self check."
+    }
+  }
+}

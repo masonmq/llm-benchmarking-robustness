@@ -1,22 +1,4 @@
 {
-    "original_datasets": [
-        {
-            "name": "Dataset name used for the robustness reanalysis. Example: RiskData.",
-            "filename": "Exact data file name. Example: RiskData.dta.",
-            "type": "Use original.",
-            "file_format": "File format. Example: csv, dta, rdata, rds, xlsx, json, parquet.",
-            "columns": "List key variable names if available. Example: [participant_id, PV_choice, RV_choice, LV_score]. If unknown, use not_stated.",
-            "summary_statistics": {
-                "info": "Structural metadata if available, such as rows, columns, and column types. If unknown, use not_stated.",
-                "describe": "Descriptive statistics if available. If not available, use null."
-            },
-            "access": {
-                "url": "Data URL or repository link if available. If local only, give the local path or not_stated.",
-                "restrictions": "Access restriction or license. Example: public, restricted, request_required, or not_stated."
-            },
-            "notes": "Any caveats about the data, such as missing metadata, unclear variables, or required preprocessing."
-        }
-    ],
     "planned_method": {
         "planned_id": "Unique ID for this planned analysis. Example: Bruner_ExpEco_2017_amYY_path01.",
         "tasks": [
@@ -78,28 +60,6 @@
             "file_name": "Describe each available code file and how it relates to execution. Example: analysis.R: Runs the regression analysis. ONLY include files TO BE EXECUTED HERE. YOU MUST ENSURE THAT NECESSARY FILES FOR EXECUTION EXIST BEFORE FILLING OUT THIS TEMPLATE."
         },
         "notes": "Overall code notes, such as unclear entry file, dependency issues, or folder structure."
-    },
-    "docker_specs": {
-        "base_image": "Base Docker image. Example: rocker/verse or python:3.10.",
-        "packages": {
-            "python": [
-                "Python packages with versions, if any. Example: pandas==2.0.3."
-            ],
-            "r": [
-                "R packages with versions, if any. Example: dplyr, haven, broom."
-            ],
-            "other": [
-                "Other system tools. Example: git, make, wget."
-            ]
-        },
-        "hardware": {
-            "gpu_support": "true if GPU is required; false otherwise.",
-            "min_gpu_memory_gb": "Minimum GPU memory if needed, otherwise null.",
-            "min_ram_gb": "Minimum RAM if known, otherwise null."
-        },
-        "volumes": [
-            "Suggested mounted folders. Example: ./data:/app/data."
-        ]
     },
     "analysis": {
         "instructions": "High-level execution instruction. Example: Execute Task1 and Task2 using the original dataset and produce structured execution outputs.",
