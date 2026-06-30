@@ -20,15 +20,6 @@
       "status_reason": "Short reason explaining why this status was assigned.",
       "source_agent": "pruning_agent | execution_agent",
       "iteration": "Planning or execution round number."
-    },
-
-    {
-      "path_id": "Bruner_ExpEco_2017_amYY_path02",
-      ... ,
-    },
-    {
-      "path_id": "Bruner_ExpEco_2017_amYY_path03",
-      ... ,
     }
   ]
 }

@@ -61,6 +61,28 @@
         },
         "notes": "Overall code notes, such as unclear entry file, dependency issues, or folder structure."
     },
+    "docker_specs": {
+        "base_image": "A proper base Docker image that contains the necessary software to reproduce the original study (e.g., python:3.10, rocker/verse for R, etc.).",
+        "packages": {
+            "python": [
+                "List of required Python packages with version constraints (e.g., numpy==1.23.1, pandas>=1.4.0)"
+            ],
+            "r": [
+                "List of R packages and versions (e.g., dplyr, ggplot2)"
+            ],
+            "other": [
+                "Other necessary software (e.g., git, make, wget)"
+            ]
+        },
+        "hardware": {
+            "gpu_support": "true if GPU is required for model training or inference, false otherwise",
+            "min_gpu_memory_gb": "Minimum GPU memory required in GB (e.g., 12)",
+            "min_ram_gb": "Minimum system RAM required in GB (e.g., 16)"
+        },
+        "volumes": [
+            "Suggested host paths to mount as volumes inside the container (e.g., ./data:/app/data)"
+        ]
+    },
     "analysis": {
         "instructions": "High-level execution instruction. Example: Execute Task1 and Task2 using the original dataset and produce structured execution outputs.",
         "target_task_ids": [
