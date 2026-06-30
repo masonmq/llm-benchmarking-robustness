@@ -463,6 +463,42 @@ def get_execute_tool_definitions() -> list:
     
     return base_tools + execute_tools
 
+PRUNE_ALLOWED_ACTIONS = [
+    "read_json",
+    "list_files_in_folder",
+    "load_dataset",
+    "get_dataset_head",
+    "get_dataset_shape",
+    "get_dataset_description",
+    "get_dataset_info",
+    "get_dataset_columns",
+    "get_dataset_variable_summary",
+    "ask_human_input",
+]
+
+
+def prune_known_actions() -> dict:
+    """
+    Leakage-safe subset of base_known_actions() for the Pruning Agent.
+    Excludes PDF/image/html/text/csv/docx readers and file writers so the agent
+    cannot read leakage sources or modify the proposed path.
+    """
+    base = base_known_actions()
+    return {name: base[name] for name in PRUNE_ALLOWED_ACTIONS if name in base}
+
+
+def get_prune_tool_definitions() -> list:
+    """
+    OpenAI tool schemas for the Pruning Agent: the leakage-safe subset of the base
+    tool definitions (read_json, list_files_in_folder, dataset inspection, ask_human_input).
+    """
+    base_tools = get_tool_definitions()
+    return [
+        t for t in base_tools
+        if t.get("function", {}).get("name") in PRUNE_ALLOWED_ACTIONS
+    ]
+
+
 def get_interpret_tool_definitions() -> list:
     """
     Returns schemas for tools available in the Interpret phase:

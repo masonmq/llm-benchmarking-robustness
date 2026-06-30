@@ -1,0 +1,162 @@
+{
+  "prune-gen_input": {
+    "status": "Success",
+    "total_time_seconds": 337.26,
+    "total_tokens": 160468,
+    "prompt_tokens": 137524,
+    "completion_tokens": 22944,
+    "total_turns": 11,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 285.1602032184601,
+        "tokens": 135829,
+        "prompt_tokens": 117061,
+        "completion_tokens": 18768,
+        "turns": 10
+      },
+      "8. Final Output & Parsing": {
+        "time": 52.09607672691345,
+        "tokens": 24639,
+        "prompt_tokens": 20463,
+        "completion_tokens": 4176,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 10.43,
+        "prompt_tokens": 4487,
+        "completion_tokens": 532,
+        "total_tokens": 5019
+      },
+      {
+        "turn": 2,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 31.31,
+        "prompt_tokens": 4700,
+        "completion_tokens": 601,
+        "total_tokens": 5301
+      },
+      {
+        "turn": 3,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 5.25,
+        "prompt_tokens": 6301,
+        "completion_tokens": 286,
+        "total_tokens": 6587
+      },
+      {
+        "turn": 4,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 16.21,
+        "prompt_tokens": 8101,
+        "completion_tokens": 1265,
+        "total_tokens": 9366
+      },
+      {
+        "turn": 5,
+        "action": "load_dataset",
+        "checkpoint": "Running Action",
+        "duration_seconds": 32.39,
+        "prompt_tokens": 11534,
+        "completion_tokens": 2063,
+        "total_tokens": 13597
+      },
+      {
+        "turn": 6,
+        "action": "get_dataset_columns",
+        "checkpoint": "Running Action",
+        "duration_seconds": 2.8,
+        "prompt_tokens": 11760,
+        "completion_tokens": 203,
+        "total_tokens": 11963
+      },
+      {
+        "turn": 7,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 99.95,
+        "prompt_tokens": 14711,
+        "completion_tokens": 6863,
+        "total_tokens": 21574
+      },
+      {
+        "turn": 8,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 34.83,
+        "prompt_tokens": 16599,
+        "completion_tokens": 2823,
+        "total_tokens": 19422
+      },
+      {
+        "turn": 9,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 44.65,
+        "prompt_tokens": 18477,
+        "completion_tokens": 3755,
+        "total_tokens": 22232
+      },
+      {
+        "turn": 10,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 7.33,
+        "prompt_tokens": 20391,
+        "completion_tokens": 377,
+        "total_tokens": 20768
+      }
+    ]
+  },
+  "robustness-prune": {
+    "status": "Success",
+    "total_time_seconds": 56.45,
+    "total_tokens": 22881,
+    "prompt_tokens": 18151,
+    "completion_tokens": 4730,
+    "total_turns": 3,
+    "checkpoint_stats": {
+      "2. Verify Dataset": {
+        "time": 17.278624057769775,
+        "tokens": 13122,
+        "prompt_tokens": 11732,
+        "completion_tokens": 1390,
+        "turns": 2
+      },
+      "8. Final Output & Parsing": {
+        "time": 39.16893815994263,
+        "tokens": 9759,
+        "prompt_tokens": 6419,
+        "completion_tokens": 3340,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "load_dataset",
+        "checkpoint": "2. Verify Dataset",
+        "duration_seconds": 16.15,
+        "prompt_tokens": 5783,
+        "completion_tokens": 1339,
+        "total_tokens": 7122
+      },
+      {
+        "turn": 2,
+        "action": "get_dataset_columns",
+        "checkpoint": "2. Verify Dataset",
+        "duration_seconds": 1.13,
+        "prompt_tokens": 5949,
+        "completion_tokens": 51,
+        "total_tokens": 6000
+      }
+    ]
+  }
+}

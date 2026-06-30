@@ -161,6 +161,24 @@ ROBUSTNESS_EXECUTE_CONSTANTS = {
         "execute_in_schema.json": "A structured document with plans for proposed analysis of the claim.",
         "data": "The folder containing the data and code that can be used for the replication.",
     },
-    "json_template": "templates/execute_out_schema.json"
-    
+    "json_template": "templates/execute_out_schema.json"    
 }
+
+# Pruning Agent helper extractor: paper PDF + proposed-analysis (review) PDF + data
+# are extracted into a filled prune_in_schema.json (the Pruning Agent's input).
+GEN_PRUNE_INPUT_CONSTANTS = {
+    "prune_in_template": "templates/prune_in_schema.json",
+}
+
+# Pruning Agent: reviews the filled prune_in_schema.json and routes accept/reject,
+# emitting prune_out_schema.json.
+ROBUSTNESS_PRUNE_CONSTANTS = {
+    "files": {
+        "prune_in_schema.json": "The structured Pruning Agent input: case reference, the single candidate analysis path to review (planning_output), shared memory, and the fixed pruning rules.",
+    },
+    "json_template": "templates/prune_out_schema.json",
+}
+
+# Prompt versions are logged on every run for reproducibility.
+GEN_PRUNE_INPUT_PROMPT_VERSION = "prune_input_extractor.v1"
+PRUNE_PROMPT_VERSION = "pruning_agent.v1"

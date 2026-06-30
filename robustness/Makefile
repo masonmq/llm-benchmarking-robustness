@@ -11,7 +11,11 @@ MODEL ?= gpt-5
 EVAL_MODEL ?= gpt-5
 TIER ?= easy
 
+<<<<<<< HEAD
 .PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy
+=======
+.PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy robustness-prunning-helper robustness-prunning test-prunning
+>>>>>>> 303a243 (Inital prunning agent implementation)
 
 check-deps:
 	$(PYTHON) core/check_deps.py $(REQ)
@@ -32,6 +36,15 @@ robustness-execute-gen_gold_analysis: check-deps
 # Execute analysis
 robustness-execute: check-deps
 	python -m robustness.executor --stage execute --tier easy --study-path $(STUDY) --code-mode $(CODE_MODE) --model-name $(MODEL)
+
+
+# Helper extractor: paper PDF + proposed-analysis (review) PDF + data -> prune_in_schema.json
+robustness-prunning-helper: check-deps
+	python -m robustness.prunning --stage prune-gen_input --tier easy --study-path $(STUDY) --model-name $(MODEL) --code-mode $(CODE_MODE)
+
+# Pruning Agent: prune_in_schema.json -> prune_out_schema.json (accept/reject + routing)
+robustness-prunning: check-deps
+	python -m robustness.prunning --stage prune --tier easy --study-path $(STUDY) --code-mode $(CODE_MODE) --model-name $(MODEL)
 
 
 evaluate-execute-capability: check-deps
