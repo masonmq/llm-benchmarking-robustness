@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from replicatorbench.info_extractor.file_utils import check_long_logs
 import tiktoken
+from robustness.memory.shared_memory import load_execute_spec
 
 try:
     from docker.errors import BuildError, APIError
@@ -51,13 +52,14 @@ def _require_docker():
         raise RuntimeError("The 'docker' package is not installed. Run: pip install docker")
     return docker.from_env()
 
+# It loads execute_in_schema.json up front.
 def _paths(study_path: str) -> Tuple[Path, Path, Path, Path, Path]:
     study_dir = Path(study_path).resolve()
     runtime_dir = study_dir / "_runtime"
     art_dir = study_dir / "_artifacts"
     runtime_dir.mkdir(parents=True, exist_ok=True)
     art_dir.mkdir(parents=True, exist_ok=True)
-    return study_dir, runtime_dir, art_dir, (runtime_dir / "Dockerfile"), (study_dir / "analysis_info.json")
+    return study_dir, runtime_dir, art_dir, (runtime_dir / "Dockerfile"), (study_dir / "execute_in_schema.json")
 
 def _copied_outputs_dir(study_path: str) -> Path:
     study_dir = Path(study_path).resolve()
@@ -142,54 +144,84 @@ def _list_local_output_files(study_path: str) -> List[str]:
 
     return arts
 
+# loads the execution spec through the shared memory
 def _read_spec(study_path: str) -> Dict:
-    study_dir, _, _, _, rep_info = _paths(study_path)
-    if not rep_info.exists():
-        raise FileNotFoundError(f"analysis_info.json not found at: {rep_info}")
-    return json.loads(rep_info.read_text())
+    spec, _ = load_execute_spec(study_path)
+    return spec
 
 def shq(s: str) -> str:
     return "'" + s.replace("'", "'\"'\"'") + "'"
 
-# Planner
+# pulls task entry files from planned_method.task
+def _task_entries_from_execute_spec(tasks: List[Dict[str, Any]], code_mode: str) -> List[str]:
+    preferred_exts = [".py", ".sh"] if code_mode == "python" else [".r", ".sh", ".py"]
+    ordered: List[str] = []
+
+    for ext in preferred_exts:
+        for task in tasks:
+            analysis_code = task.get("analysis_code", {})
+            entry_file = analysis_code.get("entry_file")
+            if entry_file and str(entry_file).lower().endswith(ext) and entry_file not in ordered:
+                ordered.append(entry_file)
+
+    for task in tasks:
+        analysis_code = task.get("analysis_code", {})
+        entry_file = analysis_code.get("entry_file")
+        if entry_file and entry_file not in ordered:
+            ordered.append(entry_file)
+        for code_file in analysis_code.get("code_files", []) or []:
+            if code_file not in ordered:
+                ordered.append(code_file)
+
+    return ordered
+
+# Now it is compatiible with the content in execute_in_schema.json and in analysis_info.json.
 def plan_from_analysis_info(analysis_info: Dict, code_mode) -> ExecutionPlan:
     claim_id = (
-        analysis_info.get("analysis_study", {})
-        .get("metadata", {})
-        .get("original_paper_id", "study")
+        analysis_info.get("case", {}).get("paper_id")
+        or analysis_info.get("planned_method", {}).get("planned_id")
+        or analysis_info.get("analysis_study", {}).get("metadata", {}).get("original_paper_id", "study")
     )
     plan_id = re.sub(r"[^a-zA-Z0-9_-]+", "-", claim_id)
 
-    codebase = analysis_info.get("codebase", {}).get("files", {})
-    if not codebase:
-        # Fallback if codebase files empty but entry script might exist physically
-        # We'll rely on agent to provide valid entry, or raise error later
-        ordered = ["main.py"]
-        lang = "python"
+    tasks = analysis_info.get("planned_method", {}).get("tasks", [])
+    if tasks:
+        ordered = _task_entries_from_execute_spec(tasks, code_mode)
+        path_to_task_id = {}
+        for task in tasks:
+            analysis_code = task.get("analysis_code", {})
+            task_id = task.get("task_id")
+            for path in [analysis_code.get("entry_file"), *(analysis_code.get("code_files", []) or [])]:
+                if path and task_id:
+                    path_to_task_id[path] = task_id
     else:
-        # Priority: .R, .py, .sh, else first
-        keys = list(codebase.keys())
-        if code_mode == "python":
-            ordered = (
-                [k for k in keys if k.lower().endswith(".py")] +
-                # [k for k in keys if k.lower().endswith(".r")] +
-                [k for k in keys if k.lower().endswith(".sh")] +
-                [k for k in keys if not (k.lower().endswith((".r",".py",".sh")))]
-            )
+        codebase = analysis_info.get("codebase", {}).get("files", {})
+        path_to_task_id = {}
+        if not codebase:
+            ordered = ["main.py"]
         else:
-            ordered = (
-                # [k for k in keys if k.lower().endswith(".py")] +
-                [k for k in keys if k.lower().endswith(".r")] +
-                [k for k in keys if k.lower().endswith(".sh")] +
-                [k for k in keys if not (k.lower().endswith((".r",".py",".sh")))]
-            )
-    
-    steps=[
-            PlanStep(name="prepare-env", type="orchestrator")
-    ]
+            keys = list(codebase.keys())
+            if code_mode == "python":
+                ordered = (
+                    [k for k in keys if k.lower().endswith(".py")] +
+                    [k for k in keys if k.lower().endswith(".sh")] +
+                    [k for k in keys if not (k.lower().endswith((".r", ".py", ".sh")))]
+                )
+            else:
+                ordered = (
+                    [k for k in keys if k.lower().endswith(".r")] +
+                    [k for k in keys if k.lower().endswith(".sh")] +
+                    [k for k in keys if not (k.lower().endswith((".r", ".py", ".sh")))]
+                )
+
+    if not ordered:
+        ordered = ["main.py"]
+
+    steps = [PlanStep(name="prepare-env", type="orchestrator")]
     for entry_id, entry in enumerate(ordered):
         lang = _detect_lang_from_ext(entry)
-        steps.append(PlanStep(name=f"run-analysis-{entry_id}", type="container", lang=lang, entry=entry))
+        step_name = path_to_task_id.get(entry) or f"run-analysis-{entry_id}"
+        steps.append(PlanStep(name=step_name, type="container", lang=lang, entry=entry))
     
     return ExecutionPlan(
         plan_id=plan_id,
@@ -198,8 +230,20 @@ def plan_from_analysis_info(analysis_info: Dict, code_mode) -> ExecutionPlan:
 
 def _get_docker_specs(spec: Dict) -> Dict:
     d = spec.get("docker_specs")
-    if d: return d
-    return spec.get("docker_specs", {}) or {}
+    if d:
+        return d
+
+    dependencies = spec.get("dependencies", {}) or {}
+    return {
+        "base_image": dependencies.get("base_image"),
+        "platform": dependencies.get("platform"),
+        "packages": {
+            "python": dependencies.get("python", []) or [],
+            "r": dependencies.get("r", []) or [],
+            "other": dependencies.get("other", []) or dependencies.get("system", []) or [],
+        },
+        "volumes": dependencies.get("volumes", []) or [],
+    }
 
 # Tools
 def orchestrator_generate_dockerfile(study_path: str) -> str:
@@ -211,7 +255,7 @@ def orchestrator_generate_dockerfile(study_path: str) -> str:
         if not base:
             # Smart default fallback
             base = "python:3.9-slim"
-            # raise ValueError(f"docker_specs.base_image is required in {study_path}analysis_info.json")
+            # raise ValueError(f"docker_specs.base_image is required in the execution input file for {study_path}")
 
         r_pkgs = (dspec.get("packages", {}) or {}).get("r", []) or []
         other  = (dspec.get("packages", {}) or {}).get("other", []) or []
@@ -262,7 +306,7 @@ def orchestrator_build_image(study_path: str, image_name: str = DEFAULT_IMAGE_NA
     try:
         _ = _read_spec(study_path)
         spec = _read_spec(study_path)
-        dspec = spec.get("docker_specs", {}) or {}
+        dspec = _get_docker_specs(spec)
         platform = dspec.get("platform")
         if not platform:
             host_arch = _pyplat.machine().lower()
@@ -325,7 +369,8 @@ def orchestrator_run_container(
 
         mounts_by_ctr: Dict[str, str] = {}
         # Extra volumes
-        for v in (spec.get("docker_specs", {}).get("volumes") or []):
+        dspec = _get_docker_specs(spec)
+        for v in (dspec.get("volumes") or []):
             try:
                 host, ctr = v.split(":", 1)
                 mounts_by_ctr[ctr.strip()] = str(Path(host).resolve())

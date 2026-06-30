@@ -431,6 +431,20 @@ def get_execute_tool_definitions() -> list:
                 }
             }
         },
+        {
+            "type": "function",
+            "function": {
+                "name": "orchestrator_preview_entry",
+                "description": "Previews the entry file and command that will run inside the container.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "study_path": {"type": "string", "description": "Path to the current study directory"},
+                    },
+                    "required": ["study_path"]
+                }
+            }
+        },
          {
             "type": "function",
             "function": {

@@ -38,7 +38,7 @@ You will be given the following information:
 Your task is to extract relevant information about proposed analysis following the input rules:
 {extract_input_rules}
 
-Then fill out this template:
+Then fill out this template as the execution input file:
 === START OF JSON OUTPUT===
 {analysis_schema}
 === END OF JSON OUTPUT ===
@@ -59,7 +59,7 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
     	session_state={"analyzers": {}},
     	study_path=study_path,
         stage_name="execute-gen_gold_analysis",
-    	on_final=lambda ans: save_output(ans, study_path, "analysis_info.json", "execute-gen_gold_analysis"),
+    	on_final=lambda ans: save_output(ans, study_path, "execute_in_schema.json", "execute-gen_gold_analysis"),
     	model_name=model_name,
         logger=logger
     )

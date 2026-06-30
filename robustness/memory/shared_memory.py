@@ -1,0 +1,206 @@
+from __future__ import annotations
+
+import copy
+import json
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+MEMORY_DIR = Path(__file__).resolve().parent
+TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "templates" / "shared_memory.json"
+EXECUTE_SPEC_FILENAMES = ("execute_in_schema.json", "analysis_info.json")
+EXECUTION_STATUSES = {"executed_success", "execution_failed_retryable", "abandoned"}
+
+# Reads execute_in_schema.json first.
+def load_execute_spec(study_path: str) -> Tuple[Dict[str, Any], Path]:
+    study_dir = Path(study_path).resolve()
+    for filename in EXECUTE_SPEC_FILENAMES:
+        candidate = study_dir / filename
+        if candidate.exists():
+            return json.loads(candidate.read_text(encoding="utf-8")), candidate
+    expected = ", ".join(EXECUTE_SPEC_FILENAMES)
+    raise FileNotFoundError(f"No execution input file found in {study_dir}. Expected one of: {expected}")
+
+# Extract stable IDs from the execution spec so the memory file name and record ID are consistent.
+def get_case_id(execute_spec: Dict[str, Any]) -> str:
+    case = execute_spec.get("case", {})
+    if case.get("paper_id"):
+        return str(case["paper_id"])
+
+    legacy_case_id = (
+        execute_spec.get("analysis_study", {})
+        .get("metadata", {})
+        .get("original_paper_id")
+    )
+    if legacy_case_id:
+        return str(legacy_case_id)
+
+    planned = execute_spec.get("planned_method", {})
+    if planned.get("planned_id"):
+        planned_id = str(planned["planned_id"])
+        return planned_id.rsplit("_path", 1)[0].rsplit("_plan", 1)[0]
+
+    raise ValueError("Execution spec is missing case.paper_id and planned_method.planned_id.")
+
+
+def get_path_id(execute_spec: Dict[str, Any]) -> str:
+    planned = execute_spec.get("planned_method", {})
+    planned_id = planned.get("planned_id")
+    if planned_id:
+        return str(planned_id)
+    return f"{get_case_id(execute_spec)}_path01"
+
+# Builds robustness/memory/shared_memory_<case_id>.json
+def get_case_memory_path(case_id: str) -> Path:
+    return MEMORY_DIR / f"shared_memory_{case_id}.json"
+
+
+def _load_template() -> Dict[str, Any]:
+    return json.loads(TEMPLATE_PATH.read_text(encoding="utf-8"))
+
+# If the file does not exist, it creates one from the template with an empty memory_records list.
+def ensure_memory_file(case_id: str) -> Path:
+    memory_path = get_case_memory_path(case_id)
+    if memory_path.exists():
+        return memory_path
+
+    template = _load_template()
+    template["case_id"] = case_id
+    template["memory_records"] = []
+    memory_path.write_text(json.dumps(template, indent=2), encoding="utf-8")
+    return memory_path
+
+
+def load_case_memory(case_id: str) -> Tuple[Dict[str, Any], Path]:
+    memory_path = ensure_memory_file(case_id)
+    return json.loads(memory_path.read_text(encoding="utf-8")), memory_path
+
+
+def _task_list(execute_spec: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return execute_spec.get("planned_method", {}).get("tasks", [])
+
+
+def _pick_signature_task(tasks: List[Dict[str, Any]]) -> Dict[str, Any]:
+    for task in tasks:
+        if task.get("task_role") == "conclusion_oriented_reanalysis":
+            return task
+    return tasks[0] if tasks else {}
+
+# Converts the execution spec into one shared-memory record.
+# Pulls out task scope, model family, outcome, predictor, controls, and status reason.
+def build_memory_record_from_execute_spec(
+    execute_spec: Dict[str, Any],
+    *,
+    status: str,
+    status_reason: str,
+    iteration: int,
+    source_agent: str = "execution_agent",
+) -> Dict[str, Any]:
+    if status not in EXECUTION_STATUSES and status not in {"accepted", "rejected"}:
+        raise ValueError(f"Unsupported shared memory status: {status}")
+
+    case_id = get_case_id(execute_spec)
+    path_id = get_path_id(execute_spec)
+    tasks = _task_list(execute_spec)
+    signature_task = _pick_signature_task(tasks)
+    analysis_path = signature_task.get("analysis_path", {})
+    key_choices = analysis_path.get("key_choices", {})
+    variables = analysis_path.get("variables", {})
+
+    path_descriptions = [
+        task.get("analysis_path", {}).get("path_description")
+        for task in tasks
+        if task.get("analysis_path", {}).get("path_description")
+    ]
+    path_summary = " | ".join(path_descriptions) if path_descriptions else "Execution path record."
+
+    controls = key_choices.get("control_variables")
+    if not controls and isinstance(variables.get("controls"), list):
+        controls = [item.get("name", item) if isinstance(item, dict) else item for item in variables["controls"]]
+
+    return {
+        "path_id": path_id,
+        "case_id": case_id,
+        "status": status,
+        "task_scope": [task.get("task_id", "Task") for task in tasks],
+        "path_summary": path_summary,
+        "path_signature": {
+            "model_family": analysis_path.get("model_family", "not_stated"),
+            "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
+            "main_predictor": variables.get("main_predictor", {}).get("name", key_choices.get("main_predictor_measure")),
+            "controls": controls or [],
+            "sample_restriction": key_choices.get("sample_restriction"),
+            "missing_data_rule": key_choices.get("missing_data_rule"),
+            "variable_construction": key_choices.get("data_processing"),
+            "inference_rule": key_choices.get("inference_rule"),
+        },
+        "status_reason": status_reason,
+        "source_agent": source_agent,
+        "iteration": iteration,
+    }
+
+# Adds a new record or replaces an existing one with the same path_id
+def update_memory_record(memory_data: Dict[str, Any], new_record: Dict[str, Any]) -> Dict[str, Any]:
+    updated_memory = copy.deepcopy(memory_data)
+    records = updated_memory.setdefault("memory_records", [])
+
+    for index, record in enumerate(records):
+        if record.get("path_id") == new_record.get("path_id"):
+            merged = dict(record)
+            merged.update(new_record)
+            records[index] = merged
+            return updated_memory
+
+    records.append(new_record)
+    return updated_memory
+
+
+def save_case_memory(memory_path: Path, memory_data: Dict[str, Any]) -> None:
+    memory_path.write_text(json.dumps(memory_data, indent=2), encoding="utf-8")
+
+# Shows the proposed update in terminal and asks for confirmation.
+def write_memory_update_with_confirmation(memory_path: Path, current_memory: Dict[str, Any], new_record: Dict[str, Any]) -> bool:
+    proposed = update_memory_record(current_memory, new_record)
+    print("\nShared memory update proposal:")
+    print(json.dumps(new_record, indent=2))
+    response = input(f"Write this update to {memory_path.name}? (yes/no): ").strip().lower()
+    if response != "yes":
+        print("Shared memory update skipped.")
+        return False
+
+    save_case_memory(memory_path, proposed)
+    print(f"Shared memory updated at {memory_path}")
+    return True
+
+# derive the path status for updating the shared memory record based on the execution results.
+def derive_execution_status(execution_results: Dict[str, Any]) -> Tuple[str, str]:
+    memory_update = execution_results.get("shared_memory_update", {})
+    recommended_status = memory_update.get("recommended_status")
+    if recommended_status in EXECUTION_STATUSES:
+        reason = memory_update.get("status_reason") or memory_update.get("update_summary") or "Execution agent provided a memory update."
+        return recommended_status, reason
+
+    overview = execution_results.get("execution_overview", {})
+    overall_status = overview.get("overall_execution_status")
+    if overall_status == "success":
+        return "executed_success", overview.get("overall_summary", "Execution completed successfully.")
+
+    failed_tasks = execution_results.get("task_outputs", [])
+    failure_reasons = []
+    retryable = False
+    for task in failed_tasks:
+        failure = task.get("failure", {})
+        reason = failure.get("failure_reason")
+        stage = failure.get("failure_stage")
+        status = task.get("execution_status")
+        if status == "failure" and reason:
+            failure_reasons.append(f"{task.get('task_id', 'Task')}: {reason}")
+            lowered = reason.lower()
+            if any(token in lowered for token in ("path", "dependency", "package", "runtime", "import", "docker", "mount")):
+                retryable = True
+        if stage in {"setup", "data_loading", "code_execution"} and status == "failure":
+            retryable = True
+
+    summary = "; ".join(failure_reasons) if failure_reasons else overview.get("overall_summary", "Execution did not finish successfully.")
+    if retryable:
+        return "execution_failed_retryable", summary
+    return "abandoned", summary

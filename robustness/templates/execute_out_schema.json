@@ -183,5 +183,33 @@
           }
         }
       }
-    ]
+    ],
+    "shared_memory_update": {
+      "path_id": {
+        "description": "The planned path ID being executed.",
+        "example": "Christensen_EurJournPersonality_2018_8R9d_plan"
+      },
+      "case_id": {
+        "description": "The paper or case ID.",
+        "example": "Christensen_EurJournPersonality_2018_8R9d"
+      },
+      "recommended_status": {
+        "description": "Recommended shared-memory status after this execution attempt.",
+        "allowed_values": ["executed_success", "execution_failed_retryable", "abandoned"],
+        "example": "executed_success"
+      },
+      "status_reason": {
+        "description": "Short reason for the recommended status.",
+        "example": "Both tasks executed successfully and produced usable outputs."
+      },
+      "retry_recommended": {
+        "description": "Whether the execution should be retried in a future run.",
+        "allowed_values": ["yes", "no"],
+        "example": "no"
+      },
+      "update_summary": {
+        "description": "Compact explanation suitable for the shared memory record.",
+        "example": "Execution succeeded with minor file-path fixes only."
+      }
+    }
 }
