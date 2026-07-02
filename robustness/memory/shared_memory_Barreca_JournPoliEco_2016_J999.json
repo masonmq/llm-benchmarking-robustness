@@ -1,0 +1,36 @@
+{
+  "case_id": "Barreca_JournPoliEco_2016_J999",
+  "memory_records": [
+    {
+      "path_id": "z3gmf_Barreca_JournPoliEco_2016_J999_plan",
+      "case_id": "Barreca_JournPoliEco_2016_J999",
+      "status": "accepted",
+      "task_scope": [
+        {
+          "task_id": "Task1",
+          "task_role": "conclusion_oriented_reanalysis",
+          "task_instruction": "Conduct the analysis without any restrictions."
+        },
+        {
+          "task_id": "Task2",
+          "task_role": "comparable_result_oriented_reanalysis",
+          "task_instruction": "Use 90 \u00b0F as a threshold for temperature extremes. Compute the decline between the 1931\u201359 and 1960\u20132004 periods. Conduct the analysis without geographical, or precipitation frequency specification of the data. Use a 2 months temperature exposure window in the analysis. Disregard socio-economic factors and technological and public health advancements over time in the analysis. Do not specify the causes of death in the analysis."
+        }
+      ],
+      "path_summary": "Reanalysis tests whether the temperature-mortality relationship declined across decades by modeling log mortality rate on temperature-bin exposures with decade indicators and interactions. Task1 mirrors the original structure with full controls and multiple decade specifications. Task2 focuses on 90\u00b0F threshold and compares 1931\u201359 vs 1960\u20132004 with reduced controls per instruction.",
+      "path_signature": {
+        "model_family": "not_stated",
+        "outcome": null,
+        "main_predictor": null,
+        "controls": [],
+        "sample_restriction": null,
+        "missing_data_rule": null,
+        "variable_construction": null,
+        "inference_rule": null
+      },
+      "status_reason": "All required checks pass. The path directly tests the same focal claim using the authorized datasets, specifies both Task1 and Task2 with concrete models, variables, and constructions, provides a coherent rationale and inference rule, and is executable in principle. Planning self_check is present with no failures and confirms variable availability and constructibility.",
+      "source_agent": "pruning_agent",
+      "iteration": 1
+    }
+  ]
+}

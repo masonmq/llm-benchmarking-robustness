@@ -9,6 +9,7 @@ MEMORY_DIR = Path(__file__).resolve().parent
 TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "templates" / "shared_memory.json"
 EXECUTE_SPEC_FILENAMES = ("execute_in_schema.json", "analysis_info.json")
 EXECUTION_STATUSES = {"executed_success", "execution_failed_retryable", "abandoned"}
+PRUNE_STATUSES = {"accepted", "rejected"}
 
 # Reads execute_in_schema.json first.
 def load_execute_spec(study_path: str) -> Tuple[Dict[str, Any], Path]:
@@ -84,6 +85,93 @@ def _pick_signature_task(tasks: List[Dict[str, Any]]) -> Dict[str, Any]:
         if task.get("task_role") == "conclusion_oriented_reanalysis":
             return task
     return tasks[0] if tasks else {}
+
+
+def get_prune_case_id(prune_in: Dict[str, Any]) -> str:
+    case_reference = prune_in.get("case_reference", {})
+    if case_reference.get("case_id"):
+        return str(case_reference["case_id"])
+    planning_output = prune_in.get("planning_output", {})
+    description = planning_output.get("description", {})
+    planned_id = description.get("planned_id")
+    if planned_id:
+        return str(planned_id).rsplit("_plan", 1)[0]
+    raise ValueError("Prune input is missing case_reference.case_id and planning_output.description.planned_id.")
+
+
+def get_prune_path_id(prune_in: Dict[str, Any]) -> str:
+    planning_output = prune_in.get("planning_output", {})
+    description = planning_output.get("description", {})
+    planned_id = description.get("planned_id")
+    if planned_id:
+        return str(planned_id)
+    return f"{get_prune_case_id(prune_in)}_plan"
+
+
+def _prune_tasks(prune_in: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return prune_in.get("planning_output", {}).get("description", {}).get("planned_method", {}).get("tasks", [])
+
+
+def _task_value(task: Dict[str, Any], *keys: str, default: Any = None) -> Any:
+    current: Any = task
+    for key in keys:
+        if not isinstance(current, dict):
+            return default
+        current = current.get(key)
+    return default if current is None else current
+
+
+def build_memory_record_from_prune_output(
+    prune_in: Dict[str, Any],
+    prune_out: Dict[str, Any],
+    *,
+    iteration: int,
+) -> Dict[str, Any]:
+    if not isinstance(prune_out, dict):
+        raise ValueError("Prune output must be a JSON object.")
+
+    pruning_output = prune_out.get("pruning_output", {})
+    decision = pruning_output.get("decision")
+    if decision not in PRUNE_STATUSES:
+        raise ValueError(f"Unsupported pruning status: {decision}")
+
+    case_id = get_prune_case_id(prune_in)
+    path_id = get_prune_path_id(prune_in)
+    planning_output = prune_in.get("planning_output", {}).get("description", {})
+    planned_method = planning_output.get("planned_method", {})
+    tasks = _prune_tasks(prune_in)
+
+    task_scope = [task.get("task_id", "Task") for task in tasks] or prune_in.get("case_reference", {}).get("tasks_info", [])
+    path_summary = planning_output.get("path_summary") or "Pruning review record."
+
+    first_task = tasks[0] if tasks else {}
+    analysis_path = first_task.get("analysis_path", {}) if isinstance(first_task, dict) else {}
+    key_choices = analysis_path.get("key_choices", {}) if isinstance(analysis_path, dict) else {}
+    variables = analysis_path.get("variables", {}) if isinstance(analysis_path, dict) else {}
+    controls = key_choices.get("control_variables")
+    if not controls and isinstance(variables.get("controls"), list):
+        controls = [item.get("name", item) if isinstance(item, dict) else item for item in variables["controls"]]
+
+    return {
+        "path_id": path_id,
+        "case_id": case_id,
+        "status": decision,
+        "task_scope": task_scope,
+        "path_summary": path_summary,
+        "path_signature": {
+            "model_family": _task_value(first_task, "analysis_path", "model_family", default=planned_method.get("model_family", "not_stated")),
+            "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
+            "main_predictor": variables.get("main_predictor", {}).get("name", key_choices.get("main_predictor_measure")),
+            "controls": controls or [],
+            "sample_restriction": key_choices.get("sample_restriction"),
+            "missing_data_rule": key_choices.get("missing_data_rule"),
+            "variable_construction": key_choices.get("data_processing"),
+            "inference_rule": key_choices.get("inference_rule"),
+        },
+        "status_reason": pruning_output.get("decision_summary") or pruning_output.get("memory_record", {}).get("status_reason") or "Pruning decision recorded.",
+        "source_agent": "pruning_agent",
+        "iteration": iteration,
+    }
 
 # Converts the execution spec into one shared-memory record.
 # Pulls out task scope, model family, outcome, predictor, controls, and status reason.

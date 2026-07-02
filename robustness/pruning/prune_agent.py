@@ -19,6 +19,14 @@ from core.agent import run_react_loop, save_output
 from core.prompts import PREAMBLE_PRUNE, EXAMPLE_PRUNE, PRUNE_CHECKS_POLICY
 from core.utils import configure_file_logging, get_logger
 from replicatorbench.info_extractor.file_utils import read_json
+from robustness.memory.shared_memory import (
+    build_memory_record_from_prune_output,
+    ensure_memory_file,
+    get_prune_case_id,
+    get_prune_path_id,
+    load_case_memory,
+    write_memory_update_with_confirmation,
+)
 
 logger, formatter = get_logger(name="robustness")
 system_prompt = "\n\n".join([PREAMBLE_PRUNE, EXAMPLE_PRUNE])
@@ -39,6 +47,15 @@ CHECKPOINT_MAP = {
 }
 
 
+def _load_json_object(file_path: str):
+    loaded = read_json(file_path)
+    if isinstance(loaded, dict):
+        return loaded
+    if isinstance(loaded, str):
+        return json.loads(loaded)
+    raise TypeError(f"Unsupported JSON payload type from {file_path}: {type(loaded).__name__}")
+
+
 def run_prune(study_path: str, show_prompt: bool = False, templates_dir: str = "./templates",
               tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5"):
     configure_file_logging(logger, study_path, "prune.log")
@@ -54,15 +71,18 @@ def run_prune(study_path: str, show_prompt: bool = False, templates_dir: str = "
     if not os.path.exists(prune_in_path):
         msg = (
             f"prune_in_schema.json not found in {study_path}. "
-            f"Run the helper extractor first (make robustness-prunning-helper STUDY=...)."
+            f"Run the helper extractor first (make robustness-pruning-helper STUDY=...)."
         )
         logger.error(msg)
         raise FileNotFoundError(msg)
 
-    prune_in = read_json(prune_in_path)
+    prune_in = _load_json_object(prune_in_path)
+    case_id = get_prune_case_id(prune_in)
+    path_id = get_prune_path_id(prune_in)
+    ensure_memory_file(case_id)
 
     out_schema_path = os.path.join(templates_dir, "prune_out_schema.json")
-    prune_out_template = read_json(out_schema_path)
+    prune_out_template = _load_json_object(out_schema_path)
 
     instruction = f"""
 Your goal is to REVIEW exactly one candidate analysis path and ROUTE it (accept -> execution, reject -> planning) for a single focal claim. You review and route only. Do not run, modify, or create an analysis path.
@@ -104,7 +124,7 @@ Answer: [the final JSON]
     print(f"\n\nmodel name for pruning agent: {model_name}\n\n")
 
     tool_definitions = get_prune_tool_definitions()
-    return run_react_loop(
+    final_answer = run_react_loop(
         system_prompt,
         known_actions,
         tool_definitions,
@@ -123,3 +143,15 @@ Answer: [the final JSON]
         logger=logger,
         code_mode=code_mode,
     )
+
+    if isinstance(final_answer, dict):
+        current_memory, resolved_memory_path = load_case_memory(case_id)
+        memory_record = build_memory_record_from_prune_output(
+            prune_in,
+            final_answer,
+            iteration=_get_next_iteration(current_memory, path_id),
+        )
+        write_memory_update_with_confirmation(resolved_memory_path, current_memory, memory_record)
+
+    return final_answer
+

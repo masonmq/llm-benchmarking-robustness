@@ -1,9 +1,10 @@
 import argparse, sys
+
 from core.constants import DEFAULT_CODE_MODE, CODE_MODE_CHOICES
 
 
 def main():
-    p = argparse.ArgumentParser("prunning")
+    p = argparse.ArgumentParser("pruning")
     p.add_argument("--stage", choices=["prune-gen_input", "prune"], required=True)
     p.add_argument("--tier", choices=["easy", "medium", "hard"], default="easy")
     p.add_argument("--study-path", required=True)
@@ -20,7 +21,7 @@ def main():
 
     if args.stage == "prune-gen_input":
         # Helper extractor: build the Pruning Agent input from the paper + proposed path.
-        from robustness.prunning.produce_prune_input import run_gen_prune_input
+        from robustness.pruning.produce_prune_input import run_gen_prune_input
         run_gen_prune_input(
             args.study_path,
             tier=args.tier,
@@ -31,7 +32,7 @@ def main():
 
     elif args.stage == "prune":
         # Pruning Agent: review the candidate path and route accept/reject.
-        from robustness.prunning.prune_agent import run_prune
+        from robustness.pruning.prune_agent import run_prune
         run_prune(
             study_path=args.study_path,
             show_prompt=args.show_prompt,

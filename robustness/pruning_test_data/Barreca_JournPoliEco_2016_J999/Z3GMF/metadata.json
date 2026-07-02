@@ -1,0 +1,62 @@
+{
+  "robustness-prune": {
+    "status": "Success",
+    "total_time_seconds": 51.01,
+    "total_tokens": 26667,
+    "prompt_tokens": 22263,
+    "completion_tokens": 4404,
+    "total_turns": 4,
+    "checkpoint_stats": {
+      "2. Verify Dataset": {
+        "time": 9.585395336151123,
+        "tokens": 5980,
+        "prompt_tokens": 5372,
+        "completion_tokens": 608,
+        "turns": 1
+      },
+      "1. Inspect Inputs": {
+        "time": 4.880783557891846,
+        "tokens": 11361,
+        "prompt_tokens": 11144,
+        "completion_tokens": 217,
+        "turns": 2
+      },
+      "8. Final Output & Parsing": {
+        "time": 36.53489661216736,
+        "tokens": 9326,
+        "prompt_tokens": 5747,
+        "completion_tokens": 3579,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "load_dataset",
+        "checkpoint": "2. Verify Dataset",
+        "duration_seconds": 9.59,
+        "prompt_tokens": 5372,
+        "completion_tokens": 608,
+        "total_tokens": 5980
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "1. Inspect Inputs",
+        "duration_seconds": 3.29,
+        "prompt_tokens": 5513,
+        "completion_tokens": 176,
+        "total_tokens": 5689
+      },
+      {
+        "turn": 3,
+        "action": "list_files_in_folder",
+        "checkpoint": "1. Inspect Inputs",
+        "duration_seconds": 1.59,
+        "prompt_tokens": 5631,
+        "completion_tokens": 41,
+        "total_tokens": 5672
+      }
+    ]
+  }
+}
