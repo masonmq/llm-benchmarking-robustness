@@ -151,7 +151,15 @@ EVALUATE_INTERPRET_CONSTANTS = {
 ### ROBUSTNESS CONSTANTS
 
 GEN_GOLD_ANALYSIS_CONSTANTS = {
-    "analysis_schema": "robustness/templates/execute_in_schema.json",
+    "analysis_schema": "templates/execute_in_schema.json",
+}
+
+PLAN_ANALYSIS_CONSTANTS = {
+    "analysis_schema": "templates/execute_in_schema.json",
+    "task_description_data": "data/_robustness/all_claims.xlsx",
+    "example_paper": "data/_robustness/plan_few_shots/Bartels_JournConsRes_2015_mrZ.pdf",
+    "example_good_analysis": "data/_robustness/plan_few_shots/Bartels_JournConsRes_2015_mrZ_50PCE.pdf",
+    "example_bad_analysis": "data/_robustness/plan_few_shots/Bartels_JournConsRes_2015_mrZ_0HC9H.pdf"
 }
 
 

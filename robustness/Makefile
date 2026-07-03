@@ -26,6 +26,11 @@ check-docker:
 
 
 # Generate structured analysis from human documentation
+robustness-plan: check-deps
+	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID)
+
+
+# Generate structured analysis from human documentation
 robustness-execute-gen_gold_analysis: check-deps
 	python -m robustness.executor --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage execute-gen_gold_analysis --code-mode $(CODE_MODE)
 

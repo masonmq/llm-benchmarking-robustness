@@ -399,6 +399,18 @@ EXTRACT RULES (DESIGN)
  """.strip(),
  }
 
+ROBUSTNESS_PLAN_POLICY = {
+    "input": """
+EXTRACT RULES (DESIGN)
+- Use one focal claim per case.
+- Use the original dataset for robustness reanalysis. Do not substitute a new dataset.
+- Keep Task1 and Task2 if both are available. Task1 is usually the conclusion oriented analysis. Task2 is usually the comparable result oriented analysis.
+- Use simple, concrete wording. Prefer exact file names, exact commands, and exact variable names when available.
+- If a field is not stated after checking the available materials, write \"not_stated\". If a field is truly not applicable, write \"NA\".
+- You have to write all necessary code for the analysis in this planning step. All necessary code files must be creaated before filling out the final output.
+ """.strip(),
+ }
+
 ROBUSTNESS_EXECUTE_OUTPUT_POLICY = {
     "output": """
 EXECUTE OUTPUT RULES (EXECUTE)
