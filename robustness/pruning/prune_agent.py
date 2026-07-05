@@ -149,7 +149,7 @@ Answer: [the final JSON]
         memory_record = build_memory_record_from_prune_output(
             prune_in,
             final_answer,
-            iteration=_get_next_iteration(current_memory, path_id),
+            iteration = 1,
         )
         write_memory_update_with_confirmation(resolved_memory_path, current_memory, memory_record)
 
