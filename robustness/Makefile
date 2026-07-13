@@ -29,6 +29,9 @@ check-docker:
 robustness-plan: check-deps
 	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID)
 
+paraphase-analysis: check-deps
+	python -m robustness.memory --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage paraphrase-analysis --code-mode $(CODE_MODE)
+
 
 # Generate structured analysis from human documentation
 robustness-execute-gen_gold_analysis: check-deps
