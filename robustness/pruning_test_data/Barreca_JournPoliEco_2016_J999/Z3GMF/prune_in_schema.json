@@ -1,19 +1,20 @@
 {
   "case_reference": {
     "case_id": "Barreca_JournPoliEco_2016_J999",
-    "focal_claim": "There was a decline in the temperature-mortality relationship across decades.",
-    "hypothesis": "The association between extreme temperature and mortality is smaller in later decades (e.g., 1960\u20132004) than in earlier decades (e.g., 1931\u20131959).",
+    "study_type": "observational panel study",
+    "focal_claim": "there was a \u2026 decline in the temperature-mortality relationship across decades (p. 133.)",
+    "hypothesis": "The relationship between temperature and mortality declined across decades, with a weaker association in later periods than in earlier periods.",
     "authorized_datasets": [
       {
         "name": "DATA_1900_2004",
         "file_name": "DATA_1900_2004.dta",
-        "file_path": "prunning_test_data/Barreca_JournPoliEco_2016_J999/Z3GMF/data/DATA_1900_2004.dta",
+        "file_path": "pruning_test_data/Barreca_JournPoliEco_2016_J999/Z3GMF/data/DATA_1900_2004.dta",
         "file_format": "dta"
       },
       {
         "name": "DATA_TABLE9",
         "file_name": "DATA_TABLE9.dta",
-        "file_path": "prunning_test_data/Barreca_JournPoliEco_2016_J999/Z3GMF/data/DATA_TABLE9.dta",
+        "file_path": "pruning_test_data/Barreca_JournPoliEco_2016_J999/Z3GMF/data/DATA_TABLE9.dta",
         "file_format": "dta"
       }
     ],
@@ -26,99 +27,142 @@
       {
         "task_id": "Task2",
         "task_role": "comparable_result_oriented_reanalysis",
-        "task_instruction": "Use 90 \u00b0F as a threshold for temperature extremes. Compute the decline between the 1931\u201359 and 1960\u20132004 periods. Conduct the analysis without geographical, or precipitation frequency specification of the data. Use a 2 months temperature exposure window in the analysis. Disregard socio-economic factors and technological and public health advancements over time in the analysis. Do not specify the causes of death in the analysis."
+        "task_instruction": "You should use 90 \u00b0F as a threshold for temperature extremes. You should compute the decline between the 1931\u201359 and 1960\u20132004 periods. You should conduct your analysis without geographical, or precipitation frequency specification of the data. You should use a 2 months temperature exposure window in your analysis. You should disregard socio-economic factors and technological and public health advancements over time in your analysis. You should not specify the causes of death in your analysis."
       }
     ]
   },
   "planning_output": {
-    "description": {
-      "planned_id": "z3gmf_Barreca_JournPoliEco_2016_J999_plan",
-      "task_scope": [
-        "Task1",
-        "Task2"
+    "planned_id": "Barreca_JournPoliEco_2016_J999_Z3GMF_plan",
+    "task_scope": [
+      "Task1",
+      "Task2"
+    ],
+    "path_summary": "The proposed path uses the original DATA_1900_2004.dta panel data to test whether the temperature-mortality relationship declined over time. Task1 constructs state-month, year-month, quadratic year, decade, two-period decade, and below-40-degree variables; drops observations with missing lndrate; restricts the sample to years 1931 and later; then estimates OLS regressions of lndrate on temperature-bin days and interactions with either factor(decade_two) or factor(decade), including population-age-share, income, state-month, year-month, quadratic time, and precipitation controls. Task2 uses the same cleaned 1931-2004 sample but follows the restriction to use only days above 90 \u00b0F, compares 1931-1959 with 1960-2004, and omits socioeconomic, geographical, and precipitation-frequency controls.",
+    "path_signature": {
+      "model_family": "linear_regression_OLS",
+      "outcome": "lndrate",
+      "main_predictor": "Task1: temperature-bin-day variables b10_1, b10_2, b10_3, b10_4, b10_5, b10_6, b10_8, b10_9, b10_10 and selected extreme bins b10_9, b10_10, b10_b_4 interacted with factor(decade_two) or factor(decade). Task2: b10_10 interacted with factor(decade_two).",
+      "controls": [
+        "Task1: sh_0000 * month",
+        "Task1: sh_0144 * month",
+        "Task1: sh_4564 * month",
+        "Task1: sh_6599 * month",
+        "Task1: lri * month",
+        "Task1: statemo",
+        "Task1: yearmo",
+        "Task1: year2",
+        "Task1: devp25",
+        "Task1: devp75",
+        "Task2: sh_0000 * month",
+        "Task2: sh_0144 * month",
+        "Task2: sh_4564 * month",
+        "Task2: sh_6599 * month",
+        "Task2: yearmo",
+        "Task2: year2"
       ],
-      "path_summary": "Reanalysis tests whether the temperature-mortality relationship declined across decades by modeling log mortality rate on temperature-bin exposures with decade indicators and interactions. Task1 mirrors the original structure with full controls and multiple decade specifications. Task2 focuses on 90\u00b0F threshold and compares 1931\u201359 vs 1960\u20132004 with reduced controls per instruction.",
-      "path_signature": {
-        "model_family": "linear_regression (OLS)",
-        "outcome": "lndrate (log mortality rate)",
-        "main_predictor": "Temperature exposure bins b10_1\u2013b10_10; for Task2, b10_10 as >90\u00b0F extreme-heat exposure; interactions with decade indicators (decade_two and decade)",
-        "controls": [
-          "Population shares by age (sh_0000, sh_0144, sh_4564, sh_6599) and their interactions with month",
-          "lri and its interaction with month (Task1 only, excluded in Task2 per instruction)",
-          "statemo (state-by-month fixed effect proxy)",
-          "yearmo (year-by-month fixed effect proxy)",
-          "year2 (quadratic time)",
-          "devp25, devp75 (precipitation anomalies; Task1 only)"
-        ],
-        "sample_restriction": "Drop rows with missing lndrate; restrict to years >= 1931; compare pre-1960 vs post-1959 using decade_two for Task2.",
-        "missing_data_rule": "Listwise deletion for missing lndrate.",
-        "variable_construction": "Compute statemo = stfips*1000 + month; yearmo = year*1000 + month; year2 = year^2; b10_b_4 = b10_1 + b10_2 + b10_3 + b10_4; decade (11 levels by decade); decade_two (1=year<=1959, 2=year>1959).",
-        "inference_rule": "Sign and statistical significance of interaction terms between temperature exposures (especially b10_10) and decade indicators (decade_two or decade) to assess decline in effect over time."
-      },
-      "planned_method": {
-        "software": "R",
-        "environment": "Base R with packages: foreign, dplyr, ggplot2, tidyr.",
-        "datasets": [
-          "data/DATA_1900_2004.dta",
-          "data/DATA_TABLE9.dta"
-        ],
+      "sample_restriction": "Drop rows with missing lndrate and keep observations with year >= 1931.",
+      "missing_data_rule": "Remove observations with missing lndrate.",
+      "variable_construction": "statemo = stfips * 1000 + month; yearmo = year * 1000 + month; year2 = year^2; b10_b_4 = b10_1 + b10_2 + b10_3 + b10_4; decade is coded as ten-year categories from 1900-1909 through 2000-2004; decade_two = 1 for year <= 1959 and 2 for year > 1959.",
+      "inference_rule": "Evaluate the interaction coefficients between temperature exposure bins and period or decade indicators. Evidence for the claim is a negative interaction indicating a weaker temperature-mortality association in later decades or in 1960-2004 relative to 1931-1959.",
+      "task_decisions": {
         "Task1": {
-          "preprocessing": [
-            "Load DATA_1900_2004.dta.",
-            "Create statemo, yearmo, year2.",
-            "Create b10_b_4 = b10_1 + b10_2 + b10_3 + b10_4.",
-            "Create decade (11 levels) and decade_two (before/after 1959).",
-            "Drop rows with missing lndrate.",
-            "Restrict to years >= 1931."
-          ],
-          "models": [
-            "M1: lndrate ~ b10_1 + b10_2 + b10_3 + b10_4 + b10_5 + b10_6 + b10_8 + b10_9 + b10_10 + (sh_0000 + sh_0144 + sh_4564 + sh_6599)*month + lri*month + statemo + yearmo + year2 + devp25 + devp75.",
-            "M2: Same as M1 plus interactions with factor(decade_two) for all temperature bins.",
-            "M3: Same as M1 plus interactions with factor(decade) for all temperature bins.",
-            "M4: lndrate ~ (b10_9 + b10_10 + b10_b_4)*factor(decade_two) + same controls as M1.",
-            "M5: lndrate ~ (b10_9 + b10_10 + b10_b_4)*factor(decade) + same controls as M1."
-          ],
-          "focus_parameters": "Interaction terms of b10_10 with decade_two and with decade; optionally b10_b_4 for cold extremes."
+          "decision": "not_stated",
+          "reason": "This is the extracted proposed analysis path; pruning decision is not made in this extractor output."
         },
         "Task2": {
-          "constraints": "Use 90\u00b0F threshold; compare 1931\u201359 vs 1960\u20132004; no geographic or precipitation frequency specification; 2-month temperature exposure window; disregard socio-economic and technology/public health advancements; do not specify causes of death.",
-          "preprocessing": [
-            "Load DATA_1900_2004.dta.",
-            "Create statemo, yearmo, year2.",
-            "Create decade_two (before/after 1959).",
-            "Drop rows with missing lndrate.",
-            "Restrict to years >= 1931."
-          ],
-          "model": "M1: lndrate ~ b10_10 * factor(decade_two) + (sh_0000 + sh_0144 + sh_4564 + sh_6599)*month + yearmo + year2.",
-          "excluded_controls": "Socioeconomic, geographical, and precipitation controls excluded per instruction."
+          "decision": "not_stated",
+          "reason": "This is the extracted proposed analysis path; pruning decision is not made in this extractor output."
         }
       },
-      "method_justification": "Interacting temperature exposure variables with decade indicators directly tests whether the strength of the temperature-mortality association changed over time. Using b10_10 (>90\u00b0F) isolates extreme heat exposure for Task2 as required. The outcome lndrate and temperature bins (b10_1\u2013b10_10) are available in the authorized dataset. Fixed effects proxies and time trends align with the original study structure. Sign and size of interaction coefficients indicate whether mortality sensitivity to temperature declined in later decades.",
-      "codebase": {
-        "language": "R",
-        "code_files": [
-          "data/Multi100_analysis_script_task1.R",
-          "data/Multi100_analysis_script_task2.R"
-        ],
-        "entry_commands": [
-          "Rscript data/Multi100_analysis_script_task1.R",
-          "Rscript data/Multi100_analysis_script_task2.R"
-        ],
-        "dependencies": [
-          "R >= 3.6.0",
-          "foreign",
-          "dplyr",
-          "ggplot2",
-          "tidyr"
-        ],
-        "notes": "Scripts read DATA_1900_2004.dta directly and implement the models described in the review PDF."
-      },
-      "self_check": {
-        "data_availability": "DATA_1900_2004.dta and DATA_TABLE9.dta are present. Variables lndrate, b10_1\u2013b10_10, sh_*, lri, devp25, devp75, stfips, year, month exist.",
-        "constructs_check": "decade_two and decade can be computed from year; statemo/yearmo/year2 can be computed from stfips, year, month; b10_b_4 as sum of b10_1..b10_4.",
-        "task2_constraints_applied": "Only b10_10*decade_two interaction used; socioeconomic/geographical/precipitation controls excluded; compare pre-1959 vs post-1959; restrict to years >= 1931.",
-        "inference": "Primary test is whether the interaction term(s) for b10_10 with later decades are negative and significant, indicating decline over time."
-      }
+      "overall_decision": "not_stated"
+    },
+    "planned_method": {
+      "software": "Python translation of original R scripts",
+      "original_software": "R",
+      "models": [
+        {
+          "task_id": "Task1",
+          "model_name": "M1",
+          "formula": "lndrate ~ b10_1 + b10_2 + b10_3 + b10_4 + b10_5 + b10_6 + b10_8 + b10_9 + b10_10 + (sh_0000 + sh_0144 + sh_4564 + sh_6599) * month + lri * month + statemo + yearmo + year2 + devp25 + devp75"
+        },
+        {
+          "task_id": "Task1",
+          "model_name": "M2",
+          "formula": "lndrate ~ (b10_1 + b10_2 + b10_3 + b10_4 + b10_5 + b10_6 + b10_8 + b10_9 + b10_10) * factor(decade_two) + (sh_0000 + sh_0144 + sh_4564 + sh_6599) * month + lri * month + statemo + yearmo + year2 + devp25 + devp75"
+        },
+        {
+          "task_id": "Task1",
+          "model_name": "M3",
+          "formula": "lndrate ~ (b10_1 + b10_2 + b10_3 + b10_4 + b10_5 + b10_6 + b10_8 + b10_9 + b10_10) * factor(decade) + (sh_0000 + sh_0144 + sh_4564 + sh_6599) * month + lri * month + statemo + yearmo + year2 + devp25 + devp75"
+        },
+        {
+          "task_id": "Task1",
+          "model_name": "M4",
+          "formula": "lndrate ~ (b10_9 + b10_10 + b10_b_4) * factor(decade_two) + (sh_0000 + sh_0144 + sh_4564 + sh_6599) * month + lri * month + statemo + yearmo + year2 + devp25 + devp75"
+        },
+        {
+          "task_id": "Task1",
+          "model_name": "M5",
+          "formula": "lndrate ~ (b10_9 + b10_10 + b10_b_4) * factor(decade) + (sh_0000 + sh_0144 + sh_4564 + sh_6599) * month + lri * month + statemo + yearmo + year2 + devp25 + devp75"
+        },
+        {
+          "task_id": "Task2",
+          "model_name": "M1",
+          "formula": "lndrate ~ b10_10 * factor(decade_two) + (sh_0000 + sh_0144 + sh_4564 + sh_6599) * month + yearmo + year2"
+        }
+      ],
+      "preprocessing_steps": [
+        "Read DATA_1900_2004.dta and DATA_TABLE9.dta.",
+        "Compute statemo as stfips * 1000 + month.",
+        "Compute yearmo as year * 1000 + month.",
+        "Compute year2 as year^2.",
+        "For Task1, compute b10_b_4 as the sum of b10_1 through b10_4.",
+        "For Task1, compute decade as a categorical ten-year period variable.",
+        "For both tasks, compute decade_two as 1 for years up to 1959 and 2 for years after 1959.",
+        "Drop observations with missing lndrate.",
+        "Restrict the analytic sample to years 1931 through 2004."
+      ],
+      "outputs": [
+        "OLS model summaries.",
+        "Interaction plots of lndrate against temperature-bin variables by decade or two-period decade category."
+      ]
+    },
+    "method_justification": "The claim concerns a decline in the temperature-mortality relationship across time. The proposed OLS models directly estimate mortality as a function of temperature exposure bins and test whether the temperature slope differs by decade or by the pre-1959 versus post-1959 period. Negative interaction terms for later decades or for the 1960-2004 period indicate a decline in the temperature-mortality relationship. Task2 follows the required specification by using b10_10 as the 90 \u00b0F threshold variable and comparing 1931-1959 with 1960-2004 without geographical, precipitation-frequency, socioeconomic, technological, public-health, or cause-of-death specifications.",
+    "codebase": {
+      "available": true,
+      "original_code_files": [
+        "data/Multi100_analysis_script_task1.R",
+        "data/Multi100_analysis_script_task2.R"
+      ],
+      "translated_code_files": [
+        "data/Multi100_analysis_script_task1__py.py",
+        "data/Multi100_analysis_script_task2__py.py"
+      ],
+      "entry_files": [
+        "data/Multi100_analysis_script_task1__py.py",
+        "data/Multi100_analysis_script_task2__py.py"
+      ],
+      "run_commands": [
+        "python /app/data/Multi100_analysis_script_task1__py.py",
+        "python /app/data/Multi100_analysis_script_task2__py.py"
+      ],
+      "io_policy": "Python translations read and write using /app/data.",
+      "packages": [
+        "pandas",
+        "statsmodels",
+        "matplotlib",
+        "seaborn"
+      ],
+      "notes": "The R scripts were translated to Python before producing this structured report. The original R scripts are unchanged."
+    },
+    "self_check": {
+      "same_focal_claim": "yes",
+      "same_dataset": "yes",
+      "uses_authorized_original_dataset": "yes",
+      "task_completeness": "Task1 and Task2 are both specified.",
+      "executable_in_principle": "yes",
+      "not_duplicate": "yes; shared_memory is empty.",
+      "limitations": "The review report states the analyst's conclusions and selected result for Task2, but the extractor did not run the translated scripts."
     }
   },
   "shared_memory": {
@@ -136,8 +180,11 @@
     },
     "allowed_actions": [
       "Read the candidate path.",
+      "Read the original paper PDF.",
+      "Explore the authorized dataset.",
+      "Read the candidate path's analysis code.",
       "Read shared memory.",
-      "Accept or reject the candidate path.",
+      "Decide whether the candidate path is high-quality or low-quality.",
       "Write a memory update instruction."
     ],
     "not_allowed_actions": [

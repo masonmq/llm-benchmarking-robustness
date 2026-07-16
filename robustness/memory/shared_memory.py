@@ -10,6 +10,13 @@ TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "templates" / "shared_memo
 EXECUTE_SPEC_FILENAMES = ("execute_in_schema.json", "analysis_info.json")
 EXECUTION_STATUSES = {"executed_success", "execution_failed_retryable", "abandoned"}
 PRUNE_STATUSES = {"accepted", "rejected"}
+# The Pruning Agent reports quality decisions; shared memory keeps the accepted/rejected vocabulary.
+PRUNE_DECISION_TO_STATUS = {
+    "accepted": "accepted",
+    "rejected": "rejected",
+    "high-quality": "accepted",
+    "low-quality": "rejected",
+}
 
 # Reads execute_in_schema.json first.
 def load_execute_spec(study_path: str) -> Tuple[Dict[str, Any], Path]:
@@ -132,7 +139,8 @@ def build_memory_record_from_prune_output(
 
     pruning_output = prune_out.get("pruning_output", {})
     decision = pruning_output.get("decision")
-    if decision not in PRUNE_STATUSES:
+    status = PRUNE_DECISION_TO_STATUS.get(str(decision).strip().lower() if decision else "")
+    if status is None:
         raise ValueError(f"Unsupported pruning status: {decision}")
 
     case_id = get_prune_case_id(prune_in)
@@ -155,7 +163,7 @@ def build_memory_record_from_prune_output(
     return {
         "path_id": path_id,
         "case_id": case_id,
-        "status": decision,
+        "status": status,
         "task_scope": task_scope,
         "path_summary": path_summary,
         "path_signature": {

@@ -1,61 +1,236 @@
 {
-  "robustness-prune": {
+  "prune-gen_input": {
     "status": "Success",
-    "total_time_seconds": 51.01,
-    "total_tokens": 26667,
-    "prompt_tokens": 22263,
-    "completion_tokens": 4404,
-    "total_turns": 4,
+    "total_time_seconds": 160.35,
+    "total_tokens": 79394,
+    "prompt_tokens": 72199,
+    "completion_tokens": 7195,
+    "total_turns": 7,
     "checkpoint_stats": {
-      "2. Verify Dataset": {
-        "time": 9.585395336151123,
-        "tokens": 5980,
-        "prompt_tokens": 5372,
-        "completion_tokens": 608,
-        "turns": 1
-      },
-      "1. Inspect Inputs": {
-        "time": 4.880783557891846,
-        "tokens": 11361,
-        "prompt_tokens": 11144,
-        "completion_tokens": 217,
-        "turns": 2
+      "Running Action": {
+        "time": 102.71300601959229,
+        "tokens": 60340,
+        "prompt_tokens": 56617,
+        "completion_tokens": 3723,
+        "turns": 6
       },
       "8. Final Output & Parsing": {
-        "time": 36.53489661216736,
-        "tokens": 9326,
-        "prompt_tokens": 5747,
-        "completion_tokens": 3579,
+        "time": 57.63258218765259,
+        "tokens": 19054,
+        "prompt_tokens": 15582,
+        "completion_tokens": 3472,
         "turns": 1
       }
     },
     "turn_history": [
       {
         "turn": 1,
-        "action": "load_dataset",
-        "checkpoint": "2. Verify Dataset",
-        "duration_seconds": 9.59,
-        "prompt_tokens": 5372,
-        "completion_tokens": 608,
-        "total_tokens": 5980
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 5.65,
+        "prompt_tokens": 4465,
+        "completion_tokens": 132,
+        "total_tokens": 4597
+      },
+      {
+        "turn": 2,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 25.83,
+        "prompt_tokens": 4693,
+        "completion_tokens": 247,
+        "total_tokens": 4940
+      },
+      {
+        "turn": 3,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 5.77,
+        "prompt_tokens": 8255,
+        "completion_tokens": 330,
+        "total_tokens": 8585
+      },
+      {
+        "turn": 4,
+        "action": "get_dataset_columns",
+        "checkpoint": "Running Action",
+        "duration_seconds": 9.61,
+        "prompt_tokens": 11649,
+        "completion_tokens": 401,
+        "total_tokens": 12050
+      },
+      {
+        "turn": 5,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 45.46,
+        "prompt_tokens": 12821,
+        "completion_tokens": 1839,
+        "total_tokens": 14660
+      },
+      {
+        "turn": 6,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 10.39,
+        "prompt_tokens": 14734,
+        "completion_tokens": 774,
+        "total_tokens": 15508
+      }
+    ]
+  },
+  "robustness-prune": {
+    "status": "Success",
+    "total_time_seconds": 232.18,
+    "total_tokens": 209287,
+    "prompt_tokens": 203643,
+    "completion_tokens": 5644,
+    "total_turns": 13,
+    "checkpoint_stats": {
+      "2. Read Original Paper": {
+        "time": 25.815628051757812,
+        "tokens": 8759,
+        "prompt_tokens": 8650,
+        "completion_tokens": 109,
+        "turns": 1
+      },
+      "1. Inspect Inputs": {
+        "time": 3.687009572982788,
+        "tokens": 10452,
+        "prompt_tokens": 10303,
+        "completion_tokens": 149,
+        "turns": 1
+      },
+      "3. Explore Dataset": {
+        "time": 75.62007999420166,
+        "tokens": 64625,
+        "prompt_tokens": 62832,
+        "completion_tokens": 1793,
+        "turns": 5
+      },
+      "4. Review Analysis Code": {
+        "time": 65.49046230316162,
+        "tokens": 99206,
+        "prompt_tokens": 98657,
+        "completion_tokens": 549,
+        "turns": 5
+      },
+      "8. Final Output & Parsing": {
+        "time": 61.56693410873413,
+        "tokens": 26245,
+        "prompt_tokens": 23201,
+        "completion_tokens": 3044,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "read_pdf",
+        "checkpoint": "2. Read Original Paper",
+        "duration_seconds": 25.82,
+        "prompt_tokens": 8650,
+        "completion_tokens": 109,
+        "total_tokens": 8759
       },
       {
         "turn": 2,
         "action": "list_files_in_folder",
         "checkpoint": "1. Inspect Inputs",
-        "duration_seconds": 3.29,
-        "prompt_tokens": 5513,
-        "completion_tokens": 176,
-        "total_tokens": 5689
+        "duration_seconds": 3.69,
+        "prompt_tokens": 10303,
+        "completion_tokens": 149,
+        "total_tokens": 10452
       },
       {
         "turn": 3,
-        "action": "list_files_in_folder",
-        "checkpoint": "1. Inspect Inputs",
-        "duration_seconds": 1.59,
-        "prompt_tokens": 5631,
-        "completion_tokens": 41,
-        "total_tokens": 5672
+        "action": "load_dataset",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 4.96,
+        "prompt_tokens": 10583,
+        "completion_tokens": 204,
+        "total_tokens": 10787
+      },
+      {
+        "turn": 4,
+        "action": "get_dataset_shape",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 28.17,
+        "prompt_tokens": 10879,
+        "completion_tokens": 239,
+        "total_tokens": 11118
+      },
+      {
+        "turn": 5,
+        "action": "get_dataset_info",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 5.97,
+        "prompt_tokens": 11889,
+        "completion_tokens": 482,
+        "total_tokens": 12371
+      },
+      {
+        "turn": 6,
+        "action": "get_dataset_head",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 7.09,
+        "prompt_tokens": 14010,
+        "completion_tokens": 510,
+        "total_tokens": 14520
+      },
+      {
+        "turn": 7,
+        "action": "get_dataset_info",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 29.44,
+        "prompt_tokens": 15471,
+        "completion_tokens": 358,
+        "total_tokens": 15829
+      },
+      {
+        "turn": 8,
+        "action": "read_txt",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 3.9,
+        "prompt_tokens": 17513,
+        "completion_tokens": 148,
+        "total_tokens": 17661
+      },
+      {
+        "turn": 9,
+        "action": "read_file",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 28.43,
+        "prompt_tokens": 17677,
+        "completion_tokens": 107,
+        "total_tokens": 17784
+      },
+      {
+        "turn": 10,
+        "action": "read_file",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 3.18,
+        "prompt_tokens": 20093,
+        "completion_tokens": 128,
+        "total_tokens": 20221
+      },
+      {
+        "turn": 11,
+        "action": "read_file",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 27.3,
+        "prompt_tokens": 20888,
+        "completion_tokens": 82,
+        "total_tokens": 20970
+      },
+      {
+        "turn": 12,
+        "action": "read_file",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 2.68,
+        "prompt_tokens": 22486,
+        "completion_tokens": 84,
+        "total_tokens": 22570
       }
     ]
   }

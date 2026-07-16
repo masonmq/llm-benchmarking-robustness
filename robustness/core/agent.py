@@ -5,6 +5,7 @@ import time
 import json
 import logging
 import tiktoken
+from types import SimpleNamespace
 from openai import OpenAI
 from core.utils import get_logger
 from core.constants import API_KEY, GENERATE_REACT_CONSTANTS
@@ -111,6 +112,23 @@ class Agent:
         self.tools = tools
         self._tpm_window_start = time.time()
         self._tpm_tokens = 0  # tokens used since last reset
+        # Responses API conversation chaining for reasoning models.
+        self.previous_response_id = None
+
+    def _tools_for_responses(self) -> list:
+        """Convert chat-completions tool schemas to the flattened Responses API shape."""
+        converted = []
+        for tool in self.tools or []:
+            func = tool.get("function", {}) if tool.get("type") == "function" else {}
+            if not func.get("name"):
+                continue
+            converted.append({
+                "type": "function",
+                "name": func["name"],
+                "description": func.get("description", ""),
+                "parameters": func.get("parameters", {"type": "object", "properties": {}}),
+            })
+        return converted
 
     def __call__(self, message, tool_outputs=None, logger=logger):
         content, usage = self.execute(message, tool_outputs, logger=logger)
@@ -140,41 +158,91 @@ class Agent:
             self._tpm_tokens = 0
 
         # Call API
-        params = {
-            "model": self.model,
-            "messages": self.messages,
-        }
-
-        # Handle Tools
-        if self.tools:
-            params["tools"] = self.tools
-            params["tool_choice"] = "auto"
-
-        # Handle Model Specifics (o1/o3 vs GPT-4o)
-        is_reasoning = self.model in REASONING_MODELS
-        
-        if is_reasoning:
-            # o1/o3 support 'max_completion_tokens' instead of 'max_tokens'
-            # and may support 'reasoning_effort'
-            params["reasoning_effort"] = "medium" # or "high" / "low"
-            # params["max_completion_tokens"] = 4000
-        else:
-            params["temperature"] = 0
-            # params["max_tokens"] = 4000
+        is_reasoning = is_reasoning_model(self.model)
 
         try:
-            # Unified call for both GPT-4o and o3
-            completion = client.chat.completions.create(**params)
-            
-            response_message = completion.choices[0].message
-            usage = completion.usage
+            if is_reasoning:
+                # Reasoning models (gpt-5.x, o1, o3): use the Responses API, which
+                # supports function tools together with reasoning (chat completions
+                # rejects tools + reasoning_effort for gpt-5.5). Conversation state,
+                # including the model's reasoning items, is chained server-side via
+                # previous_response_id, so each request only sends the new items.
+                input_items = []
+                if message:
+                    input_items.append({"role": "user", "content": message})
+                for out in tool_outputs or []:
+                    if out.get("role") == "tool":
+                        input_items.append({
+                            "type": "function_call_output",
+                            "call_id": out["tool_call_id"],
+                            "output": str(out.get("content", "")),
+                        })
+                    else:
+                        input_items.append({
+                            "role": out.get("role", "user"),
+                            "content": str(out.get("content", "")),
+                        })
 
-            # Update usage stats
-            usage_stats = {
-                "prompt_tokens": usage.prompt_tokens,
-                "completion_tokens": usage.completion_tokens,
-                "total_tokens": usage.total_tokens
-            }
+                params = {
+                    "model": self.model,
+                    "input": input_items,
+                    "reasoning": {"effort": "medium"},  # or "high" / "low"
+                    "store": True,
+                }
+                if self.system:
+                    # instructions apply per request, so resend them on every call.
+                    params["instructions"] = self.system
+                if self.previous_response_id:
+                    params["previous_response_id"] = self.previous_response_id
+                if self.tools:
+                    params["tools"] = self._tools_for_responses()
+                    params["tool_choice"] = "auto"
+
+                response = client.responses.create(**params)
+                self.previous_response_id = response.id
+
+                # Adapt the Responses output to the chat-completions message shape
+                # that run_react_loop consumes (.content, .tool_calls[].function.*).
+                tool_calls = [
+                    SimpleNamespace(
+                        id=item.call_id,
+                        type="function",
+                        function=SimpleNamespace(name=item.name, arguments=item.arguments),
+                    )
+                    for item in response.output
+                    if getattr(item, "type", None) == "function_call"
+                ]
+                response_message = SimpleNamespace(
+                    role="assistant",
+                    content=getattr(response, "output_text", "") or "",
+                    tool_calls=tool_calls or None,
+                )
+                usage = response.usage
+                usage_stats = {
+                    "prompt_tokens": getattr(usage, "input_tokens", 0) or 0,
+                    "completion_tokens": getattr(usage, "output_tokens", 0) or 0,
+                    "total_tokens": getattr(usage, "total_tokens", 0) or 0,
+                }
+            else:
+                params = {
+                    "model": self.model,
+                    "messages": self.messages,
+                    "temperature": 0,
+                    # "max_tokens": 4000,
+                }
+                if self.tools:
+                    params["tools"] = self.tools
+                    params["tool_choice"] = "auto"
+
+                completion = client.chat.completions.create(**params)
+                response_message = completion.choices[0].message
+                usage = completion.usage
+                usage_stats = {
+                    "prompt_tokens": usage.prompt_tokens,
+                    "completion_tokens": usage.completion_tokens,
+                    "total_tokens": usage.total_tokens
+                }
+
             self._tpm_tokens += usage_stats["total_tokens"]
 
             # Append the full message object

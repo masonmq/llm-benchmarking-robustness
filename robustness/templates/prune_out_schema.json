@@ -3,9 +3,9 @@
     "case_id": "ID of the paper or case. Example: Bruner_ExpEco_2017_amYY.",
     "planned_id": "ID of the candidate path reviewed by the Pruning Agent.",
 
-    "decision": "accepted | rejected",
+    "decision": "high-quality | low-quality",
 
-    "decision_summary": "Short explanation of why the path was accepted or rejected.",
+    "decision_summary": "Short explanation of why the path was high-quality or low-quality.",
 
     "check_results": {
       "same_focal_claim": {
@@ -38,7 +38,7 @@
     "memory_record": {
       "path_id": "Same as planned_id.",
       "case_id": "Same as case_id.",
-      "status": "accepted | rejected",
+      "status": "high-quality | low-quality",
       "task_scope": ["Task1", "Task2"],
       "path_summary": "Short summary copied from the planning output.",
       "path_signature": {
@@ -49,13 +49,23 @@
         "sample_restriction": "Sample inclusion or exclusion rule, or null.",
         "missing_data_rule": "Missing data handling rule, or null.",
         "variable_construction": "How the main variables are created or changed before analysis, or null.",
-        "inference_rule": "How the result will be judged."
+        "inference_rule": "How the result will be judged.",
+          "task_decisions": {
+            "Task1": {
+              "decision": "high-quality | revise | low-quality",
+              "reason": "Reason why the analysis path was high-quality or low-quality for Task 1"
+            },
+            "Task2": {
+              "decision": "high-quality | revise | low-quality",
+              "reason": "Reason why the analysis path was high-quality or low-quality for Task 2"
+            }
+          },
+          "overall_decision": "high_quality_path | incomplete_path | low_quality_path"
       },
       "status_reason": "Short reason for accepting or rejecting this path.",
       "source_agent": "pruning_agent",
       "iteration": "Planning or pruning round number."
     },
-
     "next_step": "send_to_execution | return_to_planning"
   }
 }

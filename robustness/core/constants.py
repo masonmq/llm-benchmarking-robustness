@@ -178,8 +178,8 @@ GEN_PRUNE_INPUT_CONSTANTS = {
     "prune_in_template": "templates/prune_in_schema.json",
 }
 
-# Pruning Agent: reviews the filled prune_in_schema.json and routes accept/reject,
-# emitting prune_out_schema.json.
+# Pruning Agent: reviews the filled prune_in_schema.json and routes
+# high-quality/low-quality, emitting prune_out_schema.json.
 ROBUSTNESS_PRUNE_CONSTANTS = {
     "files": {
         "prune_in_schema.json": "The structured Pruning Agent input: case reference, the single candidate analysis path to review (planning_output), shared memory, and the fixed pruning rules.",
@@ -189,4 +189,4 @@ ROBUSTNESS_PRUNE_CONSTANTS = {
 
 # Prompt versions are logged on every run for reproducibility.
 GEN_PRUNE_INPUT_PROMPT_VERSION = "prune_input_extractor.v1"
-PRUNE_PROMPT_VERSION = "pruning_agent.v1"
+PRUNE_PROMPT_VERSION = "pruning_agent.v2"

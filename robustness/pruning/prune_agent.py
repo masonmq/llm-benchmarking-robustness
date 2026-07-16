@@ -3,12 +3,14 @@ Pruning Agent.
 
 Mirrors robustness/executor/execute_agent.py (run_execute) but for the review-and-route
 stage: it consumes the filled prune_in_schema.json (produced by the helper extractor or,
-later, by the Planning Agent), runs the seven required checks via a ReAct loop, and emits
-prune_out_schema.json with an accept/reject decision and routing.
+later, by the Planning Agent), performs a deep review (original paper, dataset, analysis
+code) against the pruning policy via a ReAct loop, and emits prune_out_schema.json with a
+high-quality/low-quality decision and routing.
 
 It follows the executor's validation approach exactly: the output template is embedded in
 the prompt and the final Answer is parsed as JSON by the shared ReAct loop. The agent uses
-a leakage-safe subset of tools (no PDF / free-text readers, no file writers).
+a leakage-safe subset of tools: guarded readers that block human analysis / review
+documents, dataset inspection tools, and no file writers.
 """
 import os
 import json
@@ -36,14 +38,17 @@ known_actions = prune_known_actions()
 CHECKPOINT_MAP = {
     "list_files_in_folder": "1. Inspect Inputs",
     "read_json": "1. Inspect Inputs",
-    "load_dataset": "2. Verify Dataset",
-    "get_dataset_columns": "2. Verify Dataset",
-    "get_dataset_info": "2. Verify Dataset",
-    "get_dataset_shape": "2. Verify Dataset",
-    "get_dataset_head": "2. Verify Dataset",
-    "get_dataset_description": "2. Verify Dataset",
-    "get_dataset_variable_summary": "2. Verify Dataset",
-    "ask_human_input": "3. Human Input",
+    "read_pdf": "2. Read Original Paper",
+    "load_dataset": "3. Explore Dataset",
+    "get_dataset_columns": "3. Explore Dataset",
+    "get_dataset_info": "3. Explore Dataset",
+    "get_dataset_shape": "3. Explore Dataset",
+    "get_dataset_head": "3. Explore Dataset",
+    "get_dataset_description": "3. Explore Dataset",
+    "get_dataset_variable_summary": "3. Explore Dataset",
+    "read_txt": "4. Review Analysis Code",
+    "read_file": "4. Review Analysis Code",
+    "ask_human_input": "5. Human Input",
 }
 
 
@@ -85,9 +90,15 @@ def run_prune(study_path: str, show_prompt: bool = False, templates_dir: str = "
     prune_out_template = _load_json_object(out_schema_path)
 
     instruction = f"""
-Your goal is to REVIEW exactly one candidate analysis path and ROUTE it (accept -> execution, reject -> planning) for a single focal claim. You review and route only. Do not run, modify, or create an analysis path.
+Your goal is to REVIEW exactly one candidate analysis path (plan + analysis code) for a single focal claim, decide whether it is high-quality or low-quality, and ROUTE it (high-quality -> execution, otherwise -> back to planning). You review and route only. Do not run, modify, or create an analysis path.
 
-The complete, AUTHORIZED input is the prune_in JSON below. Use ONLY this input (plus, if useful, inspection of the authorized original dataset listed in case_reference.authorized_datasets). Read the original paper PDF, the proposed-analysis / review PDF, human reports, human code, or any expected results.
+Your AUTHORIZED inputs are:
+1. The prune_in JSON below (candidate path, case info, Task1/Task2 instructions, shared memory, planning self-check).
+2. The original paper PDF in the study folder (original_paper.pdf) - you MUST read it to understand the claim, the study design, and the data collection.
+3. The authorized original dataset(s) in case_reference.authorized_datasets - you MUST explore them in depth (shape, focal variables, dependence structure), not just load them.
+4. The candidate path's analysis code files listed in planning_output.description.codebase - you MUST read every file end to end.
+
+FORBIDDEN inputs: the human analysis / review PDF (e.g., files ending in "_review.pdf"), human analytical reports, and any expected or ground-truth results. Do not open them; doing so is cheating and invalidates the benchmark.
 
 === START OF PRUNE INPUT (prune_in_schema.json) ===
 {json.dumps(prune_in, indent=2)}
@@ -104,7 +115,8 @@ Output Requirements:
 - Return a valid JSON object only (no markdown, no commentary).
 - pruning_output.case_id and pruning_output.planned_id must match the candidate path in the input.
 - check_results must contain the six schema check fields. Fold the planning_self_check result into decision_summary.
-- decision is "accepted" or "rejected" only; next_step follows the decision rule above.
+- decision is "high-quality" or "low-quality" only; fill path_signature.task_decisions for Task1 and Task2 and overall_decision; next_step follows the decision rule above.
+- Every task decision reason must cite the specific rule number(s) that triggered, or the positive evidence supporting high-quality.
 - memory_record.status must equal decision, and memory_record.source_agent must be "pruning_agent".
 
 Current Study Path: "{study_path}"

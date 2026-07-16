@@ -1,4 +1,6 @@
 # core/actions.py
+import os
+
 from replicatorbench.info_extractor.file_utils import read_txt, read_csv, read_json, read_pdf, read_docx
 from core.tools import (
     list_files_in_folder,
@@ -465,6 +467,9 @@ def get_execute_tool_definitions() -> list:
 
 PRUNE_ALLOWED_ACTIONS = [
     "read_json",
+    "read_pdf",
+    "read_txt",
+    "read_file",
     "list_files_in_folder",
     "load_dataset",
     "get_dataset_head",
@@ -476,21 +481,54 @@ PRUNE_ALLOWED_ACTIONS = [
     "ask_human_input",
 ]
 
+# Readers the Pruning Agent may use only on non-leakage files: the original paper,
+# the candidate path's analysis code, and plain config/readme files.
+PRUNE_GUARDED_READERS = ("read_pdf", "read_txt", "read_file")
+
+# File-name tokens that identify leakage sources for the Pruning Agent
+PRUNE_BLOCKED_NAME_TOKENS = (
+    "review",
+    "human_analysis",
+    "human_report",
+    "proposed_analysis",
+    "planned_analysis_summary",
+)
+
+
+def _prune_guard(tool_name: str, reader):
+    """Wrap a reader so it refuses files whose names mark them as leakage sources."""
+    def guarded(file_path: str, **kwargs):
+        basename = os.path.basename(str(file_path)).lower()
+        if any(token in basename for token in PRUNE_BLOCKED_NAME_TOKENS):
+            return (
+                f"BLOCKED: {tool_name} refused to read '{file_path}'. Human analysis / review "
+                "documents and expected results are forbidden inputs for the Pruning Agent. "
+                "Decide from the original paper, the authorized dataset, and the analysis code only."
+            )
+        return reader(file_path, **kwargs)
+    return guarded
+
 
 def prune_known_actions() -> dict:
     """
     Leakage-safe subset of base_known_actions() for the Pruning Agent.
-    Excludes PDF/image/html/text/csv/docx readers and file writers so the agent
-    cannot read leakage sources or modify the proposed path.
+    Includes the readers needed for a deep review (original paper PDF, analysis code,
+    dataset inspection) but guards them against human analysis / review documents,
+    and excludes all file writers so the agent cannot modify the proposed path.
     """
     base = base_known_actions()
-    return {name: base[name] for name in PRUNE_ALLOWED_ACTIONS if name in base}
+    actions = {name: base[name] for name in PRUNE_ALLOWED_ACTIONS if name in base}
+    for name in PRUNE_GUARDED_READERS:
+        if name in actions:
+            actions[name] = _prune_guard(name, actions[name])
+    return actions
 
 
 def get_prune_tool_definitions() -> list:
     """
     OpenAI tool schemas for the Pruning Agent: the leakage-safe subset of the base
-    tool definitions (read_json, list_files_in_folder, dataset inspection, ask_human_input).
+    tool definitions (guarded readers, list_files_in_folder, dataset inspection,
+    ask_human_input).
     """
     base_tools = get_tool_definitions()
     return [

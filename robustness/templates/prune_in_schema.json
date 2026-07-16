@@ -35,7 +35,7 @@
       {
         "path_id": "Unique ID for a previous analysis path.",
         "case_id": "ID of the paper or case.",
-        "status": "rejected | accepted | executed_success | execution_failed_retryable | abandoned",
+        "status": "high-quality | low-quality | executed_success | execution_failed_retryable | abandoned",
         "task_scope": ["Task1", "Task2"],
         "path_summary": "Short summary of the previous analysis path.",
         "path_signature": {
@@ -46,7 +46,18 @@
           "sample_restriction": "Sample inclusion or exclusion rule, or null.",
           "missing_data_rule": "Missing data handling rule, or null.",
           "variable_construction": "How the main variables are created or changed before analysis, or null.",
-          "inference_rule": "How the result was judged."
+          "inference_rule": "How the result will be judged.",
+          "task_decisions": {
+            "Task1": {
+              "decision": "high-quality | revise | low-quality",
+              "reason": "Reason why the analysis path was high-quality or low-quality for Task 1"
+            },
+            "Task2": {
+              "decision": "high-quality | revise | low-quality",
+              "reason": "Reason why the analysis path was high-quality or low-quality for Task 2"
+            }
+          },
+          "overall_decision": "high_quality_path | incomplete_path | low_quality_path"
         },
         "status_reason": "Short reason explaining why this status was assigned.",
         "source_agent": "pruning_agent | execution_agent",
@@ -66,8 +77,11 @@
     },
     "allowed_actions": [
       "Read the candidate path.",
+      "Read the original paper PDF.",
+      "Explore the authorized dataset.",
+      "Read the candidate path's analysis code.",
       "Read shared memory.",
-      "Accept or reject the candidate path.",
+      "Decide whether the candidate path is high-quality or low-quality.",
       "Write a memory update instruction."
     ],
     "not_allowed_actions": [
