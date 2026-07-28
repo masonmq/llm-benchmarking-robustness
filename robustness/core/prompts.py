@@ -945,66 +945,115 @@ PRUNE_CHECKS_POLICY = """
 MANDATORY REVIEW PROCEDURE (complete ALL steps BEFORE deciding; a decision made without them is invalid):
 Step 1 - Read the original paper. Read original_paper.pdf to understand the focal claim, the study design (experimental or observational, treatment, comparison groups), how the data were collected, and the unit of observation. Never read the human analysis / review PDF.
 Step 2 - Explore the dataset in depth. Do not stop after loading it. For every authorized dataset: check shape and columns; run variable summaries on the focal outcome, the main predictor / treatment / grouping variables, and the ID variables; determine the dependence structure (repeated measures per participant, panel structure, clustering by person, school, firm, state, or group); look for implausible values or coding problems in the focal variables.
-Step 3 - Read the analysis code end to end. Read EVERY code file listed in the codebase section. Verify that the code implements the model the plan claims (same structure, interactions, fixed effects), that it actually computes and outputs concrete statistical results (coefficients, test statistics, p-values) rather than only describing them, that the variables it uses exist in the dataset or are constructed in the code, and that both Task1 and Task2 are covered by runnable code.
+Step 3 - Review the analysis code efficiently. Read only genuine text-based source-code files listed in the codebase section, using the reader appropriate to the extension. Source-code extensions include .py, .R, .r, .do, .m, .jl, .sas, .sql, .sh, .ipynb, .txt, .md, .yaml, .yml, .json, and similar plain-text scripts/configuration files. Do NOT open binary or data files with read_file/read_txt, including .xlsx, .xls, .dta, .sav, .rds, .RData, .mat, .pkl, .parquet, .pdf, .docx, images, archives, or executables. Inspect datasets with dataset tools, PDFs with read_pdf, and skip unrelated artifacts. If the codebase field mixes code and data, review only the code needed to implement Task1 and Task2. Verify that the reviewed code implements the claimed model and produces the focal statistical results.
 Step 4 - Cross-check. Compare the plan text, the code, the Task1/Task2 instructions, and the observed data structure against the rules below, then decide.
 
-A task is high-quality only when you can cite positive evidence from the paper, the dataset, AND the code. Many candidate paths are low-quality; finding no problem after a shallow review is not evidence of quality.
+CORE DECISION STANDARD:
+For each task, label the pipeline low-quality only when ALL four conditions below are satisfied:
+1. clear_evidence: the problem is directly supported by the authorized task instructions, original paper, dataset, plan, code, or reported results; do not infer a defect from speculation, ambiguous naming, or preference alone;
+2. substantive_relevance: the problem affects the focal claim, a required Task2 analysis, focal variable, estimand, sample, inference, or conclusion;
+3. materiality: the problem could plausibly change whether the analysis answers the assigned question, the direction or strength of the result, the uncertainty, or the final categorization;
+4. unresolved_status: the problem remains unresolved and is not adequately corrected, justified, or shown to be inconsequential.
+If any condition is not met, do not use that issue by itself to assign low-quality.
 
-SCHEMA CHECKS (fill check_results; any fail makes the path low-quality):
+IMPORTANT DISTINCTION:
+- Analytical quality asks whether the proposed analytical path is scientifically capable of answering the assigned question.
+- Reproducibility/verification asks whether the supplied artifacts can be executed exactly in the current environment.
+The Pruning Agent is expected to receive candidate analysis code. If the candidate path has no identifiable candidate code, entry file, or executable specification linked to its claimed analysis and result, label the affected task low-quality. Broken paths, unavailable software, or unavailable external objects do not independently make a task low-quality when the candidate code and executable specification are otherwise present and traceable.
+
+SCHEMA CHECKS (fill check_results):
 1. same_focal_claim: The path tests the SAME focal claim as case_reference.focal_claim.
-2. same_dataset: The path uses the authorized original dataset in case_reference.authorized_datasets. It does not substitute a new dataset.
-3. not_duplicate: The path is NOT a duplicate of any record in shared_memory (any status). Judge duplication semantically from path_summary and path_signature. Report closest_memory_path_id (or null if shared memory is empty).
-4. task_completeness: Both Task1 and Task2 are specified for the path.
-5. method_justification: A justification is present AND coherent - it explains WHY these variables + model + inference rule test the focal claim, not just "because this method is common".
-6. executable_in_principle: Variables, model, variable construction, and inference rule are concrete enough to execute, and the code supports them.
-Also verify the Planning Agent self_check is present with no "fail" values; fold its result into decision_summary.
+2. same_dataset: The path uses the authorized original dataset in case_reference.authorized_datasets and does not substitute a new dataset.
+3. not_duplicate: The path is NOT a semantic duplicate of any shared_memory record. Report closest_memory_path_id, or null when memory is empty.
+4. task_completeness: Task1 and Task2 are both present. If one is absent or materially underspecified, mark the affected task low-quality.
+5. method_justification: A coherent justification explains why the variables, model, and inference rule test the focal claim.
+6. executable_in_principle: The candidate path must include identifiable candidate analysis code or a concrete executable specification, including the relevant code file or entry file and enough information to connect the implementation to the claimed analysis and result. If no candidate code or executable specification is supplied, fail this check.
+Also inspect the Planning Agent self_check and summarize any unresolved failure in decision_summary.
 
-TASK1 REJECTION RULES (mark Task1 "low-quality" if ANY rule triggers):
-1.1 Reject if the plan says it uses one statistical structure, but the model specification or code implements a materially different structure.
-    Examples: the plan claims fixed effects but treats fixed-effect identifiers as continuous regressors; the plan claims interactions but does not specify or implement the interaction terms; the text describes one analysis while the code or executable path describes another.
-1.2 Reject only if a data abnormality is documented in the provided materials or directly observable in the available data, materially affects the focal variables or analysis, and the path ignores it without cleaning, sensitivity analysis, or justification.
-    Examples: implausible or inconsistent values occur in the focal outcome or predictor; a known coding problem affects the treatment, group, or outcome variable; the path proceeds without addressing a documented data-quality issue that could change the result.
-1.3 Reject if the proposed method assumes independent observations when the data clearly contain repeated measures, panel structure, clustering, or repeated interactions, and the path provides no correction or valid justification.
-    Examples: repeated choices from the same participant are analyzed as independent rows; clustering by person, school, firm, state, country, seller, buyer, or group is ignored; a simple t-test, chi-square test, or OLS model is used despite clear dependence among observations.
-1.4 Reject only if the omitted variable or comparison is required by the task instruction, the study design, or the identification logic needed to test the focal claim.
-    Examples: a causal claim requires baseline adjustment, exposure level, or a comparison group, but the path omits it; the outcome mechanically depends on scale, population, duration, or exposure, but the path ignores that quantity; the proposed design cannot distinguish the focal relationship from a clearly identified alternative explanation.
-1.5 Reject if the path evaluates a causal policy, intervention, or treatment claim only by comparing outcomes before and after treatment, without a control group, comparison trend, or justified counterfactual.
-    Examples: only the treated group is compared before and after an intervention; general time trends cannot be separated from the treatment effect; no untreated or comparison unit is used when the claim requires causal attribution.
+EVIDENCE-USE RULES:
+- Use only authorized inputs. Never read the human analysis/review PDF or expected results.
+- Read the original paper, dataset, plan, relevant source code, and available results together. Use extension-specific tools and never pass binary/data files to read_file or read_txt.
+- Prefer actual executed specifications and outputs over comments or prose when they conflict, but first determine whether the difference is only naming, formatting, or versioning.
+- Do not infer the meaning of labels such as T2 or T3 without clear documentation.
+- Do not treat the original paper's method or conclusion as the required answer unless the task explicitly requires it.
+- A single minor weakness is normally insufficient. Multiple weaknesses justify low-quality only when their combined effect is clearly material.
 
-TASK2 REJECTION RULES (mark Task2 "low-quality" if ANY rule triggers):
-2.1 Reject if Task2 specifies a required exposure window, threshold, retained-node rate, sample, subgroup, exclusion, measurement, or control rule, and the proposed path does not follow it.
-    Examples: a required two-month exposure window is not used; a required 90% node-retained network is not used; a required subgroup is excluded; the wrong sample period, condition, or threshold is selected.
-2.2 Reject if the proposed outcome does not match the Task2 instruction or the original result selected for comparison.
-    Examples: a continuous outcome is used when the requested outcome is binary; a related but different survey item is analyzed; the path reports a result for an outcome other than the one designated for comparison.
-2.3 Reject if the main predictor, group comparison, threshold, or constructed variable does not represent the quantity required by Task2.
-    Examples: the path compares different groups from those named in the instruction; a constructed difference score does not match the intended concept; required original categories are replaced with different categories without justification.
-2.4 Reject if Task2 requires pooling observations, excluding certain controls, retaining specific cases, or removing a specification, but the path violates that requirement.
-    Examples: country controls are included when the task requires a pooled sample; socioeconomic, geographic, sector, region, precipitation, or technological controls are included when explicitly prohibited; observations required by Task2 are removed; cases that Task2 requires excluding are retained.
-2.5 Reject if the path cannot produce the requested single comparable statistical result and does not validly identify an existing Task1 result that already satisfies Task2.
-    Examples: Task2 simply states that no additional analysis is needed without identifying the exact reusable Task1 result; the reused Task1 analysis does not satisfy the Task2 sample, variable, or constraint requirements; the proposed output cannot be compared with the designated original result.
-2.6 Reject if the Task2 method prevents production of the specifically requested comparable statistical result or materially violates the Task2 instruction.
-2.7 Reject if Task2 applies an independence-based test to repeated, clustered, panel, or interaction data without addressing the dependence or explaining why independence is reasonable.
-2.8 Reject if Task2 evaluates a treatment, policy, or intervention effect using only a treated-group before-and-after comparison without a control group, comparison trend, or justified counterfactual.
+TASK1 LOW-QUALITY RULES (apply the four-part standard before triggering any rule):
+1.1 Label low-quality when the plan claims one analysis but the code or executable specification clearly implements a materially different outcome, predictor, sample, transformation, interaction, fixed-effect structure, model, or inference rule, and the difference could change the estimand or result. A materially different model structure includes replacing an explicitly planned multilevel or hierarchical model with a single-level model that only adjusts standard errors for clustering, when the planned analysis requires level-specific effects, variance components, or within-level/between-level structure. Do not trigger for harmless naming differences, algebraically equivalent implementations, selected rather than complete output, comments contradicted by actual output, uncertain version differences, or when the plan itself permits cluster-robust single-level estimation as an alternative.
 
-GENERAL QUALITY RULES (apply to BOTH tasks; mark the affected task "low-quality" if ANY rule triggers):
-G1. Reject if the analysis exists only as a description: the analysis code is missing, unreadable, or does not actually run the analysis and produce concrete statistical results. A path that only outlines what an analyst *would* do, without runnable code that produces the result, is not a valid path.
-G2. Reject if the path jumps straight to a single test or model command with no evidence that the data and model were examined for appropriateness (no data exploration, no check that the model fits the structure of the data).
-G3. Reject if the path is too short, vague, or poorly documented to be understood and reproduced: unnamed methods or packages, unstated hypotheses or variables, missing expected statistical outputs, or no reproducible step-by-step pipeline.
+A materially different structure includes replacing an explicitly planned hierarchical or multilevel model with a single-level model that only adjusts standard errors for clustering, when the planned model requires level-specific effects, variance components, or between-level/within-level structure.
 
-REVISION RULES (mark the affected task "revise"; the path returns to Planning):
-3.1 Revise if Task1 or Task2 is absent, vague, or only partially specified.
-3.2 Revise if the path may satisfy a required constraint but does not explicitly document how it is satisfied.
-    Examples: exposure window is not stated; node-retention rate is not stated; sample or subgroup restriction is unclear; exclusion of forbidden controls is not documented.
-3.3 Revise if it does not clearly specify one or more of the following: outcome variable; main predictor, treatment, or grouping variable; control variables; sample restrictions; missing-data handling; preprocessing or variable construction; model family and specification; inference rule. Paths that only say something broad such as "run ANOVA" or "conduct regression" without sufficient analytical detail must be revised.
-3.4 Revise if the path does not identify the result that Execution should produce. The plan should specify an expected output such as: coefficient; test statistic; p-value; confidence interval; effect size; sample size and degrees of freedom; model comparison; or another clearly defined numerical result.
+1.2 Label low-quality when the implemented pipeline mainly answers a different question from the focal claim, such as changing the focal outcome, predictor, population, contrast, or estimand without a defensible mapping. A different but reasonable operationalization that still tests the same claim is allowed.
 
-DECISION RULE:
-- For each task, set path_signature.task_decisions.<TaskX>.decision to "high-quality", "revise", or "low-quality", and in the reason cite the exact rule number(s) that triggered (e.g., "1.3, G2") or the positive evidence supporting high-quality.
-- overall_decision: "high_quality_path" if both tasks are high-quality AND all schema checks pass; "low_quality_path" if any task is low-quality or any schema check fails; otherwise "incomplete_path" (at least one task needs revision).
-- decision = "high-quality" only when overall_decision is "high_quality_path"; otherwise decision = "low-quality".
-- next_step = "send_to_execution" if decision is "high-quality"; otherwise "return_to_planning".
-- Record check_results for the six schema check fields, and write a single memory_record with status equal to the decision and source_agent = "pruning_agent".
-- Do NOT fabricate a pass. If a rule or check cannot be evaluated from the authorized inputs, treat it against the path and explain why.
+1.3 Label low-quality when the conclusion materially overstates, reverses, or otherwise does not follow from the analyst's own reported result and stated inference rule. Do not require agreement with the original paper. Examples include claiming a positive effect from a negative estimate, claiming support when the stated threshold is not met, or treating significance in one group and non-significance in another as proof that the groups differ without a direct test.
+
+1.4 Label low-quality when the candidate path claims a completed analysis or reported result but provides no identifiable candidate analysis code, entry file, run command, or executable specification that can be connected to that analysis and result. Also label low-quality when the supplied candidate code does not correspond to the reported method or result and no explanation is provided. Do not trigger solely because otherwise identifiable candidate code cannot run in the current environment due to unavailable software, dependencies, paths, or external saved objects.
+
+1.5 Label low-quality only when a documented or directly observable abnormality affects a focal variable or analytic sample, could materially change the result, and is ignored without cleaning, sensitivity analysis, or justification. Do not trigger for speculative, non-focal, or demonstrably inconsequential issues.
+
+1.6 Label low-quality only when the design creates a clear dependence, clustering, repeated-measures, sampling, outcome-distribution, or uncertainty problem and ignoring it makes the focal inference unreliable. Before triggering, explain why the issue is consequential for this result, considering assignment/sampling level, cluster structure, whether the claim depends on uncertainty, whether the conclusion is marginal, and whether a defensible adjustment or robustness analysis exists. Do not trigger merely because clustering exists or another standard-error method is possible.
+
+1.7 Label low-quality only when a causal or direct-comparison claim lacks the minimum counterfactual, treatment-control/group contrast, trend adjustment, or direct effect comparison needed to interpret the claim. Do not trigger merely because a stronger design or additional controls would be preferable.
+
+1.8 Label low-quality when the analyst states one decision rule but applies another in a way that drives the conclusion, or when selective testing/unaddressed multiplicity materially determines the conclusion. Do not trigger for minor threshold ambiguity or an explicitly justified alternative rule.
+
+1.9 Label low-quality when several individually non-decisive, unresolved weaknesses jointly make Task1 unreliable. List the concrete weaknesses and explain their combined material effect; do not use this rule as a substitute for identifying evidence.
+
+TASK2 LOW-QUALITY RULES (Task2 is primarily an instruction-compliance and result-mapping judgment; apply the same four-part standard):
+2.1 Label low-quality when an explicit, case-specific requirement involving the outcome, predictor, sample, subgroup, time window, control rule, threshold, transformation, or parameter is not implemented and the omission prevents or materially weakens the requested analysis. Do not trigger for a genuinely ambiguous instruction reasonably interpreted or a requirement already satisfied elsewhere.
+
+2.2 Label low-quality when Task2 clearly requests one outcome, predictor, sample, subgroup, or contrast but the pipeline uses another that does not answer the requested question. A defensibly equivalent coding or operationalization is allowed.
+
+2.3 Label low-quality when Task2 requires a specific derived variable, interaction, transformation, exposure window, cumulative measure, or aggregation and the final pipeline does not construct or estimate it. Verify that the implementation is not algebraically equivalent and that the component is truly required.
+
+2.4 Reusing Task1 is acceptable only when the reused implementation satisfies all material Task2 requirements and does not inherit a material implementation defect identified under Task1.
+
+2.5 Label low-quality when the required Task2 result cannot be identified, clearly belongs to another outcome, model, sample, or task, or is reported without identifiable candidate code or an executable specification linking the result to the claimed Task2 analysis. Do not trigger solely because the result appears in text rather than a table, only selected statistics are printed, or otherwise identifiable candidate code cannot run because of unavailable software, dependencies, paths, or external saved objects.
+
+2.6 Label low-quality when support, opposition, or inconclusive categorization does not reasonably follow from the Task2 result. A non-significant frequentist result may reasonably be categorized as no evidence for or against; do not require Bayesian evidence merely for that wording.
+
+2.7 Apply the same threshold as Rules 1.5 and 1.6. Do not automatically reject ordinary regression because data are clustered or blocked; explain why the specific issue materially affects the focal Task2 result.
+
+2.8 Label low-quality when several unresolved departures jointly make it unclear whether the requested Task2 analysis was performed or answered. Identify each departure and explain the combined material effect.
+
+NON-TRIGGER GUARDRAILS (apply to BOTH tasks):
+Do not label a task low-quality solely because:
+G1. it uses a different model, controls, coding, subgroup definition, diagnostic, or standard-error method from the original paper;
+G2. it reaches a different conclusion from the original paper;
+G3. Task2 uses a different analysis from Task1 or reaches a different conclusion;
+G4. Task1 is reused for Task2 and demonstrably satisfies every Task2 requirement;
+G5. identifiable candidate code is present but cannot run in the current environment because of unavailable software, dependencies, saved objects, absolute paths, or external files;
+G6. complete output tables, full BIC rankings, or intermediate statistics are missing, provided that candidate code or an executable specification still links the analysis to the focal result;
+G7. the narrative is brief but the analytical path and reported result are substantively understandable;
+G8. a preferred diagnostic, robustness check, control, or test is absent but is neither essential to the focal claim nor explicitly required;
+G9. an evaluator cannot personally execute otherwise identifiable candidate code;
+G10. a code comment conflicts with the report unless the executed specification/output confirms a material contradiction;
+G11. the concern depends only on ambiguous variable names, wave labels, or undocumented assumptions;
+G12. the analyst uses no evidence for or against for a non-significant frequentist result;
+G13. the issue was corrected in the final submission;
+G14. the analyst makes a defensible methodological choice that another evaluator would not personally choose.
+A guardrail may contribute to a joint assessment only when accompanied by clear, material substantive defects; it cannot be the sole basis for low-quality.
+
+
+DECISION PROCEDURE (follow in this order for EACH task):
+D1. Identify the target: state the focal claim or exact Task2 requirements.
+D2. Describe the implemented path concisely: outcome, predictor, sample, model, construction, inference rule, and focal result. Do not inspect unrelated files once these elements are established.
+D3. Check direct compliance with the focal claim or each material Task2 instruction.
+D4. Check plan-code-result consistency and flag only clearly supported, materially consequential discrepancies.
+D5. Check whether the conclusion/category follows from the analyst's own result.
+D6. Apply the four-part standard: clear evidence, substantive relevance, materiality, unresolved status.
+D7. Verify that identifiable candidate code or an executable specification is present and linked to each claimed task result. Distinguish environmental execution failures from complete absence of candidate implementation.
+D8. Assign low-quality when candidate code or an executable specification is absent for a claimed completed analysis, or when another low-quality rule passes the four-part standard. Assign low-quality for correctable planning underspecification only when candidate implementation is present. Otherwise assign high-quality when no low-quality rule applies.
+When substantive evidence is ambiguous, do not reject based on speculation. However, complete absence of candidate code or an executable specification is not treated as substantive ambiguity; it is a low-quality traceability failure.
+
+DECISION AND ROUTING RULE:
+- For each task, set path_signature.task_decisions.<TaskX>.decision to high-quality, or low-quality. In the reason cite exact rule numbers and guardrails considered, identify the evidence, explain materiality, and list verification limitations separately.
+- overall_decision = high_quality_path only if both tasks are high-quality and all substantive schema checks pass.
+- overall_decision = low_quality_path if any task is low-quality or same_focal_claim, same_dataset, or not_duplicate fails.
+- decision = high-quality only for high_quality_path; otherwise decision = low-quality, because the current outer schema supports only routing to execution versus returning to planning.
+- next_step = send_to_execution for high_quality_path; otherwise return_to_planning.
+- Record all six check_results and write exactly one memory_record with status equal to decision and source_agent = pruning_agent.
+- Do not fabricate a pass. When a check cannot be evaluated, determine whether the problem is substantive, correctable underspecification, or verification-only, and route accordingly rather than automatically treating uncertainty as low-quality.
 """.strip()
 
 EXAMPLE_PRUNE = """
@@ -1036,13 +1085,13 @@ PAUSE
 
 Observation: [CODE truncated] ... m <- lm(decision_error ~ risk_aversion, data = df); summary(m) ...
 
-Thought: The code fits plain OLS on all 6560 rows, treating repeated choices from the same participant as independent, with no clustered standard errors, random effects, or participant-level aggregation. That triggers rule 1.3 for Task1. The plan states Task2 reuses the same model, so rule 2.7 triggers for Task2. The schema checks themselves pass (same claim, authorized dataset, both tasks specified, no duplicates, coherent justification, executable), but the rejection rules make the path low-quality.
+Thought: The code fits plain OLS on all 6560 rows, treating repeated choices from the same participant as independent. Under Rules 1.6 and 2.7, the existence of repeated observations alone is not enough for rejection. I must determine whether this dependence materially affects the focal inference, considering the inferential target, cluster structure, uncertainty, and whether the conclusion is sensitive. If materiality is not established, I should treat this as a methodological concern rather than a low-quality trigger.
 Answer: {
   "pruning_output": {
     "case_id": "Bruner_ExpEco_2017_amYY",
     "planned_id": "Bruner_ExpEco_2017_amYY_path01",
-    "decision": "low-quality",
-    "decision_summary": "The paper and dataset show 20 repeated choices per participant (328 subjects, 6560 rows), but the Task1 and Task2 code fits plain OLS treating rows as independent with no correction (rules 1.3 and 2.7). Planning self_check reported no failures but did not consider the dependence structure.",
+    "decision": "high-quality",
+    "decision_summary": "The paper and dataset show repeated choices per participant, but the authorized evidence does not establish that ordinary OLS materially changes the focal inference. Under Rules 1.6 and 2.7 and guardrail G1, clustering alone is insufficient for rejection; both tasks remain high-quality with this concern recorded.",
     "check_results": {
       "same_focal_claim": {"status": "pass", "note": "Same focal claim about risk aversion and decision error."},
       "same_dataset": {"status": "pass", "note": "Uses the authorized RiskData.dta."},
@@ -1054,7 +1103,7 @@ Answer: {
     "memory_record": {
       "path_id": "Bruner_ExpEco_2017_amYY_path01",
       "case_id": "Bruner_ExpEco_2017_amYY",
-      "status": "low-quality",
+      "status": "high-quality",
       "task_scope": ["Task1", "Task2"],
       "path_summary": "Regress constructed decision error on constructed risk aversion score with plain OLS.",
       "path_signature": {
@@ -1068,21 +1117,21 @@ Answer: {
         "inference_rule": "Support if coefficient is negative and p < 0.05.",
         "task_decisions": {
           "Task1": {
-            "decision": "low-quality",
-            "reason": "Rule 1.3: repeated choices from the same participant (20 per subject) are analyzed as independent rows with no clustering, random effects, or aggregation."
+            "decision": "high-quality",
+            "reason": "Rules 1.6 and G1 considered: repeated observations are present, but the available evidence does not establish that the uncertainty problem is materially consequential for the focal conclusion."
           },
           "Task2": {
-            "decision": "low-quality",
-            "reason": "Rule 2.7: the same independence-based OLS is reused on clustered repeated-choice data without addressing the dependence."
+            "decision": "high-quality",
+            "reason": "Rules 2.7 and G1 considered: Task2 reuses the same model, but material harm to the focal Task2 inference is not established."
           }
         },
-        "overall_decision": "low_quality_path"
+        "overall_decision": "high_quality_path"
       },
-      "status_reason": "Both tasks ignore the repeated-measures structure of the data (rules 1.3 and 2.7).",
+      "status_reason": "Both tasks pass because repeated measures are documented but material inferential harm is not established under Rules 1.6 and 2.7.",
       "source_agent": "pruning_agent",
       "iteration": "1"
     },
-    "next_step": "return_to_planning"
+    "next_step": "send_to_execution"
   }
 }
 """.strip()
