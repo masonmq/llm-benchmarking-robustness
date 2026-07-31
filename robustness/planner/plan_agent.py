@@ -11,6 +11,8 @@ from core.utils import build_file_description, configure_file_logging, get_logge
 from core.actions import base_known_actions, get_tool_definitions, read_file, read_pdf
 import pandas as pd
 from pathlib import Path
+from robustness.memory.shared_memory import load_case_memory
+
 logger, formatter = get_logger(name="robustness")
 action_re = re.compile(r'^Action: (\w+): (.*)$', re.MULTILINE) # Use re.MULTILINE for multiline parsing
 known_actions = base_known_actions()
@@ -35,6 +37,9 @@ def run_plan_analysis(study_path, tier: str = "easy", code_mode: str = "python",
         task_1_desc = """In Task 1, the analyst was asked to conduct the analysis without any restrictions."""
     except:
         return "cannot find claim and task descriptions related to the provided study path."
+
+    shared_memory, memory_path = load_case_memory(paper_id)
+    logger.info(f"[memory] loaded shared memory for planning: {memory_path}")
     
     code_policy = ROBUSTNESS_DESIGN_CODE_MODE_POLICY.get(code_mode, ROBUSTNESS_DESIGN_CODE_MODE_POLICY["native"])
     plan_input_rules = ROBUSTNESS_PLAN_POLICY.get("input", "")
@@ -63,7 +68,11 @@ Your task is to plan analysis tasks to help investigate the robustness of the fo
 == END OF FOCAL CLAIM ==
 1. original_paper.pdf: A published paper containing the focal claim.
 2. data/: This folder contains the original data used by the paper.
+3. shared_memory: Read-only path history for this case. Use it to avoid generating a duplicate path. Do not update it.
 
+== START OF SHARED MEMORY (READ ONLY) ==
+{json.dumps(shared_memory, indent=2)}
+== END OF SHARED MEMORY ==
 
 
 
@@ -82,6 +91,13 @@ Additionally, you must adhere to constraints provided for each task described be
 
 Other rules:
 {plan_input_rules}
+
+Shared-memory rules:
+- Treat every memory_records item as a previous path, regardless of status.
+- Compare your proposed path against path_summary, path_signature, and task_signatures when present.
+- Your proposed path must be meaningfully different in model family, variables, sample restriction, variable construction, inference rule, or another analytically important choice.
+- Do not write, modify, or request updates to shared memory. The Planning Agent only reads it.
+- In your final self_check, explain why the new path is not a duplicate and name the closest_memory_path_id if any previous path is similar.
 
 Your final goal is to fill out this template:
 === START OF JSON OUTPUT===
