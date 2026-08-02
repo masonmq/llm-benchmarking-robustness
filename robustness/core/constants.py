@@ -155,7 +155,9 @@ GEN_GOLD_ANALYSIS_CONSTANTS = {
 }
 
 PLAN_ANALYSIS_CONSTANTS = {
-    "analysis_schema": "templates/execute_in_schema.json",
+    # The Planning Agent now emits the universal schema. The same document is the
+    # Pruning Agent's input (prune_in), so the two agents share one contract.
+    "analysis_schema": "templates/universal_schema.json",
     "task_description_data": "data/_robustness/all_claims.xlsx",
     "example_paper": "data/_robustness/plan_few_shots/Bartels_JournConsRes_2015_mrZ.pdf",
     "example_good_analysis": "data/_robustness/plan_few_shots/Bartels_JournConsRes_2015_mrZ_50PCE.pdf",
@@ -190,3 +192,73 @@ ROBUSTNESS_PRUNE_CONSTANTS = {
 # Prompt versions are logged on every run for reproducibility.
 GEN_PRUNE_INPUT_PROMPT_VERSION = "prune_input_extractor.v1"
 PRUNE_PROMPT_VERSION = "pruning_agent.v2"
+
+
+# ---------------------------------------------------------------------------
+# Fixed per-agent role rules.
+#
+# These are NOT agent-generated content: they define what each agent in the
+# pipeline is allowed and not allowed to do, and they must stay identical across
+# every run and every case. They therefore live here as constants instead of in
+# the universal schema (an agent must never be able to author its own rules).
+# ---------------------------------------------------------------------------
+
+PLANNING_RULES = {
+    "allowed_actions": [
+        "Read the original paper.",
+        "Inspect the original dataset metadata.",
+        "Inspect original paper source code if available.",
+        "Use shared memory to avoid repeated paths.",
+        "Propose exactly one new analysis path.",
+    ],
+    "not_allowed_actions": [
+        "Do not change the focal claim.",
+        "Do not change the dataset.",
+        "Do not run analysis.",
+        "Do not output multiple candidate paths.",
+        "Do not propose a path that repeats shared memory.",
+    ],
+}
+
+PRUNING_RULES = {
+    "allowed_actions": [
+        "Read the candidate path.",
+        "Read the original paper PDF.",
+        "Explore the authorized dataset.",
+        "Read the candidate path's analysis code.",
+        "Read shared memory.",
+        "Decide whether the candidate path is high-quality or low-quality.",
+        "Write a memory update instruction.",
+    ],
+    "not_allowed_actions": [
+        "Do not modify the proposed path.",
+        "Do not run analysis.",
+        "Do not change the focal claim.",
+        "Do not change the dataset.",
+        "Do not create a new analysis path.",
+        "Do not read the human analysis or review PDF, or any expected or ground-truth result.",
+    ],
+}
+
+EXECUTION_RULES = {
+    "allowed_actions": [
+        "Inspect data files.",
+        "Inspect code files.",
+        "Run provided code.",
+        "Make bounded implementation fixes.",
+        "Write compact result-extraction scripts.",
+    ],
+    "not_allowed_actions": [
+        "Do not change the focal claim.",
+        "Do not change the dataset.",
+        "Do not replace the planned path with a different analysis path.",
+        "Do not choose a more favorable result.",
+    ],
+}
+
+# Convenience lookup keyed the same way the schema used to key them.
+AGENT_RULES = {
+    "planning_rules": PLANNING_RULES,
+    "pruning_rules": PRUNING_RULES,
+    "execution_rules": EXECUTION_RULES,
+}

@@ -15,7 +15,7 @@ documents, dataset inspection tools, and no file writers.
 import os
 import json
 
-from core.constants import ROBUSTNESS_PRUNE_CONSTANTS, PRUNE_PROMPT_VERSION
+from core.constants import ROBUSTNESS_PRUNE_CONSTANTS, PRUNE_PROMPT_VERSION, PRUNING_RULES
 from core.actions import prune_known_actions, get_prune_tool_definitions
 from core.agent import run_react_loop, save_output
 from core.prompts import PREAMBLE_PRUNE, EXAMPLE_PRUNE, PRUNE_CHECKS_POLICY
@@ -61,8 +61,63 @@ def _load_json_object(file_path: str):
     raise TypeError(f"Unsupported JSON payload type from {file_path}: {type(loaded).__name__}")
 
 
+def _is_universal_schema(payload: dict) -> bool:
+    """The Planning Agent emits the universal schema (case/tasks_info/datasets/plan).
+    The legacy helper extractor emits the prune_in shape (case_reference/planning_output)."""
+    return "planning_output" not in payload and "plan" in payload
+
+
+def _legacy_to_universal(payload: dict) -> dict:
+    """Lift a legacy prune_in_schema.json (helper-extractor output) into the universal shape.
+
+    Only the section names change: case_reference -> case / tasks_info / datasets, and
+    planning_output.description -> plan. The candidate path's own content is carried over
+    verbatim so the standalone `make robustness-pruning` flow keeps working.
+    """
+    case_reference = payload.get("case_reference", {}) or {}
+    plan = dict(payload.get("planning_output", {}).get("description", {}) or {})
+    if "analysis_code" not in plan and "codebase" in plan:
+        plan["analysis_code"] = plan.pop("codebase")
+
+    files = []
+    for entry in case_reference.get("authorized_datasets", []) or []:
+        if isinstance(entry, dict):
+            files.append(entry)
+
+    return {
+        "iteration": payload.get("iteration", 1),
+        "case": {
+            "case_id": case_reference.get("case_id"),
+            "paper_title": case_reference.get("paper_title"),
+            "paper_file": case_reference.get("paper_file"),
+            "focal_claim": case_reference.get("focal_claim"),
+            "hypothesis": case_reference.get("hypothesis"),
+            "study_type": case_reference.get("study_type"),
+        },
+        "tasks_info": case_reference.get("tasks_info", []),
+        "datasets": {"authorized_only": "true", "files": files},
+        "plan": plan,
+    }
+
+
+def _build_prune_input(payload: dict, shared_memory: dict) -> dict:
+    """Build the Pruning Agent's input: the universal schema plus the two sections that the
+    pipeline owns rather than any agent.
+
+    shared_memory is loaded from the case memory file, and pruning_rules come from
+    core.constants.PRUNING_RULES so they are identical on every run.
+    """
+    universal = payload if _is_universal_schema(payload) else _legacy_to_universal(payload)
+    return {
+        **universal,
+        "shared_memory": shared_memory,
+        "pruning_rules": PRUNING_RULES,
+    }
+
+
 def run_prune(study_path: str, show_prompt: bool = False, templates_dir: str = "./templates",
-              tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5"):
+              tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5",
+              plan_output: dict = None):
     configure_file_logging(logger, study_path, "prune.log")
     logger.info(f"[agent] pruning review loop for: {study_path}")
     # Reproducibility: log model and prompt version for every run.
@@ -71,20 +126,32 @@ def run_prune(study_path: str, show_prompt: bool = False, templates_dir: str = "
         f"temperature=0_or_reasoning_default seed=NA(controlled by temperature=0/reasoning model)"
     )
 
-    # Load the Pruning Agent input produced by the helper extractor (or the Planning Agent).
-    prune_in_path = os.path.join(study_path, "prune_in_schema.json")
-    if not os.path.exists(prune_in_path):
-        msg = (
-            f"prune_in_schema.json not found in {study_path}. "
-            f"Run the helper extractor first (make robustness-pruning-helper STUDY=...)."
-        )
-        logger.error(msg)
-        raise FileNotFoundError(msg)
+    # Input: either the Planning Agent's universal-schema output handed over in memory
+    # (make robustness-plan), or the prune_in_schema.json written by the helper extractor
+    # (make robustness-pruning-helper / make robustness-pruning).
+    if plan_output is not None:
+        raw_input = plan_output
+        logger.info("[agent] pruning input received directly from the Planning Agent (universal schema)")
+    else:
+        prune_in_path = os.path.join(study_path, "prune_in_schema.json")
+        if not os.path.exists(prune_in_path):
+            msg = (
+                f"prune_in_schema.json not found in {study_path}. "
+                f"Run the helper extractor first (make robustness-pruning-helper STUDY=...)."
+            )
+            logger.error(msg)
+            raise FileNotFoundError(msg)
+        raw_input = _load_json_object(prune_in_path)
 
-    prune_in = _load_json_object(prune_in_path)
-    case_id = get_prune_case_id(prune_in)
-    path_id = get_prune_path_id(prune_in)
-    ensure_memory_file(case_id)
+    # Shared memory and the pruning rules are supplied by the pipeline, not by an agent.
+    # The agent READS shared memory here (it is embedded in its input) and later WRITES one
+    # record back, subject to the same human confirmation as before.
+    case_id = get_prune_case_id(_build_prune_input(raw_input, {}))
+    path_id = get_prune_path_id(_build_prune_input(raw_input, {}))
+    shared_memory, _ = load_case_memory(case_id)
+    logger.info(f"[memory] loaded shared memory for pruning: case={case_id} path={path_id}")
+
+    prune_in = _build_prune_input(raw_input, shared_memory)
 
     out_schema_path = os.path.join(templates_dir, "prune_out_schema.json")
     prune_out_template = _load_json_object(out_schema_path)
@@ -95,12 +162,12 @@ Your goal is to REVIEW exactly one candidate analysis path (plan + analysis code
 Your AUTHORIZED inputs are:
 1. The prune_in JSON below (candidate path, case info, Task1/Task2 instructions, shared memory, planning self-check).
 2. The original paper PDF in the study folder (original_paper.pdf) - you MUST read it to understand the claim, the study design, and the data collection.
-3. The authorized original dataset(s) in case_reference.authorized_datasets - you MUST explore them in depth (shape, focal variables, dependence structure), not just load them.
-4. The candidate path's analysis code files listed in planning_output.description.codebase - you MUST read every file end to end.
+3. The authorized original dataset(s) in datasets.files - you MUST explore them in depth (shape, focal variables, dependence structure), not just load them.
+4. The candidate path's analysis code files listed in plan.tasks[].analysis_code - you MUST read every file end to end.
 
 FORBIDDEN inputs: the human analysis / review PDF (e.g., files ending in "_review.pdf"), human analytical reports, and any expected or ground-truth results. Do not open them; doing so is cheating and invalidates the benchmark.
 
-=== START OF PRUNE INPUT (prune_in_schema.json) ===
+=== START OF PRUNE INPUT (universal_schema.json) ===
 {json.dumps(prune_in, indent=2)}
 === END OF PRUNE INPUT ===
 
@@ -157,11 +224,13 @@ Answer: [the final JSON]
     )
 
     if isinstance(final_answer, dict):
+        # Write the agent's memory_record back to the case memory file, still gated on the
+        # same human yes/no confirmation as before.
         current_memory, resolved_memory_path = load_case_memory(case_id)
         memory_record = build_memory_record_from_prune_output(
             prune_in,
             final_answer,
-            iteration = 1,
+            iteration=prune_in.get("iteration", 1),
         )
         write_memory_update_with_confirmation(resolved_memory_path, current_memory, memory_record)
 

@@ -9,13 +9,14 @@ MEMORY_DIR = Path(__file__).resolve().parent
 TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "templates" / "shared_memory.json"
 EXECUTE_SPEC_FILENAMES = ("execute_in_schema.json", "analysis_info.json")
 EXECUTION_STATUSES = {"executed_success", "execution_failed_retryable", "abandoned"}
-PRUNE_STATUSES = {"accepted", "rejected"}
-# The Pruning Agent reports quality decisions; shared memory keeps the accepted/rejected vocabulary.
+PRUNE_STATUSES = {"high-quality", "low-quality"}
+# The Pruning Agent reports quality decisions and shared_memory.json records them with the
+# same vocabulary. accepted/rejected are kept as legacy aliases for older memory files.
 PRUNE_DECISION_TO_STATUS = {
-    "accepted": "accepted",
-    "rejected": "rejected",
-    "high-quality": "accepted",
-    "low-quality": "rejected",
+    "high-quality": "high-quality",
+    "low-quality": "low-quality",
+    "accepted": "high-quality",
+    "rejected": "low-quality",
 }
 
 # Reads execute_in_schema.json first.
@@ -94,29 +95,40 @@ def _pick_signature_task(tasks: List[Dict[str, Any]]) -> Dict[str, Any]:
     return tasks[0] if tasks else {}
 
 
+# The Pruning Agent's input is the universal schema: case / tasks_info / datasets / plan.
+def _prune_plan(prune_in: Dict[str, Any]) -> Dict[str, Any]:
+    plan = prune_in.get("plan")
+    if isinstance(plan, dict):
+        return plan
+    # Legacy prune_in_schema.json shape.
+    return prune_in.get("planning_output", {}).get("description", {}) or {}
+
+
 def get_prune_case_id(prune_in: Dict[str, Any]) -> str:
-    case_reference = prune_in.get("case_reference", {})
-    if case_reference.get("case_id"):
-        return str(case_reference["case_id"])
-    planning_output = prune_in.get("planning_output", {})
-    description = planning_output.get("description", {})
-    planned_id = description.get("planned_id")
+    case = prune_in.get("case") or prune_in.get("case_reference") or {}
+    if case.get("case_id"):
+        return str(case["case_id"])
+    planned_id = _prune_plan(prune_in).get("planned_id")
     if planned_id:
-        return str(planned_id).rsplit("_plan", 1)[0]
-    raise ValueError("Prune input is missing case_reference.case_id and planning_output.description.planned_id.")
+        return str(planned_id).rsplit("_path", 1)[0].rsplit("_plan", 1)[0]
+    raise ValueError("Prune input is missing case.case_id and plan.planned_id.")
 
 
 def get_prune_path_id(prune_in: Dict[str, Any]) -> str:
-    planning_output = prune_in.get("planning_output", {})
-    description = planning_output.get("description", {})
-    planned_id = description.get("planned_id")
+    planned_id = _prune_plan(prune_in).get("planned_id")
     if planned_id:
         return str(planned_id)
     return f"{get_prune_case_id(prune_in)}_plan"
 
 
 def _prune_tasks(prune_in: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return prune_in.get("planning_output", {}).get("description", {}).get("planned_method", {}).get("tasks", [])
+    plan = _prune_plan(prune_in)
+    # Legacy prune_in nests tasks under planned_method; the universal schema's
+    # "plan" section carries them directly.
+    planned_method = plan.get("planned_method")
+    if isinstance(planned_method, dict) and planned_method.get("tasks"):
+        return planned_method["tasks"]
+    return plan.get("tasks", [])
 
 
 def _task_value(task: Dict[str, Any], *keys: str, default: Any = None) -> Any:
@@ -145,12 +157,25 @@ def build_memory_record_from_prune_output(
 
     case_id = get_prune_case_id(prune_in)
     path_id = get_prune_path_id(prune_in)
-    planning_output = prune_in.get("planning_output", {}).get("description", {})
-    planned_method = planning_output.get("planned_method", {})
+    plan = _prune_plan(prune_in)
+    # Legacy prune_in keeps the path-level signature under planned_method; the
+    # universal schema's "plan" section keeps it under path_signature.
+    planned_method = plan.get("planned_method") or plan.get("path_signature", {})
     tasks = _prune_tasks(prune_in)
 
-    task_scope = [task.get("task_id", "Task") for task in tasks] or prune_in.get("case_reference", {}).get("tasks_info", [])
-    path_summary = planning_output.get("path_summary") or "Pruning review record."
+    # The agent's own memory_record is the primary source: it carries the per-task decisions
+    # and overall_decision that cannot be derived from the plan. Fields it leaves out are
+    # filled in from the candidate path below.
+    agent_record = pruning_output.get("memory_record", {})
+    if not isinstance(agent_record, dict):
+        agent_record = {}
+    agent_signature = agent_record.get("path_signature", {})
+    if not isinstance(agent_signature, dict):
+        agent_signature = {}
+
+    task_scope = agent_record.get("task_scope") or [task.get("task_id", "Task") for task in tasks] \
+        or [item.get("task_id") for item in prune_in.get("tasks_info", []) if isinstance(item, dict)]
+    path_summary = agent_record.get("path_summary") or plan.get("path_summary") or "Pruning review record."
 
     first_task = tasks[0] if tasks else {}
     analysis_path = first_task.get("analysis_path", {}) if isinstance(first_task, dict) else {}
@@ -160,23 +185,38 @@ def build_memory_record_from_prune_output(
     if not controls and isinstance(variables.get("controls"), list):
         controls = [item.get("name", item) if isinstance(item, dict) else item for item in variables["controls"]]
 
+    derived_signature = {
+        "model_family": _task_value(first_task, "analysis_path", "model_family", default=planned_method.get("model_family", "not_stated")),
+        "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
+        "main_predictor": variables.get("main_predictor", {}).get("name", key_choices.get("main_predictor_measure")),
+        "controls": controls or [],
+        "sample_restriction": key_choices.get("sample_restriction"),
+        "missing_data_rule": key_choices.get("missing_data_rule"),
+        "variable_construction": key_choices.get("data_processing"),
+        "inference_rule": key_choices.get("inference_rule"),
+    }
+    # The universal schema states the path-level signature directly under plan.path_signature;
+    # it is more authoritative than anything reconstructed from the first task.
+    plan_signature = plan.get("path_signature", {})
+    if not isinstance(plan_signature, dict):
+        plan_signature = {}
+
+    # Keep everything the agent reported (task_decisions, overall_decision) and backfill any
+    # signature field it omitted from the candidate path.
+    path_signature = {
+        **derived_signature,
+        **{k: v for k, v in plan_signature.items() if v is not None},
+        **{k: v for k, v in agent_signature.items() if v is not None},
+    }
+
     return {
         "path_id": path_id,
         "case_id": case_id,
         "status": status,
         "task_scope": task_scope,
         "path_summary": path_summary,
-        "path_signature": {
-            "model_family": _task_value(first_task, "analysis_path", "model_family", default=planned_method.get("model_family", "not_stated")),
-            "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
-            "main_predictor": variables.get("main_predictor", {}).get("name", key_choices.get("main_predictor_measure")),
-            "controls": controls or [],
-            "sample_restriction": key_choices.get("sample_restriction"),
-            "missing_data_rule": key_choices.get("missing_data_rule"),
-            "variable_construction": key_choices.get("data_processing"),
-            "inference_rule": key_choices.get("inference_rule"),
-        },
-        "status_reason": pruning_output.get("decision_summary") or pruning_output.get("memory_record", {}).get("status_reason") or "Pruning decision recorded.",
+        "path_signature": path_signature,
+        "status_reason": pruning_output.get("decision_summary") or agent_record.get("status_reason") or "Pruning decision recorded.",
         "source_agent": "pruning_agent",
         "iteration": iteration,
     }

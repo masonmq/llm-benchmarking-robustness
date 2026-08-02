@@ -1,0 +1,201 @@
+{
+  "iteration": "Planning round number for this case. Integer starting at 1.",
+
+
+  "case": {
+    "case_id": "Same as case_id.",
+    "paper_title": "Title of the original paper.",
+    "paper_file": "File name or local path of the original paper PDF.",
+    "focal_claim": "Exact focal claim under test. No agent may change this.",
+    "hypothesis": "Focal hypothesis phrased as a testable statement at the level of operationalized variables.",
+    "study_type": "Experimental, Observational, Meta-Analysis, or Other."
+  },
+
+
+  "tasks_info": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "task_instruction": "Assigned instruction for Task1. Example: Conduct the analysis without any restrictions.",
+      "task_goal": "Test whether the focal claim is supported."
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "task_instruction": "Assigned instruction for Task2, including all case-specific constraints.",
+      "task_goal": "Produce one statistical result comparable to the original paper's focal result."
+    }
+  ],
+
+
+  "datasets": {
+    "authorized_only": "true. No agent may substitute a dataset not listed here.",
+    "source_type": "Data source, such as survey, experiment, database, or archive.",
+    "wave_or_subset": "Specific waves, subsets, or sample restrictions, if applicable.",
+    "sample_size": "Expected analytic sample size if known, otherwise not_stated.",
+    "unit_of_analysis": "Unit of analysis, such as individual, household, country, firm, or trial.",
+    "notes": "Caveats about the data: encoding issues, nested structure, missing metadata, unusual column formats.",
+    "files": [
+      {
+        "name": "Dataset name. Example: RiskData.",
+        "file_path": "Local path to the data file.",
+        "file_format": "csv, dta, rdata, rds, xlsx, json, parquet, or other.",
+        "columns": ["Key variable names if available, otherwise not_stated."],
+        "summary_statistics": {
+          "info": "Compact dtype/non-null summary, or null.",
+          "describe": "Compact descriptive statistics for focal variables, or null."
+        },
+        "access_details": "Local path, repository link, access restriction, or not_stated.",
+        "notes": "Caveats specific to this file."
+      }
+    ]
+  },
+
+  "plan": {
+    "planned_id": "Unique ID for this planned path. Example: Bruner_ExpEco_2017_amYY_path04.",
+    "task_scope": ["Task1", "Task2"],
+    "path_summary": "Short summary of the proposed analysis path.",
+
+    "path_signature": {
+      "model_family": "Main model or test family. Example: linear_regression, logistic_regression, correlation, t_test, poisson, multilevel, Bayesian.",
+      "outcome": "Outcome variable or constructed outcome.",
+      "main_predictor": "Main predictor, treatment, or grouping variable.",
+      "controls": ["List of control variables, or empty list."],
+      "sample_restriction": "Sample inclusion or exclusion rule, or null.",
+      "missing_data_rule": "Missing data handling rule, or null.",
+      "variable_construction": "How the main variables are created or changed before analysis, or null.",
+      "inference_rule": "How the result will be judged."
+    },
+
+    "tasks": [
+      {
+
+        "task_id": "Task1 or Task2.",
+        "task_role": "conclusion_oriented_reanalysis or comparable_result_oriented_reanalysis.",
+
+        "analysis_path": {
+          "path_name": "Short name for the path. Example: linear_regression_risk_aversion_decision_error.",
+          "path_description": "Concise description of what should be run for this task.",
+          "software": "Software or language used. Example: R, Stata, Matlab, Python, or not_stated.",
+          "original_software": "Language of the original analysis code, if it differs from software.",
+          "model_family": "Main model or test family for this task.",
+          "preprocessing_steps": [
+            "Ordered preprocessing and preparation steps. Another analyst should be able to reconstruct the code from this list."
+          ],
+          "key_choices": {
+            "outcome_measure": "How the outcome is measured or constructed.",
+            "main_predictor_measure": "How the main predictor is measured or constructed.",
+            "control_variables": ["Control variable names, or empty list."],
+            "sample_restriction": "Sample inclusion or exclusion rule, or null.",
+            "outlier_rule": "Outlier handling rule, or null.",
+            "missing_data_rule": "Missing-data handling rule, or null.",
+            "data_processing": "Any reshaping, recoding, aggregation, scaling, or transformation.",
+            "model_choice": "Main model or statistical test used.",
+            "inference_rule": "Rule used to judge support. Example: expected direction and p < 0.05."
+          },
+          "models": [
+            {
+              "model_id": "Unique model ID within this task. Example: M1.",
+              "type": "Model or statistical approach. Example: linear regression, t-test.",
+              "formula": "Explicit model specification when expressible. Example: lndrate ~ b10_10 * factor(decade_two) + yearmo + year2. Use null if not applicable.",
+              "planned_estimation": "Main quantity to estimate. Example: coefficient, mean difference, odds ratio, correlation.",
+              "inference_criteria": "Rule for judging this model's result.",
+              "deviation": "true if this uses a meaningfully different choice from the original paper, otherwise false.",
+              "qualification": "Why this is a valid design choice to test the focal claim, especially when it deviates from the original paper."
+            }
+          ],
+          "variables": {
+            "outcome": {
+              "name": "Outcome variable name or constructed outcome name.",
+              "definition": "What the variable means and how it is operationalized and mathematically formulated.",
+              "variable_construction": "How this variable is created, recoded, scaled, transformed, or aggregated. Use null if the raw variable is used.",
+              "missing_data_handling": "Rule for missing data on this variable.",
+              "deviation": "true if this uses a meaningfully different choice from the original paper, otherwise false.",
+              "qualification": "Why this variable choice is valid for the focal claim.",
+              "models": ["model_id values that use this variable."]
+            },
+            "main_predictor": {
+              "name": "Main predictor variable name.",
+              "definition": "What the variable means and how it is operationalized.",
+              "variable_construction": "Construction rule, or null.",
+              "missing_data_handling": "Rule for missing data on this variable.",
+              "deviation": "true or false.",
+              "qualification": "Why this variable choice is valid for the focal claim.",
+              "models": ["model_id values that use this variable."]
+            },
+            "controls": [
+              {
+                "name": "Control variable name.",
+                "definition": "Brief definition or construction rule.",
+                "variable_construction": "Construction rule, or null.",
+                "missing_data_handling": "Rule for missing data, or null.",
+                "deviation": "true or false.",
+                "qualification": "Why this control is appropriate, or null.",
+                "models": ["model_id values that use this variable."]
+              }
+            ]
+          },
+
+          "expected_outputs": [
+            "What this task should produce. Example: OLS model summaries, interaction plot."
+          ]
+        },
+
+        "analysis_code": {
+          "available": "true if analysis code for this task exists; false otherwise.",
+          "code_files": ["Files needed for this specific task."],
+          "entry_file": "Main script to run for this task, or null.",
+          "run_command": "Command to run this task, or null.",
+          "notes": "Task-specific notes about running the analysis code."
+        },
+
+        "notes_for_agent": "Task-specific rule. Example: Follow this planned path; do not change the focal claim, dataset, or analysis goal."
+      }
+    ],
+
+    "tools_software": "Software or tools expected for execution, such as R, Python, Stata, or specific packages.",
+
+    "method_justification": {
+      "claim_alignment": "How this path tests the same focal claim.",
+      "dataset_alignment": "How this path uses the authorized original dataset.",
+      "method_reason": "Why the models, variables, and inference rule are reasonable for the claim.",
+      "novelty_reason": "Why this path differs from paths already in shared_memory."
+    },
+
+    "self_check": {
+      "same_focal_claim": "pass | fail",
+      "same_dataset": "pass | fail",
+      "task1_specified": "pass | fail",
+      "task2_specified": "pass | fail",
+      "method_justification_present": "pass | fail",
+      "not_duplicate_of_shared_memory": "pass | fail",
+      "self_check_note": "Short explanation of the self check."
+    }
+  },
+
+  "docker_specs": {
+    "base_image": "Base Docker image containing the software needed to run the analysis. Example: python:3.10, rocker/verse.",
+    "packages": {
+      "python": ["Required Python packages with version constraints. Example: pandas>=1.4.0."],
+      "r": ["Required R packages and versions."],
+      "other": ["Other necessary software. Example: git, make, wget."]
+    },
+    "hardware": {
+      "gpu_support": "true if a GPU is required, false otherwise.",
+      "min_gpu_memory_gb": "Minimum GPU memory in GB, or null.",
+      "min_ram_gb": "Minimum system RAM in GB."
+    },
+    "volumes": ["Host paths to mount inside the container. Example: ./data:/app/data."]
+  },
+
+
+  "execution_directives": {
+    "instructions": "High-level execution instruction. Example: Execute Task1 and Task2 using the original dataset and produce structured execution outputs.",
+    "target_task_ids": ["Task IDs to execute. Example: Task1, Task2."],
+    "debugging_rule": {
+      "max_repair_attempts": "Maximum bounded repair attempts. Example: 3.",
+      "repair_scope": "Allowed repair scope. Example: fix dependency, file path, or output extraction issues only; do not redesign the analysis."
+    },
+    "comparison_metrics": "Expected metrics or outputs for later comparison. Example: coefficient, p-value, test statistic, Cohen's d, conclusion text."
+  }
+}

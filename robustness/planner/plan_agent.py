@@ -1,7 +1,7 @@
 import os
 import json
 import re
-from core.constants import PLAN_ANALYSIS_CONSTANTS
+from core.constants import PLAN_ANALYSIS_CONSTANTS, PLANNING_RULES
 import sys
 
 from replicatorbench.info_extractor.file_utils import read_json # Keep save_output here if the agent orchestrates saving
@@ -21,7 +21,9 @@ def build_system_prompt(code_mode: str) -> str:
     # Put the policy in SYSTEM prompt
     return "\n\n".join([PREAMBLE_ROBUSTNESS, GENERATE_GOLD_ANALYSIS, EXAMPLE_ROBUSTNESS])
 
-def run_plan_analysis(study_path, tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5", paper_id: str = ""):
+def run_plan_analysis(study_path, tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5",
+                      paper_id: str = "", templates_dir: str = "./templates", show_prompt: bool = False,
+                      run_pruning: bool = True):
     configure_file_logging(logger, study_path, f"gen_gold_analysis.log")
     # Load json template
     logger.info(f"Starting gold analysis extraction for study path: {study_path}")
@@ -92,6 +94,9 @@ Additionally, you must adhere to constraints provided for each task described be
 Other rules:
 {plan_input_rules}
 
+Your fixed role rules as the Planning Agent (these never change and you may not rewrite them):
+{json.dumps(PLANNING_RULES, indent=2)}
+
 Shared-memory rules:
 - Treat every memory_records item as a previous path, regardless of status.
 - Compare your proposed path against path_summary, path_signature, and task_signatures when present.
@@ -110,7 +115,7 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
 """.strip()
     print(f"starting design phase with {model_name}\n")
     tool_definitions = get_tool_definitions()
-    return run_react_loop(
+    plan_output = run_react_loop(
     	system_prompt,
     	known_actions,
     	tool_definitions,
@@ -122,3 +127,26 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
     	model_name=model_name,
         logger=logger
     )
+
+    if not run_pruning:
+        return plan_output
+
+    # Hand the universal-schema plan straight to the Pruning Agent: planning and pruning
+    # run back to back under `make robustness-plan`, with no intermediate command.
+    if not isinstance(plan_output, dict):
+        logger.error("[plan->prune] planning did not return a JSON object; skipping the pruning stage.")
+        return plan_output
+
+    logger.info("[plan->prune] handing the planned path to the Pruning Agent")
+    print("\nplanning complete; starting pruning review\n")
+    from robustness.pruning.prune_agent import run_prune
+    prune_output = run_prune(
+        study_path=study_path,
+        show_prompt=show_prompt,
+        templates_dir=templates_dir,
+        tier=tier,
+        code_mode=code_mode,
+        model_name=model_name,
+        plan_output=plan_output,
+    )
+    return {"plan_output": plan_output, "prune_output": prune_output}

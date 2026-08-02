@@ -921,7 +921,7 @@ AUTHORIZED inputs - you are EXPECTED to study ALL of these in depth before decid
 1. The structured prune_in JSON: the candidate path, case information, Task1/Task2 instructions, authorized dataset info, shared memory, and the Planning Agent self-check.
 2. The ORIGINAL PAPER PDF (original_paper.pdf): read it to understand the focal claim, the study design, how the data were collected, and the unit of observation.
 3. The AUTHORIZED ORIGINAL DATASET(S): explore them thoroughly (shape, columns, variable summaries, dependence structure), not just load them.
-4. The candidate path's ANALYSIS CODE files listed in the codebase section: read every file end to end.
+4. The candidate path's ANALYSIS CODE files listed in the analysis_code section: read every file end to end.
 
 FORBIDDEN inputs - reading ANY of these is cheating and invalidates the benchmark:
 - The human analysis / review PDF (e.g., files ending in "_review.pdf"), human analytical reports, or any human-written re-analysis document.
@@ -945,7 +945,7 @@ PRUNE_CHECKS_POLICY = """
 MANDATORY REVIEW PROCEDURE (complete ALL steps BEFORE deciding; a decision made without them is invalid):
 Step 1 - Read the original paper. Read original_paper.pdf to understand the focal claim, the study design (experimental or observational, treatment, comparison groups), how the data were collected, and the unit of observation. Never read the human analysis / review PDF.
 Step 2 - Explore the dataset in depth. Do not stop after loading it. For every authorized dataset: check shape and columns; run variable summaries on the focal outcome, the main predictor / treatment / grouping variables, and the ID variables; determine the dependence structure (repeated measures per participant, panel structure, clustering by person, school, firm, state, or group); look for implausible values or coding problems in the focal variables.
-Step 3 - Review the analysis code efficiently. Read only genuine text-based source-code files listed in the codebase section, using the reader appropriate to the extension. Source-code extensions include .py, .R, .r, .do, .m, .jl, .sas, .sql, .sh, .ipynb, .txt, .md, .yaml, .yml, .json, and similar plain-text scripts/configuration files. Do NOT open binary or data files with read_file/read_txt, including .xlsx, .xls, .dta, .sav, .rds, .RData, .mat, .pkl, .parquet, .pdf, .docx, images, archives, or executables. Inspect datasets with dataset tools, PDFs with read_pdf, and skip unrelated artifacts. If the codebase field mixes code and data, review only the code needed to implement Task1 and Task2. Verify that the reviewed code implements the claimed model and produces the focal statistical results.
+Step 3 - Review the analysis code efficiently. Read only genuine text-based source-code files listed in the analysis_code section, using the reader appropriate to the extension. Source-code extensions include .py, .R, .r, .do, .m, .jl, .sas, .sql, .sh, .ipynb, .txt, .md, .yaml, .yml, .json, and similar plain-text scripts/configuration files. Do NOT open binary or data files with read_file/read_txt, including .xlsx, .xls, .dta, .sav, .rds, .RData, .mat, .pkl, .parquet, .pdf, .docx, images, archives, or executables. Inspect datasets with dataset tools, PDFs with read_pdf, and skip unrelated artifacts. If the analysis_code field mixes code and data, review only the code needed to implement Task1 and Task2. Verify that the reviewed code implements the claimed model and produces the focal statistical results.
 Step 4 - Cross-check. Compare the plan text, the code, the Task1/Task2 instructions, and the observed data structure against the rules below, then decide.
 
 CORE DECISION STANDARD:
@@ -962,8 +962,8 @@ IMPORTANT DISTINCTION:
 The Pruning Agent is expected to receive candidate analysis code. If the candidate path has no identifiable candidate code, entry file, or executable specification linked to its claimed analysis and result, label the affected task low-quality. Broken paths, unavailable software, or unavailable external objects do not independently make a task low-quality when the candidate code and executable specification are otherwise present and traceable.
 
 SCHEMA CHECKS (fill check_results):
-1. same_focal_claim: The path tests the SAME focal claim as case_reference.focal_claim.
-2. same_dataset: The path uses the authorized original dataset in case_reference.authorized_datasets and does not substitute a new dataset.
+1. same_focal_claim: The path tests the SAME focal claim as case.focal_claim.
+2. same_dataset: The path uses the authorized original dataset in datasets.files and does not substitute a new dataset.
 3. not_duplicate: The path is NOT a semantic duplicate of any shared_memory record. Report closest_memory_path_id, or null when memory is empty.
 4. task_completeness: Task1 and Task2 are both present. If one is absent or materially underspecified, mark the affected task low-quality.
 5. method_justification: A coherent justification explains why the variables, model, and inference rule test the focal claim.
