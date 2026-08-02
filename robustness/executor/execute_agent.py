@@ -90,6 +90,7 @@ def run_execute(study_path: str, show_prompt: bool = False, templates_dir: str =
     """
     configure_file_logging(logger, study_path, f"execute_{tier}__{code_mode}.log")
     logger.info(f"[agent] dynamic orchestrator run loop for: {study_path}")
+    
 
     schema_path = os.path.join(templates_dir, "execute_out_schema.json")
     execute_spec, execute_spec_path = load_execute_spec(study_path)
@@ -236,7 +237,8 @@ Answer: [Execute necessary next action to help you solve the task]
 
 
 def _get_max_execution_attempts(execute_spec: Dict[str, Any]) -> int:
-    debugging_rule = execute_spec.get("analysis", {}).get("debugging_rule", {})
+    execution_config = execute_spec.get("execution_directives") or execute_spec.get("analysis", {})
+    debugging_rule = execution_config.get("debugging_rule", {})
     try:
         configured = int(debugging_rule.get("max_repair_attempts", 1))
     except (TypeError, ValueError):

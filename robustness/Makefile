@@ -11,7 +11,7 @@ MODEL ?= gpt-5
 EVAL_MODEL ?= gpt-5
 TIER ?= easy
 
-.PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy robustness-pruning-helper robustness-pruning test-pruning
+.PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy robustness-plan robustness-pipeline robustness-pruning-helper robustness-pruning robustness-pruning-execute test-pruning
 
 check-deps:
 	$(PYTHON) core/check_deps.py $(REQ)
@@ -28,6 +28,10 @@ check-docker:
 # Generate structured analysis from human documentation
 robustness-plan: check-deps
 	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID)
+
+# Opt-in continuous pipeline: plan -> prune -> execute (execution only after high-quality).
+robustness-pipeline: check-deps
+	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID) --run-execution
 
 paraphase-analysis: check-deps
 	python -m robustness.memory --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage paraphrase-analysis --code-mode $(CODE_MODE)
@@ -49,6 +53,10 @@ robustness-pruning-helper: check-deps
 # Pruning Agent: prune_in_schema.json -> prune_out_schema.json (accept/reject + routing)
 robustness-pruning: check-deps
 	python -m robustness.pruning --stage prune --tier easy --study-path $(STUDY) --code-mode $(CODE_MODE) --model-name $(MODEL)
+
+# Standalone prune -> execute path, still gated on a high-quality pruning decision.
+robustness-pruning-execute: check-deps
+	python -m robustness.pruning --stage prune --tier easy --study-path $(STUDY) --code-mode $(CODE_MODE) --model-name $(MODEL) --run-execution
 
 
 evaluate-execute-capability: check-deps

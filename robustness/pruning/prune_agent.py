@@ -117,7 +117,7 @@ def _build_prune_input(payload: dict, shared_memory: dict) -> dict:
 
 def run_prune(study_path: str, show_prompt: bool = False, templates_dir: str = "./templates",
               tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5",
-              plan_output: dict = None):
+              plan_output: dict = None, run_execution: bool = False):
     configure_file_logging(logger, study_path, "prune.log")
     logger.info(f"[agent] pruning review loop for: {study_path}")
     # Reproducibility: log model and prompt version for every run.
@@ -234,5 +234,35 @@ Answer: [the final JSON]
         )
         write_memory_update_with_confirmation(resolved_memory_path, current_memory, memory_record)
 
-    return final_answer
+    if not run_execution:
+        return final_answer
 
+    execution_output = None
+    decision = ""
+    if isinstance(final_answer, dict):
+        decision = str(
+            final_answer.get("pruning_output", {}).get("decision", "")
+        ).strip().lower()
+
+    if decision == "high-quality":
+        logger.info("[prune->execute] high-quality path approved; starting execution")
+        print("\npruning approved the path; starting execution\n")
+        from robustness.executor.execute_agent import run_execute
+        execution_output = run_execute(
+            study_path=study_path,
+            show_prompt=show_prompt,
+            templates_dir=templates_dir,
+            tier=tier,
+            code_mode=code_mode,
+            model_name=model_name,
+        )
+    else:
+        logger.info(
+            "[prune->execute] execution skipped because pruning decision was %r",
+            decision or "missing/invalid",
+        )
+
+    return {
+        "prune_output": final_answer,
+        "execution_output": execution_output,
+    }

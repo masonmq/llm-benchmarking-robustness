@@ -23,7 +23,9 @@ def build_system_prompt(code_mode: str) -> str:
 
 def run_plan_analysis(study_path, tier: str = "easy", code_mode: str = "python", model_name: str = "gpt-5",
                       paper_id: str = "", templates_dir: str = "./templates", show_prompt: bool = False,
-                      run_pruning: bool = True):
+                      run_pruning: bool = True, run_execution: bool = False):
+    if run_execution and not run_pruning:
+        raise ValueError("run_execution=True requires run_pruning=True.")
     configure_file_logging(logger, study_path, f"gen_gold_analysis.log")
     # Load json template
     logger.info(f"Starting gold analysis extraction for study path: {study_path}")
@@ -129,13 +131,21 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
     )
 
     if not run_pruning:
-        return plan_output
+        return {
+            "plan_output": plan_output,
+            "prune_output": None,
+            "execution_output": None,
+        }
 
     # Hand the universal-schema plan straight to the Pruning Agent: planning and pruning
     # run back to back under `make robustness-plan`, with no intermediate command.
     if not isinstance(plan_output, dict):
         logger.error("[plan->prune] planning did not return a JSON object; skipping the pruning stage.")
-        return plan_output
+        return {
+            "plan_output": plan_output,
+            "prune_output": None,
+            "execution_output": None,
+        }
 
     logger.info("[plan->prune] handing the planned path to the Pruning Agent")
     print("\nplanning complete; starting pruning review\n")
@@ -148,5 +158,17 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
         code_mode=code_mode,
         model_name=model_name,
         plan_output=plan_output,
+        run_execution=run_execution,
     )
-    return {"plan_output": plan_output, "prune_output": prune_output}
+    if run_execution:
+        pruning_stage_output = prune_output.get("prune_output") if isinstance(prune_output, dict) else prune_output
+        execution_output = prune_output.get("execution_output") if isinstance(prune_output, dict) else None
+    else:
+        pruning_stage_output = prune_output
+        execution_output = None
+
+    return {
+        "plan_output": plan_output,
+        "prune_output": pruning_stage_output,
+        "execution_output": execution_output,
+    }

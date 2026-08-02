@@ -178,13 +178,13 @@ def _task_entries_from_execute_spec(tasks: List[Dict[str, Any]], code_mode: str)
 # Now it is compatiible with the content in execute_in_schema.json and in analysis_info.json.
 def plan_from_analysis_info(analysis_info: Dict, code_mode) -> ExecutionPlan:
     claim_id = (
-        analysis_info.get("case", {}).get("paper_id")
-        or analysis_info.get("planned_method", {}).get("planned_id")
-        or analysis_info.get("analysis_study", {}).get("metadata", {}).get("original_paper_id", "study")
+        analysis_info.get("plan", {}).get("planned_id")
+        or analysis_info.get("case", {}).get("case_id")
     )
     plan_id = re.sub(r"[^a-zA-Z0-9_-]+", "-", claim_id)
 
-    tasks = analysis_info.get("planned_method", {}).get("tasks", [])
+    planned = analysis_info.get("plan") or analysis_info.get("planned_method", {})
+    tasks = planned.get("tasks", [])
     if tasks:
         ordered = _task_entries_from_execute_spec(tasks, code_mode)
         path_to_task_id = {}
@@ -229,6 +229,7 @@ def plan_from_analysis_info(analysis_info: Dict, code_mode) -> ExecutionPlan:
     )
 
 def _get_docker_specs(spec: Dict) -> Dict:
+    # print("HELLO", spec)
     d = spec.get("docker_specs")
     if d:
         return d

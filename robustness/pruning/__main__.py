@@ -11,6 +11,12 @@ def main():
     p.add_argument("--templates-dir", default="./templates")
     p.add_argument("--show-prompt", action="store_true", default=False)
     p.add_argument(
+        "--run-execution",
+        action="store_true",
+        default=False,
+        help="Execute immediately after pruning only when the path is high-quality.",
+    )
+    p.add_argument(
         "--code-mode",
         choices=CODE_MODE_CHOICES,
         default=DEFAULT_CODE_MODE,
@@ -40,6 +46,7 @@ def main():
             tier=args.tier,
             code_mode=args.code_mode,
             model_name=args.model_name,
+            run_execution=args.run_execution,
         )
 
     else:

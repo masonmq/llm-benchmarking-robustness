@@ -11,9 +11,17 @@ def main():
     p.add_argument("--show-prompt", action="store_true", default=False)
     p.add_argument("--no-pruning", action="store_true", default=False,
                    help="Stop after planning instead of chaining into the Pruning Agent.")
+    p.add_argument(
+        "--run-execution",
+        action="store_true",
+        default=False,
+        help="After pruning, execute the path only when the decision is high-quality.",
+    )
     p.add_argument("--code-mode",choices=CODE_MODE_CHOICES,default=DEFAULT_CODE_MODE,help="Code execution mode: 'native' (run original language) or 'python' (translate all to Python and run Python).",)
     p.add_argument("--model-name", help="Please specify the OpenAI model to be used.")
     args = p.parse_args()
+    if args.no_pruning and args.run_execution:
+        p.error("--run-execution cannot be combined with --no-pruning")
 
     if args.stage == "plan-analysis":
         from planner.plan_agent import run_plan_analysis
@@ -28,6 +36,7 @@ def main():
             templates_dir=args.templates_dir,
             show_prompt=args.show_prompt,
             run_pruning=not args.no_pruning,
+            run_execution=args.run_execution,
         )
 
     else:
