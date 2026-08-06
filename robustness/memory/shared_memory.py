@@ -29,9 +29,21 @@ def load_execute_spec(study_path: str) -> Tuple[Dict[str, Any], Path]:
     expected = ", ".join(EXECUTE_SPEC_FILENAMES)
     raise FileNotFoundError(f"No execution input file found in {study_dir}. Expected one of: {expected}")
 
+def _execute_plan(execute_spec: Dict[str, Any]) -> Dict[str, Any]:
+    plan = execute_spec.get("plan")
+    if isinstance(plan, dict):
+        return plan
+    planned_method = execute_spec.get("planned_method")
+    if isinstance(planned_method, dict):
+        return planned_method
+    return {}
+
+
 # Extract stable IDs from the execution spec so the memory file name and record ID are consistent.
 def get_case_id(execute_spec: Dict[str, Any]) -> str:
     case = execute_spec.get("case", {})
+    if case.get("case_id"):
+        return str(case["case_id"])
     if case.get("paper_id"):
         return str(case["paper_id"])
 
@@ -43,16 +55,16 @@ def get_case_id(execute_spec: Dict[str, Any]) -> str:
     if legacy_case_id:
         return str(legacy_case_id)
 
-    planned = execute_spec.get("planned_method", {})
+    planned = _execute_plan(execute_spec)
     if planned.get("planned_id"):
         planned_id = str(planned["planned_id"])
         return planned_id.rsplit("_path", 1)[0].rsplit("_plan", 1)[0]
 
-    raise ValueError("Execution spec is missing case.paper_id and planned_method.planned_id.")
+    raise ValueError("Execution spec is missing case.case_id/case.paper_id and plan.planned_id/planned_method.planned_id.")
 
 
 def get_path_id(execute_spec: Dict[str, Any]) -> str:
-    planned = execute_spec.get("planned_method", {})
+    planned = _execute_plan(execute_spec)
     planned_id = planned.get("planned_id")
     if planned_id:
         return str(planned_id)
@@ -85,7 +97,7 @@ def load_case_memory(case_id: str) -> Tuple[Dict[str, Any], Path]:
 
 
 def _task_list(execute_spec: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return execute_spec.get("planned_method", {}).get("tasks", [])
+    return _execute_plan(execute_spec).get("tasks", [])
 
 
 def _pick_signature_task(tasks: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -236,6 +248,7 @@ def build_memory_record_from_execute_spec(
 
     case_id = get_case_id(execute_spec)
     path_id = get_path_id(execute_spec)
+    plan = _execute_plan(execute_spec)
     tasks = _task_list(execute_spec)
     signature_task = _pick_signature_task(tasks)
     analysis_path = signature_task.get("analysis_path", {})
@@ -247,27 +260,40 @@ def build_memory_record_from_execute_spec(
         for task in tasks
         if task.get("analysis_path", {}).get("path_description")
     ]
-    path_summary = " | ".join(path_descriptions) if path_descriptions else "Execution path record."
+    if plan.get("path_summary"):
+        path_summary = plan["path_summary"]
+    elif path_descriptions:
+        path_summary = " | ".join(path_descriptions)
+    else:
+        path_summary = "Execution path record."
 
     controls = key_choices.get("control_variables")
     if not controls and isinstance(variables.get("controls"), list):
         controls = [item.get("name", item) if isinstance(item, dict) else item for item in variables["controls"]]
 
+    task_signature = {
+        "model_family": analysis_path.get("model_family", "not_stated"),
+        "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
+        "main_predictor": variables.get("main_predictor", {}).get("name", key_choices.get("main_predictor_measure")),
+        "controls": controls or [],
+        "sample_restriction": key_choices.get("sample_restriction"),
+        "missing_data_rule": key_choices.get("missing_data_rule"),
+        "variable_construction": key_choices.get("data_processing"),
+        "inference_rule": key_choices.get("inference_rule"),
+    }
+    plan_signature = plan.get("path_signature", {})
+    if not isinstance(plan_signature, dict):
+        plan_signature = {}
+
     return {
         "path_id": path_id,
         "case_id": case_id,
         "status": status,
-        "task_scope": [task.get("task_id", "Task") for task in tasks],
+        "task_scope": [task.get("task_id", "Task") for task in tasks] or plan.get("task_scope", []),
         "path_summary": path_summary,
         "path_signature": {
-            "model_family": analysis_path.get("model_family", "not_stated"),
-            "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
-            "main_predictor": variables.get("main_predictor", {}).get("name", key_choices.get("main_predictor_measure")),
-            "controls": controls or [],
-            "sample_restriction": key_choices.get("sample_restriction"),
-            "missing_data_rule": key_choices.get("missing_data_rule"),
-            "variable_construction": key_choices.get("data_processing"),
-            "inference_rule": key_choices.get("inference_rule"),
+            **task_signature,
+            **{k: v for k, v in plan_signature.items() if v is not None},
         },
         "status_reason": status_reason,
         "source_agent": source_agent,
