@@ -1,0 +1,65 @@
+{
+  "analysis": "Task1 nonparametric rank-based comparison of Manifesto plurality-winner distance by election rule",
+  "data_file": "data/powell_original.dta",
+  "required_columns": [
+    "country",
+    "year",
+    "smd",
+    "pldist1"
+  ],
+  "sample_flow": [
+    {
+      "step": "start_authorized_dataset",
+      "rows": 331,
+      "removed": 0
+    },
+    {
+      "step": "keep_smd_or_pr_election_rule",
+      "rows": 329,
+      "removed": 2
+    },
+    {
+      "step": "drop_missing_pldist1_or_smd",
+      "rows": 329,
+      "removed": 0
+    }
+  ],
+  "group_stats": [
+    {
+      "smd_clean": "pr",
+      "count": 244,
+      "mean": 11.073031425476074,
+      "median": 8.225909233093262,
+      "std": 10.930319786071777,
+      "min": 3.800000058618025e-06,
+      "max": 59.00920867919922
+    },
+    {
+      "smd_clean": "smd",
+      "count": 85,
+      "mean": 11.403997421264648,
+      "median": 9.967596054077148,
+      "std": 8.776122093200684,
+      "min": 0.20136409997940063,
+      "max": 33.745323181152344
+    }
+  ],
+  "focal_result": {
+    "metric": "hodges_lehmann_median_pairwise_difference_smd_minus_pr_pldist1",
+    "value": 1.0301170349121094,
+    "direction": "positive",
+    "p_value": 0.2208939931997902,
+    "test": "Mann-Whitney U two-sided rank-sum test comparing SMD and PR pldist1 distributions",
+    "test_statistic_U": 11295.0,
+    "confidence_interval": [
+      -0.47329093217849727,
+      3.107021333836019
+    ],
+    "sample_size": 329,
+    "n_smd": 85,
+    "n_pr": 244,
+    "common_language_probability_smd_distance_less_than_pr": 0.4554001928640309,
+    "conclusion": "inconclusive",
+    "expected_direction_for_claim": "negative SMD-minus-PR distance, meaning SMD plurality winners are closer to the median voter than PR plurality winners"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "task_id": "Task1",
+  "analysis": "OLS of Manifesto-method plurality-winner distance from median voter on SMD indicator with decade fixed effects and country-clustered SEs",
+  "data_file": "data/powell_original.dta",
+  "sample_flow": [
+    {
+      "step": "starting_rows",
+      "rows": 331,
+      "removed": 0
+    },
+    {
+      "step": "keep rows with election rule coded smd or pr",
+      "rows": 329,
+      "removed": 2
+    },
+    {
+      "step": "drop missing pldist1, decade, or country needed for Task1 model",
+      "rows": 329,
+      "removed": 0
+    }
+  ],
+  "final_n": 329,
+  "outcome": "pldist1",
+  "main_predictor": "smd_bin (1=smd, 0=pr)",
+  "controls": [
+    "C(decade_cat)"
+  ],
+  "cluster_variable": "country",
+  "group_summary": [
+    {
+      "smd_clean": "pr",
+      "count": 244,
+      "mean": 11.073031425476074,
+      "median": 8.225909233093262,
+      "std": 10.930319786071777,
+      "min": 3.800000058618025e-06,
+      "max": 59.00920867919922
+    },
+    {
+      "smd_clean": "smd",
+      "count": 85,
+      "mean": 11.403997421264648,
+      "median": 9.967596054077148,
+      "std": 8.776122093200684,
+      "min": 0.20136409997940063,
+      "max": 33.745323181152344
+    }
+  ],
+  "focal_result": {
+    "term": "smd_bin",
+    "estimate": 0.42055367109995356,
+    "std_error": 2.042593654279182,
+    "p_value": 0.8368752828972367,
+    "conf_int_95": [
+      -3.5828563263373017,
+      4.423963668537208
+    ],
+    "expected_direction": "negative: SMD plurality winners are closer to the median voter than PR plurality winners",
+    "conclusion_class": "inconclusive"
+  },
+  "model_r_squared": 0.03159570864362882,
+  "model_summary_text": "                            OLS Regression Results                            \n==============================================================================\nDep. Variable:                pldist1   R-squared:                       0.032\nModel:                            OLS   Adj. R-squared:                  0.010\nMethod:                 Least Squares   F-statistic:                     1.503\nDate:                Thu, 13 Aug 2026   Prob (F-statistic):              0.226\nTime:                        17:17:58   Log-Likelihood:                -1231.7\nNo. Observations:                 329   AIC:                             2479.\nDf Residuals:                     321   BIC:                             2510.\nDf Model:                           7                                         \nCovariance Type:              cluster                                         \n=========================================================================================\n                            coef    std err          z      P>|z|      [0.025      0.975]\n-----------------------------------------------------------------------------------------\nIntercept                12.0471      2.272      5.302      0.000       7.593      16.501\nC(decade_cat)[T.50]       2.0905      2.976      0.703      0.482      -3.742       7.923\nC(decade_cat)[T.60]      -3.7451      2.638     -1.420      0.156      -8.915       1.425\nC(decade_cat)[T.70]      -0.0221      2.757     -0.008      0.994      -5.426       5.382\nC(decade_cat)[T.80]      -1.9905      2.638     -0.755      0.450      -7.160       3.179\nC(decade_cat)[T.90]      -1.6546      2.677     -0.618      0.536      -6.901       3.592\nC(decade_cat)[T.2000]    -2.5072      2.771     -0.905      0.366      -7.938       2.924\nsmd_bin                   0.4206      2.043      0.206      0.837      -3.583       4.424\n==============================================================================\nOmnibus:                       81.957   Durbin-Watson:                   1.616\nProb(Omnibus):                  0.000   Jarque-Bera (JB):              159.446\nSkew:                           1.319   Prob(JB):                     2.38e-35\nKurtosis:                       5.161   Cond. No.                         10.3\n==============================================================================\n\nNotes:\n[1] Standard Errors are robust to cluster correlation (cluster)"
+}

@@ -1,0 +1,821 @@
+2026-08-13 14:11:11,892 - robustness - DEBUG - [core.utils] File logging configured: data/Powell_CompPolitStu_2009_0PZl/test/_log/prune.log
+2026-08-13 14:11:11,892 - robustness - INFO - [agent] pruning review loop for: data/Powell_CompPolitStu_2009_0PZl/test
+2026-08-13 14:11:11,892 - robustness - INFO - [repro] stage=prune model=gpt-5.5 prompt_version=pruning_agent.v2 temperature=0_or_reasoning_default seed=NA(controlled by temperature=0/reasoning model)
+2026-08-13 14:11:11,894 - robustness - INFO - [memory] loaded shared memory for pruning: case=Powell_CompPolitStu_2009_0PZl path=Powell_CompPolitStu_2009_0PZl_path04
+2026-08-13 14:11:11,895 - robustness - INFO - 
+--- Turn 1 ---
+2026-08-13 14:11:11,895 - robustness - INFO - ***Agent input:
+Review the active analytical candidates for one paper. Review only these tasks: ["Task1", "Task2"].
+
+An active task with status null is new and must receive a high-quality or low-quality decision. An active task already marked high-quality has passed an earlier review: preserve it, do not review it again, and do not add another candidate record for it.
+
+Your authorized inputs are:
+1. The universal-schema candidate document below.
+2. original_paper.pdf in the study folder.
+3. The authorized datasets listed in datasets.files.
+4. The source-code files listed for the candidates being reviewed.
+5. Case Shared Memory, supplied read-only inside the input.
+
+Never read a human analysis/review PDF or expected or ground-truth results. Do not run, modify, or create an analytical path.
+Verify each reviewed candidate against its task-specific analysis anchor. A method is not high-quality merely because it is statistically conventional; its outcome, contrast, sample, model, and inference choices must align with the anchor or have a documented, evidence-based deviation that still answers the task.
+
+=== START OF PRUNING INPUT ===
+{
+  "iteration": 1,
+  "case": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_title": "The Ideological Congruence Controversy: The Impact of Alternative Measures, Data, and Time Periods on the Effects of Election Rules",
+    "paper_file": "original_paper.pdf",
+    "focal_claim": "Under SMD (single member district) election rules, party competition should lead the plurality vote winner to be close to the median voter. (p. 1484.)",
+    "hypothesis": "In the authorized election-level Manifesto-method data, the plurality vote winner's ideological distance from the median voter should be smaller under SMD election rules than under PR election rules.",
+    "study_type": "Observational"
+  },
+  "tasks_info": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "task_instruction": "In Task 1, the analyst was asked to conduct the analysis without any restrictions.",
+      "task_goal": "Test whether the focal claim is supported."
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "task_instruction": "You should use the data from 1945-2003. You should use the Manifesto Method instead of the Cit-Expert and Method in your analysis.",
+      "task_goal": "Produce one statistical result comparable to the original paper's focal result."
+    }
+  ],
+  "datasets": {
+    "authorized_only": "true. No agent may substitute a dataset not listed here.",
+    "source_type": "Comparative election archive with election-level ideological-distance measures",
+    "wave_or_subset": "Authorized Stata file covers election observations from 1945 through 2003; Task2 requires 1945-2003 and Manifesto Method.",
+    "sample_size": "331 rows in authorized dataset before exclusions; analytic sample depends on task-specific sample rules.",
+    "unit_of_analysis": "Election observation",
+    "notes": "The authorized dataset has 331 rows and 107 columns. The election rule variable smd is categorical with pr=244, smd=85, and missing=2. The Manifesto-method plurality-winner distance variable pldist1 has no missing values and is positive continuous, with min approximately 0.0000038, median 8.7264, and max 59.0092. The dataset year range is 1945-2003.",
+    "files": [
+      {
+        "name": "powell_original",
+        "file_path": "data/powell_original.dta",
+        "file_format": "dta",
+        "columns": [
+          "country",
+          "year",
+          "elecdate",
+          "edate",
+          "eleccoun",
+          "smd",
+          "govid_el",
+          "voter_id",
+          "med_parl",
+          "govdisto",
+          "legdisto",
+          "ptyname",
+          "ptysize",
+          "ptyideo",
+          "v15_a",
+          "v16_a",
+          "v17_a",
+          "v18_a",
+          "v19_a",
+          "v20_a",
+          "v21_a",
+          "v22_a",
+          "v23_a",
+          "v24_a",
+          "v25_a",
+          "v26_a",
+          "v27_a",
+          "v28_a",
+          "v29_a",
+          "v30_a",
+          "v31_a",
+          "v32_a",
+          "v33_a",
+          "v34_a",
+          "v35_a",
+          "v36_a",
+          "v37_a",
+          "v38_a",
+          "v39_a",
+          "v40_a",
+          "v41_a",
+          "v42_a",
+          "v43_a",
+          "v44_a",
+          "v45_a",
+          "v46_a",
+          "v47_a",
+          "v48_a",
+          "v49_a",
+          "v50_a",
+          "v51_a",
+          "v52_a",
+          "v53_a",
+          "v54_a",
+          "v55_a",
+          "v56_a",
+          "decade",
+          "france",
+          "britain",
+          "canada",
+          "aul",
+          "nz",
+          "sweden",
+          "norway",
+          "denmark",
+          "finland",
+          "ice",
+          "belgium",
+          "neth",
+          "lux",
+          "italy",
+          "spain",
+          "port",
+          "germany",
+          "austria",
+       ...
+2026-08-13 14:11:16,829 - robustness - INFO - ***Agent output (Thought):
+Thought: I will start by reading the original paper PDF and loading the authorized dataset, while also opening the two listed source-code files for inspection; these are all authorized inputs and can be reviewed in parallel without executing analysis.
+Action: Use parallel tool to read original_paper.pdf, load data/powell_original.dta, and read both candidate Python scripts.
+PAUSE
+2026-08-13 14:11:16,830 - robustness - INFO -  -- Running Action(s): 4 tools requested. Primary: read_pdf [Checkpoint: 2. Read Original Paper]
+2026-08-13 14:12:12,244 - robustness - INFO - ***Observation (read_pdf):
+--- PDF SUMMARY (Document was 23 pages long) ---
+The document was too long to read directly, so here is a detailed summary of all sections:
+
+The paper "The Ideological Congruence Controversy" by G. Bingham Powell, Jr. investigates the debate over ideological congruence between citizens and representatives within single member district (SMD) and proportional representation (PR) electoral systems. Traditionally, studies suggested that PR systems had a congruence advantage; however, recent studies dispute this, claiming no significant difference between SMD and PR systems when analyzing ideological congruence.
+
+Key Methodologies:
+1. **Measurement Approaches**: The study evaluates three primary methodologies for assessing ideological congruence:
+   - **Citizen Survey/Expert Survey (cit-ex)**: Uses surveys to place voters and uses expert surveys to assess party positions.
+   - **Party Vote/Party Manifesto (manifesto)**: Uses manifesto data to position parties and derives median voter positions based on election outcomes.
+   - **Citizen Identification/Citizen Perception (cit-perc)**: Relies on citizens placing themselves and parties on ideological scales through surveys.
+
+2. **Data Sources**: Utilizes datasets such as the Comparative Manifesto Project and the Comparative Study of Electoral Systems (CSES).
+
+Specific Metrics:
+- **Congruence Measurement**: Calculated as the distance between the positions of the median citizen and the positions of the median legislator or the government.
+
+Results:
+- Recent findings from the CSES data suggest that ideological congruence is not superior in PR systems compared to SMD systems, countering earlier results.
+- The decline in congruence association over the past decade is attributed to a convergence toward the median of plurality parties in SMD elections.
+
+Conclusions:
+- The study highlights that new findings of no distinct advantage for PR systems are largely influenced by differences in time periods rather than measurement methods.
+
+... (truncated)
+2026-08-13 14:12:12,269 - robustness - INFO - ***Observation (load_dataset):
+Successfully loaded dataset 'data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta'.
+2026-08-13 14:12:12,269 - robustness - INFO - ***Observation (read_txt):
+not a .txt file
+2026-08-13 14:12:12,269 - robustness - INFO - ***Observation (read_txt):
+not a .txt file
+2026-08-13 14:12:12,269 - robustness - INFO - 
+--- Turn 2 ---
+2026-08-13 14:12:20,139 - robustness - INFO - ***Agent output (Thought):
+Thought: The PDF summary confirms the observational election-level SMD/PR congruence context. I now need deeper dataset inspection—shape, columns, focal variables, IDs/clustering—and I will use the generic file reader for the Python source scripts because the plain-text reader did not accept .py files.
+Action: Inspect dataset structure and focal variables, and read both candidate Python scripts with read_file.
+PAUSE
+2026-08-13 14:12:20,140 - robustness - INFO -  -- Running Action(s): 10 tools requested. Primary: get_dataset_shape [Checkpoint: 3. Explore Dataset]
+2026-08-13 14:12:20,140 - robustness - INFO - ***Observation (get_dataset_shape):
+(331, 107)
+2026-08-13 14:12:20,140 - robustness - INFO - ***Observation (get_dataset_columns):
+['country', 'year', 'elecdate', 'edate', 'eleccoun', 'smd', 'govid_el', 'voter_id', 'med_parl', 'govdisto', 'legdisto', 'ptyname', 'ptysize', 'ptyideo', 'v15_a', 'v16_a', 'v17_a', 'v18_a', 'v19_a', 'v20_a', 'v21_a', 'v22_a', 'v23_a', 'v24_a', 'v25_a', 'v26_a', 'v27_a', 'v28_a', 'v29_a', 'v30_a', 'v31_a', 'v32_a', 'v33_a', 'v34_a', 'v35_a', 'v36_a', 'v37_a', 'v38_a', 'v39_a', 'v40_a', 'v41_a', 'v42_a', 'v43_a', 'v44_a', 'v45_a', 'v46_a', 'v47_a', 'v48_a', 'v49_a', 'v50_a', 'v51_a', 'v52_a', 'v53_a', 'v54_a', 'v55_a', 'v56_a', 'decade', 'france', 'britain', 'canada', 'aul', 'nz', 'sweden', 'norway', 'denmark', 'finland', 'ice', 'belgium', 'neth', 'lux', 'italy', 'spain', 'port', 'germany', 'austria', 'switz', 'ireland', 'ideosdw', 'elecsize', 'count', 'effptyv1', 'pty1d', 'pty2d', 'pty3d', 'pty4d', 'pty5d', 'pty6d', 'pty7d', 'pty8d', 'pty9d', 'pty10d', 'pty11d', 'pty12d', 'pty13d', 'pty14d', 'pty15d', 'clptymed', 'clptydlg', 'pldist1', 'secdist1', 'decade1', 'decade50', 'decade60', 'decade70', 'decade80', 'decade90', 'decade20']
+2026-08-13 14:12:20,148 - robustness - INFO - ***Observation (get_dataset_info):
+<class 'pandas.DataFrame'>
+RangeIndex: 331 entries, 0 to 330
+Columns: 107 entries, country to decade20
+dtypes: category(2), datetime64[s](1), float32(48), float64(20), int16(3), int32(3), int8(30)
+memory usage: 133.5 KB
+
+2026-08-13 14:12:20,186 - robustness - INFO - ***Observation (get_dataset_head):
+  country  year  elecdate      edate  eleccoun smd  ...  decade50  decade60  decade70  decade80  decade90  decade20
+0  sweden  1948      4809 1948-09-19         1  pr  ...         1         0         0         0         0         0
+1  sweden  1952      5209 1952-09-21         2  pr  ...         1         0         0         0         0         0
+2  sweden  1956      5609 1956-09-26         3  pr  ...         0         1         0         0         0         0
+3  sweden  1958      5806 1958-06-01         4  pr  ...         0         1         0         0         0         0
+4  sweden  1960      6009 1960-09-18         5  pr  ...         0         1         0         0         0         0
+
+[5 rows x 107 columns]
+2026-08-13 14:12:20,186 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'pldist1' ---
+Min:    3.800000058618025e-06
+Q1:     2.736071467399597
+Median: 8.726407051086426
+Q3:     16.574419021606445
+Max:    59.00920867919922
+missing_values: 0
+2026-08-13 14:12:20,187 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Categorical Summary for 'smd' ---
+Total Unique Categories: 3
+- pr: 244
+- smd: 85
+- nan: 2
+2026-08-13 14:12:20,188 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'year' ---
+Min:    1945
+Q1:     1959.5
+Median: 1975.0
+Q3:     1988.0
+Max:    2003
+missing_values: 0
+2026-08-13 14:12:20,188 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Categorical Summary for 'country' ---
+Total Unique Categories: 20
+- denmark: 23
+- australia: 23
+- new zealand: 20
+- belgium: 19
+- sweden: 18
+- iceland: 18
+- netherlands: 18
+- canada: 18
+- finland: 17
+- austria: 17
+- ireland: 17
+- britain: 16
+- norway: 15
+- france: 15
+- italy: 15
+- germany: 15
+- switz: 15
+- luxem: 13
+- portugal: 11
+- spain: 8
+2026-08-13 14:12:20,188 - robustness - INFO - ***Observation (read_file):
+#!/usr/bin/env python3
+"""
+Task1 robustness analysis for Powell_CompPolitStu_2009_0PZl.
+Focal claim: Under SMD election rules, party competition should lead the plurality vote winner to be close to the median voter.
+This script uses the authorized original Stata data and compares Manifesto-method plurality-winner distance from the median voter (pldist1)
+between SMD and PR elections using a rank-based Mann-Whitney test plus a Hodges-Lehmann SMD-minus-PR location estimate.
+"""
+import json
+import os
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+DATA_PATH = Path("data/powell_original.dta")
+OUT_DIR = Path("candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task1/Task1_candidate01")
+REQUIRED_COLUMNS = ["country", "year", "smd", "pldist1"]
+
+
+def classify_result(estimate, p_value, ci_low=None, ci_high=None):
+    """Classify according to the fixed PaperRobust conclusion rules; expected estimate is negative."""
+    if estimate < 0 and p_value <= 0.05:
+        return "support"
+    if estimate < 0 and 0.05 < p_value <= 0.055:
+        # Borderline support only if the interval narrowly crosses the null. Use a simple narrow-crossing check if CI exists.
+        if ci_low is not None and ci_high is not None and ci_low < 0 < ci_high and abs(ci_high) <= max(1e-12, 0.10 * abs(ci_low)):
+            return "support"
+        return "inconclusive"
+    if estimate > 0 and p_value < 0.05:
+        if ci_low is None or ci_low > 0:
+            return "opposite"
+    return "inconclusive"
+
+
+def bootstrap_ci_hl(smd_values, pr_values, reps=2000, seed=202409):
+    """Bootstrap percentile CI for Hodges-Lehmann pairwise difference median."""
+    rng = np.random.default_rng(seed)
+    n_smd = len(smd_values)
+    n_pr = len(pr_values)
+    boot = np.empty(reps, dtype=float)
+    for i in range(reps):
+        s = rng.choice(smd_values, size=n_smd, replace=True)
+        p = rng.choice(pr_values, size=n_pr, replace=True)
+        boot[i] = np.median(
+... (truncated)
+2026-08-13 14:12:20,188 - robustness - INFO - ***Observation (read_file):
+#!/usr/bin/env python3
+"""
+Task2 constrained robustness analysis for Powell_CompPolitStu_2009_0PZl.
+Instructions: use data from 1945-2003 and use the Manifesto Method instead of the Cit-Expert and Method.
+This script uses Manifesto-method plurality-winner distance from the median voter (pldist1) in the authorized Stata data and compares
+SMD with PR elections using a rank-based Mann-Whitney test plus a Hodges-Lehmann SMD-minus-PR location estimate.
+"""
+import json
+import os
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+DATA_PATH = Path("data/powell_original.dta")
+OUT_DIR = Path("candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task2/Task2_candidate01")
+REQUIRED_COLUMNS = ["country", "year", "smd", "pldist1"]
+YEAR_MIN = 1945
+YEAR_MAX = 2003
+
+
+def classify_result(estimate, p_value, ci_low=None, ci_high=None):
+    """Classify according to the fixed PaperRobust conclusion rules; expected estimate is negative."""
+    if estimate < 0 and p_value <= 0.05:
+        return "support"
+    if estimate < 0 and 0.05 < p_value <= 0.055:
+        if ci_low is not None and ci_high is not None and ci_low < 0 < ci_high and abs(ci_high) <= max(1e-12, 0.10 * abs(ci_low)):
+            return "support"
+        return "inconclusive"
+    if estimate > 0 and p_value < 0.05:
+        if ci_low is None or ci_low > 0:
+            return "opposite"
+    return "inconclusive"
+
+
+def bootstrap_ci_hl(smd_values, pr_values, reps=2000, seed=202410):
+    """Bootstrap percentile CI for Hodges-Lehmann pairwise difference median."""
+    rng = np.random.default_rng(seed)
+    n_smd = len(smd_values)
+    n_pr = len(pr_values)
+    boot = np.empty(reps, dtype=float)
+    for i in range(reps):
+        s = rng.choice(smd_values, size=n_smd, replace=True)
+        p = rng.choice(pr_values, size=n_pr, replace=True)
+        boot[i] = np.median((s[:, None] - p[None, :]).ravel())
+    return [float(np.percentile(boot, 2.5)), float(np.percentile(boot, 97.5))]
+
+
+de
+... (truncated)
+2026-08-13 14:12:20,188 - robustness - INFO - 
+--- Turn 3 ---
+2026-08-13 14:12:27,016 - robustness - INFO - ***Agent output (Thought):
+Thought: I have confirmed the scripts implement the declared Mann-Whitney/Hodges-Lehmann paths and report sample flow. I will add a little more dataset inspection on ID/election-count and related distance variables to assess dependence structure and focal variable plausibility.
+Action: Summarize election ID/count and related Manifesto distance variables.
+PAUSE
+2026-08-13 14:12:27,017 - robustness - INFO -  -- Running Action(s): 5 tools requested. Primary: get_dataset_variable_summary [Checkpoint: 3. Explore Dataset]
+2026-08-13 14:12:27,019 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'eleccoun' ---
+Min:    1
+Q1:     5.0
+Median: 9.0
+Q3:     13.0
+Max:    23
+missing_values: 0
+2026-08-13 14:12:27,021 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'pty1d' ---
+Min:    3.800000058618025e-06
+Q1:     2.736071467399597
+Median: 8.726407051086426
+Q3:     16.574419021606445
+Max:    59.00920867919922
+missing_values: 0
+2026-08-13 14:12:27,022 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'govdisto' ---
+Min:    9.999999747378752e-06
+Q1:     2.9474324584007263
+Median: 7.13138484954834
+Q3:     13.401782751083374
+Max:    45.65340042114258
+missing_values: 1
+2026-08-13 14:12:27,024 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'legdisto' ---
+Min:    0.0
+Q1:     1.3342900276184082
+Median: 3.69854998588562
+Q3:     8.567224979400635
+Max:    34.0063591003418
+missing_values: 0
+2026-08-13 14:12:27,143 - robustness - INFO - ***Observation (get_dataset_description):
+              year       elecdate                edate    eleccoun  ...    decade70    decade80    decade90    decade20
+count   331.000000     331.000000                  303  331.000000  ...  331.000000  331.000000  331.000000  331.000000
+mean   1974.262840   18912.320242  1972-05-02 02:46:20    9.135952  ...    0.175227    0.184290    0.175227    0.126888
+min    1945.000000    4503.000000  1945-03-18 00:00:00    1.000000  ...    0.000000    0.000000    0.000000    0.000000
+25%    1959.500000    5910.000000  1958-11-22 12:00:00    5.000000  ...    0.000000    0.000000    0.000000    0.000000
+50%    1975.000000    7509.000000  1973-02-28 00:00:00    9.000000  ...    0.000000    0.000000    0.000000    0.000000
+75%    1988.000000    8805.500000  1985-04-20 12:00:00   13.000000  ...    0.000000    0.000000    0.000000    0.000000
+max    2003.000000  200310.000000  1998-10-03 00:00:00   23.000000  ...    1.000000    1.000000    1.000000    1.000000
+std      16.825137   46063.495079                  NaN    5.330553  ...    0.380736    0.388308    0.380736    0.333352
+
+[8 rows x 105 columns]
+2026-08-13 14:12:27,143 - robustness - INFO - 
+--- Turn 4 ---
+2026-08-13 14:13:56,773 - robustness - INFO - ***Agent output (Thought):
+{
+  "pruning_output": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_id": "Powell_CompPolitStu_2009_0PZl",
+    "task_pair_records": [
+      {
+        "path_id": "Powell_CompPolitStu_2009_0PZl_path04",
+        "tasks": {
+          "task1": {
+            "candidates": [
+              {
+                "candidate_id": "Task1_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use the authorized Manifesto-method plurality-winner distance and test whether SMD elections have lower distance from the median voter than PR elections using a nonparametric rank-based Mann-Whitney comparison with a Hodges-Lehmann SMD-minus-PR location estimate.",
+                  "path_signature": {
+                    "model_family": "mann_whitney_rank_sum",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Task1: rows with election rule coded smd or pr and nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for pldist1 and smd.",
+                    "variable_construction": "Clean smd labels to lower-case strings, create binary smd_bin where 1=smd and 0=pr, and retain raw pldist1 without scaling or winsorization.",
+                    "inference_rule": "Expected direction is negative for the SMD-minus-PR Hodges-Lehmann median pairwise difference in pldist1. Support requires the expected direction with Mann-Whitney two-sided p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the bootstrap interval narrowly crosses zero. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material positive SMD-minus-PR difference."
+                  },
+                  "analysis_anchor": {
+                    "estimand": {
+                      "outcome": "pldist1, the Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units; smaller values mean the plurality vote winner is closer to the median voter.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell election observations with election rule coded as smd or pr and nonmissing Manifesto plurality-winner distance.",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset powell_original.dta.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Retain observations with nonmissing pldist1."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations with missing smd because they cannot be assigned to the focal SMD-versus-PR contrast."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "not_stated",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "SMD-minus-PR distance should be negative, meaning plurality winners under SMD are closer to the median voter than plurality winners under PR.",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 can be borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null."
+                    }
+                  },
+                  "analysis_path": {
+                    "path_name": "rank_sum_smd_pr_plurality_distance_task1",
+                    "path_description": "Compare raw Manifesto-method pldist1 between SMD and PR election observations using a Mann-Whitney rank-sum test and report the Hodges-Lehmann SMD-minus-PR median pairwise difference.",
+                    "software": "Python",
+                    "model_family": "mann_whitney_rank_sum",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with pandas.read_stata.",
+                      "Verify that country, year, smd, and pldist1 exist.",
+                      "Report starting rows.",
+                      "Clean smd to a lower-case string variable smd_clean.",
+                      "Keep observations where smd_clean is smd or pr and report rows removed.",
+                      "Drop rows missing pldist1 or smd_clean and report rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Compute group descriptive statistics for pldist1 by smd_clean.",
+                      "Run a two-sided Mann-Whitney U test comparing pldist1 distributions for SMD versus PR.",
+                      "Compute the Hodges-Lehmann estimate as the median of all pairwise SMD-minus-PR pldist1 differences.",
+                      "Compute a bootstrap percentile interval for the Hodges-Lehmann estimate.",
+                      "Classify the result using the fixed conclusion rule."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, interpreted as Manifesto-method plurality-winner distance from the median voter.",
+                      "main_predictor_measure": "smd_bin, a binary contrast where 1 indicates smd and 0 indicates pr.",
+                      "control_variables": [],
+                      "sample_restriction": "Use authorized observations with smd coded smd or pr and nonmissing pldist1.",
+                      "outlier_rule": "No outlier exclusions, winsorization, or transformations are applied.",
+                      "missing_data_rule": "Listwise deletion for pldist1 and smd_clean after retaining smd/pr election-rule observations.",
+                      "model_choice": "Mann-Whitney rank-sum test with Hodges-Lehmann SMD-minus-PR location estimate.",
+                      "inference_rule": "Expected direction is negative. Support requires a negative Hodges-Lehmann SMD-minus-PR difference with two-sided p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the interval narrowly crosses zero."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Mann-Whitney rank-sum test with Hodges-Lehmann location estimate",
+                        "formula": "pldist1 ranks compared by smd_bin; Hodges-Lehmann = median(pldist1_SMD_i - pldist1_PR_j) over all SMD-PR pairs"
+                      }
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "Hodges-Lehmann median pairwise difference in pldist1 for SMD observations minus PR observations.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                      "target_population": "Authorized Powell election observations with smd/pr election-rule coding and nonmissing pldist1.",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset.",
+                      "claim_mapping": "A negative SMD-minus-PR distance indicates that SMD plurality winners are closer to the median voter than PR plurality winners."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "Uses pldist1, the anchor Manifesto-method plurality-winner distance."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "Uses the SMD-versus-PR election-rule contrast from smd."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "Uses all authorized observations with focal election-rule coding and nonmissing focal variables."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "Uses a rank-based Mann-Whitney comparison and Hodges-Lehmann estimate."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "Keeps the expected direction as lower pldist1 under SMD and applies the fixed conclusion rules."
+                      }
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "code_reports_sample_flow": "true"
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "country",
+                        "year",
+                        "smd",
+                        "pldist1"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass"
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task1/Task1_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task1/Task1_candidate01/analysis_task1.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task1/Task1_candidate01/analysis_task1.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task1/Task1_candidate01/analysis_task1.py"
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "High-quality. The original paper supports the focal observational election-level context: SMD systems are theorized to produce plurality-party convergence toward the median voter, and Manifesto-method election observations are an authorized basis for examining the plurality-winner distance. The dataset inspection confirmed 331 rows, 107 columns, election observations repeated within 20 countries, year range 1945-2003, smd categories pr=244, smd=85, missing=2, and pldist1 as a positive nonmissing Manifesto distance matching pty1d. The candidate uses the authorized dataset, focal pldist1 outcome, SMD-versus-PR contrast, raw outcome scale, and excludes only observations with non-focal/missing election-rule coding. The Mann-Whitney/Hodges-Lehmann analysis is a justified model-family deviation, not a semantic duplicate of prior OLS, quantile, or Gamma GLM shared-memory paths. The code implements the plan, checks required columns, reports starting rows and exclusions, preserves focal variable structure, and provides the focal statistic and fixed conclusion classification. No low-quality rule is triggered under M1-M6 or Task1 rules 1.1-1.9; guardrails G1, G8, G9, and G14 are relevant because alternative modeling or clustering preferences alone are insufficient defects.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The path tests whether SMD election rules are associated with plurality winners being closer to the median voter, operationalized as lower pldist1 under SMD than PR."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The code uses only data/powell_original.dta, the authorized original dataset."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared memory contains OLS with decade fixed effects, simple OLS, median quantile regression, and Gamma GLM paths; this rank-sum/Hodges-Lehmann path is substantively distinct while preserving the focal estimand components."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task1 is fully specified with outcome, contrast, sample rules, model, inference rule, code, entry file, and run command."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The Hodges-Lehmann SMD-minus-PR difference in raw pldist1 directly addresses whether SMD plurality winners are closer to the median voter than PR plurality winners in the authorized 1945-2003 election observations."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified country, year, smd, and pldist1 columns. smd has focal categories smd/pr plus two missing values; pldist1 is positive and nonmissing."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code records starting rows, rows removed by keeping smd/pr election rules, rows removed for missing pldist1 or smd_clean, and final analytic rows."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "Excluding missing/non-focal smd values is required for the SMD-versus-PR contrast; no outcome transformation, winsorization, or outlier exclusion is applied."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used, and none are required by the Task1 anchor for this direct comparison."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 is kept as a continuous raw distance; smd is collapsed only to the focal binary SMD-versus-PR contrast, with missing election-rule cases excluded."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The Task1 script implements the declared dataset, required columns, pldist1 outcome, smd_clean/smd_bin construction, sample filters, Mann-Whitney test, Hodges-Lehmann estimate, bootstrap interval, common-language probability, and conclusion rule."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "A rank-based comparison is coherently justified as a nonparametric robustness analysis for a positive, right-skewed continuous distance outcome while preserving the focal outcome, contrast, and direction."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "The candidate provides an identifiable Python script, task-specific entry file, run command, authorized data path, and traceable output structure."
+                  }
+                }
+              }
+            ]
+          },
+          "task2": {
+            "candidates": [
+              {
+                "candidate_id": "Task2_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use the authorized Manifesto-method plurality-winner distance and test whether SMD elections have lower distance from the median voter than PR elections using a nonparametric rank-based Mann-Whitney comparison with a Hodges-Lehmann SMD-minus-PR location estimate.",
+                  "path_signature": {
+                    "model_family": "mann_whitney_rank_sum",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Task2: restrict to years 1945-2003 inclusive, rows with election rule coded smd or pr, and nonmissing pldist1/year.",
+                    "missing_data_rule": "Listwise deletion for pldist1, smd, and year.",
+                    "variable_construction": "Clean smd labels to lower-case strings, create binary smd_bin where 1=smd and 0=pr, and retain raw pldist1 without scaling or winsorization.",
+                    "inference_rule": "Expected direction is negative for the SMD-minus-PR Hodges-Lehmann median pairwise difference in pldist1. Support requires the expected direction with Mann-Whitney two-sided p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the bootstrap interval narrowly crosses zero. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material positive SMD-minus-PR difference."
+                  },
+                  "analysis_anchor": {
+                    "estimand": {
+                      "outcome": "pldist1, the Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units; smaller values mean the plurality vote winner is closer to the median voter.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell election observations from 1945 through 2003 with election rule coded as smd or pr and nonmissing Manifesto plurality-winner distance.",
+                      "time_scope": "1945-2003 inclusive"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset powell_original.dta.",
+                        "Use observations from 1945 through 2003 inclusive, as required by the Task2 instruction.",
+                        "Use the Manifesto Method operationalized by pldist1, as required by the Task2 instruction.",
+                        "Retain observations with smd coded as smd or pr."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations with missing smd because they cannot be assigned to the focal SMD-versus-PR contrast.",
+                        "Exclude observations with missing pldist1 or year."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "not_stated",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "SMD-minus-PR distance should be negative, meaning plurality winners under SMD are closer to the median voter than plurality winners under PR.",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 can be borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null."
+                    }
+                  },
+                  "analysis_path": {
+                    "path_name": "rank_sum_smd_pr_plurality_distance_task2_1945_2003_manifesto",
+                    "path_description": "Within the required 1945-2003 Manifesto-method data, compare raw pldist1 between SMD and PR election observations using a Mann-Whitney rank-sum test and report the Hodges-Lehmann SMD-minus-PR median pairwise difference.",
+                    "software": "Python",
+                    "model_family": "mann_whitney_rank_sum",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with pandas.read_stata.",
+                      "Verify that country, year, smd, and pldist1 exist.",
+                      "Report starting rows.",
+                      "Restrict to years 1945 through 2003 inclusive and report rows removed.",
+                      "Clean smd to a lower-case string variable smd_clean.",
+                      "Keep observations where smd_clean is smd or pr and report rows removed.",
+                      "Drop rows missing year, pldist1, or smd_clean and report rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Compute group descriptive statistics for pldist1 by smd_clean.",
+                      "Run a two-sided Mann-Whitney U test comparing pldist1 distributions for SMD versus PR.",
+                      "Compute the Hodges-Lehmann estimate as the median of all pairwise SMD-minus-PR pldist1 differences.",
+                      "Compute a bootstrap percentile interval for the Hodges-Lehmann estimate.",
+                      "Classify the result using the fixed conclusion rule."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, interpreted as Manifesto-method plurality-winner distance from the median voter.",
+                      "main_predictor_measure": "smd_bin, a binary contrast where 1 indicates smd and 0 indicates pr.",
+                      "control_variables": [],
+                      "sample_restriction": "Use 1945-2003 inclusive, the Manifesto-method pldist1 variable, observations with smd coded smd or pr, and nonmissing focal variables.",
+                      "outlier_rule": "No outlier exclusions, winsorization, or transformations are applied.",
+                      "missing_data_rule": "Listwise deletion for year, pldist1, and smd_clean after retaining 1945-2003 and smd/pr observations.",
+                      "model_choice": "Mann-Whitney rank-sum test with Hodges-Lehmann SMD-minus-PR location estimate.",
+                      "inference_rule": "Expected direction is negative. Support requires a negative Hodges-Lehmann SMD-minus-PR difference with two-sided p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the interval narrowly crosses zero."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Mann-Whitney rank-sum test with Hodges-Lehmann location estimate",
+                        "formula": "pldist1 ranks compared by smd_bin among years 1945-2003; Hodges-Lehmann = median(pldist1_SMD_i - pldist1_PR_j) over all SMD-PR pairs"
+                      }
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "Hodges-Lehmann median pairwise difference in pldist1 for SMD observations minus PR observations during 1945-2003.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                      "target_population": "Authorized Powell election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing pldist1.",
+                      "time_scope": "1945-2003 inclusive.",
+                      "claim_mapping": "A negative SMD-minus-PR distance in the required Manifesto-method 1945-2003 data indicates that SMD plurality winners are closer to the median voter than PR plurality winners."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "Uses pldist1, the Manifesto-method outcome required by Task2."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "Uses the SMD-versus-PR election-rule contrast from smd."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "Applies the Task2-required 1945-2003 time period and nonmissing focal variables."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "Uses a rank-based Mann-Whitney comparison and Hodges-Lehmann estimate."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "Keeps the expected direction as lower pldist1 under SMD and applies the fixed conclusion rules."
+                      }
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "code_reports_sample_flow": "true"
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "country",
+                        "year",
+                        "smd",
+                        "pldist1"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass"
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task2/Task2_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task2/Task2_candidate01/analysis_task2.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task2/Task2_candidate01/analysis_task2.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path04/task2/Task2_candidate01/analysis_task2.py"
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "High-quality. Task2 explicitly requires the 1945-2003 data and the Manifesto Method rather than Cit-Expert, and the inspected paper summary and dataset support this mapping. Dataset inspection confirmed the authorized file covers 1945-2003, pldist1 is a nonmissing Manifesto plurality-winner distance variable, smd provides the SMD/PR grouping, and observations are election-level with repeated countries. The candidate implements the required time window, Manifesto outcome, SMD-versus-PR contrast, and raw distance scale. The rank-based model is a justified robustness/comparable-result choice because the original exact model for this focal claim is not imposed by the anchor, and the outcome is positive and right-skewed. The Task2 script implements the declared 1945-2003 filter, column checks, smd_clean/smd_bin construction, sample-flow reporting, Mann-Whitney test, Hodges-Lehmann estimate, bootstrap interval, common-language probability, and fixed conclusion classification. No Task2 low-quality rule 2.1-2.8 or method-quality rule M1-M6 is triggered; guardrails G1, G4, G8, G9, and G14 were considered, especially because a different model family or lack of additional clustering adjustment is not by itself a material defect.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The path tests the same substantive claim about SMD plurality-winner closeness to the median voter using the Task2-required Manifesto data."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The code uses only data/powell_original.dta, the authorized original dataset."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "The shared-memory Task2 paths use simple OLS, median quantile regression, and Gamma GLM; this Mann-Whitney/Hodges-Lehmann path is not a semantic duplicate."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task2 is fully specified with the required time window, Manifesto outcome, contrast, model, inference rule, code, entry file, and run command."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The SMD-minus-PR Hodges-Lehmann difference in raw pldist1 among 1945-2003 observations answers the requested Manifesto-method SMD-vs-PR focal result."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified year, smd, and pldist1. Year spans 1945-2003 with no missing values; pldist1 is nonmissing and positive; smd has the focal pr and smd categories plus two missing values."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code reports starting rows, rows removed by the 1945-2003 filter, rows removed by the smd/pr filter, rows removed for missing year/pldist1/smd, and final analytic rows."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "The 1945-2003 restriction and Manifesto-method pldist1 are explicitly required by Task2; excluding missing/non-focal smd values is required for the contrast; no outlier exclusions or transformations are applied."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used, and none are required by the Task2 anchor for this comparable SMD-vs-PR result."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 remains a continuous raw distance; smd is reduced only to the focal binary SMD-versus-PR grouping, which is necessary for the assigned contrast."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The Task2 script implements the declared dataset, 1945-2003 restriction, pldist1 outcome, smd_clean/smd_bin construction, no controls, Mann-Whitney test, Hodges-Lehmann estimate, bootstrap interval, common-language probability, and conclusion rule."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The method justification coherently links a rank-based nonparametric comparison to the right-skewed continuous distance outcome and preserves the Task2-required outcome, period, contrast, and inference direction."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "The candidate provides an identifiable Python script, task-specific entry file, run command, authorized data path, and traceable output structure."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "task_pair_assessment": {
+          "decision": "high-quality",
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "reason": "Both active path04 candidates are independently high-quality. Each uses the authorized Powell dataset, the verified Manifesto-method pldist1 outcome, the focal SMD-versus-PR contrast, explicit sample-flow reporting, justified restrictions, traceable executable code, and a non-duplicative rank-based method that remains aligned with its task anchor."
+        }
+      }
+    ]
+  }
+}
+2026-08-13 14:13:56,774 - robustness - INFO - 
+--- Final Answer Found ---
+2026-08-13 14:14:44,498 - robustness - INFO - [prune->execute] both active candidates are high-quality

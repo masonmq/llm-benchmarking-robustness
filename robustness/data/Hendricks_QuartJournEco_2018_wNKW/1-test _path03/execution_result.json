@@ -1,0 +1,30 @@
+{
+  "plan_id": "Hendricks_QuartJournEco_2018_wNKW_path03",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "Task1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Task1 Sample Flow (rows)\n  Starting rows: 2854\n  Removed non-positive/invalid adjusted wages: 0\n  Removed rows with missing material variables: 0\n  Removed non-focal education groups: 1108\n  Final analytic rows: 1746\n\nTask1 OLS with HC3 robust SEs: log_wage_gain ~ edu_group + female + age + age^2 + country FE + cohort FE\n  Coef (never_high_school vs college_degree): -0.051173\n  Robust SE: 0.213517\n  t value: -0.2397\n  p value: 0.810616\n  95% CI: [-0.469666, 0.367320]\n  Percent difference: -4.99%%\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task1/Task1_candidate01/analysis_task1.R",
+      "resolved_path": "/workspace/candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task1/Task1_candidate01/analysis_task1.R"
+    },
+    {
+      "name": "Task2",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Task2 Sample Flow (rows)\n  Starting rows: 2854\n  Removed non-positive/invalid adjusted wages: 0\n  Removed rows with missing material variables: 0\n  Removed non-focal education groups: 1108\n  Final analytic rows: 1746\n\nTask2 OLS (no sector/region, demographics only): log_wage_gain ~ edu_group + female + age + age^2\n  Coef (never_high_school vs college_degree): 0.011383\n  SE: 0.123134\n  t value: 0.0924\n  p value: 0.926356\n  95% CI: [-0.229959, 0.252725]\n  Percent difference: 1.14%%\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task2/Task2_candidate01/analysis_task2.R",
+      "resolved_path": "/workspace/candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task2/Task2_candidate01/analysis_task2.R"
+    }
+  ],
+  "ok": true
+}

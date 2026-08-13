@@ -28,6 +28,10 @@
           "description": "Task ID for this output entry.",
           "example": "Task2"
         },
+        "candidate_id": {
+          "description": "Active candidate ID for this task, copied from the universal schema.",
+          "example": "Task2_candidate02"
+        },
         "task_role": {
           "description": "Role of the task, copied from the input schema.",
           "example": "comparable_result_oriented_reanalysis"
@@ -152,9 +156,17 @@
         },
         "conclusion": {
           "conclusion_class": {
-            "description": "Whether this task result supports the focal claim.",
+            "description": "Relationship between this task result and the focal claim. For a frequentist result, use support for the expected direction with p <= 0.05, or for qualifying borderline evidence with 0.05 < p <= 0.055. Use inconclusive for clearly weak aligned evidence. Use opposite only for affirmative evidence of a material contrary effect.",
             "allowed_values": ["support", "inconclusive", "opposite"],
             "example": "support"
+          },
+          "rule_applied": {
+            "description": "Conclusion rule derived from the task anchor. For a frequentist result, expected direction with p <= 0.05 is support. A result with 0.05 < p <= 0.055 remains support only when its estimate is substantively meaningful and its uncertainty interval narrowly crosses the null. Clearly weak aligned evidence is inconclusive.",
+            "example": "Support requires affirmative or qualifying borderline evidence in the direction stated by the focal claim."
+          },
+          "uncertainty_statement": {
+            "description": "Plain-language statement of statistical strength and uncertainty, separate from conclusion_class.",
+            "example": "The estimate provides borderline support because p is 0.052, the effect is meaningful, and the confidence interval only narrowly crosses zero."
           },
           "conclusion_text": {
             "description": "Short conclusion for this task.",
@@ -193,19 +205,31 @@
         "description": "The paper or case ID.",
         "example": "Christensen_EurJournPersonality_2018_8R9d"
       },
-      "recommended_status": {
-        "description": "Recommended shared-memory status after this execution attempt.",
-        "allowed_values": ["executed_success", "execution_failed_retryable", "abandoned"],
+      "task_updates": [
+        {
+          "task_id": {
+            "description": "Task ID for this candidate update.",
+            "example": "Task1"
+          },
+          "candidate_id": {
+            "description": "Active candidate ID that was executed.",
+            "example": "Task1_candidate01"
+          },
+          "recommended_status": {
+            "description": "Final candidate status after bounded repairs are complete.",
+            "allowed_values": ["executed_success", "execution_failed"],
+            "example": "executed_success"
+          },
+          "status_reason": {
+            "description": "Short reason for this candidate's final status.",
+            "example": "Task1 completed successfully after a file-path fix."
+          }
+        }
+      ],
+      "execution_run_status": {
+        "description": "Final paired-run status. Use executed_success only when both task candidates succeed.",
+        "allowed_values": ["executed_success", "execution_failed"],
         "example": "executed_success"
-      },
-      "status_reason": {
-        "description": "Short reason for the recommended status.",
-        "example": "Both tasks executed successfully and produced usable outputs."
-      },
-      "retry_recommended": {
-        "description": "Whether the execution should be retried in a future run.",
-        "allowed_values": ["yes", "no"],
-        "example": "no"
       },
       "update_summary": {
         "description": "Compact explanation suitable for the shared memory record.",

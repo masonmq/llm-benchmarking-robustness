@@ -1,0 +1,27 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:          log_wage_gain   R-squared:                       0.006
+Model:                            OLS   Adj. R-squared:                  0.005
+Method:                 Least Squares   F-statistic:                     5.743
+Date:                Thu, 13 Aug 2026   Prob (F-statistic):           0.000649
+Time:                        02:43:58   Log-Likelihood:                -5104.5
+No. Observations:                2854   AIC:                         1.022e+04
+Df Residuals:                    2850   BIC:                         1.024e+04
+Df Model:                           3                                         
+Covariance Type:                  HC3                                         
+===================================================================================================================================================
+                                                                                      coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                                           0.5972      0.115      5.186      0.000       0.372       0.823
+C(edu_group, Treatment(reference="college_degree"))[T.never_high_school]            0.2603      0.121      2.153      0.031       0.023       0.497
+C(edu_group, Treatment(reference="college_degree"))[T.some_high_school]             0.2729      0.126      2.166      0.030       0.026       0.520
+C(edu_group, Treatment(reference="college_degree"))[T.high_school_some_college]    -0.0286      0.137     -0.209      0.834      -0.296       0.239
+==============================================================================
+Omnibus:                     2210.806   Durbin-Watson:                   1.619
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):           119645.024
+Skew:                          -3.188   Prob(JB):                         0.00
+Kurtosis:                      34.072   Cond. No.                         10.6
+==============================================================================
+
+Notes:
+[1] Standard Errors are heteroscedasticity robust (HC3)

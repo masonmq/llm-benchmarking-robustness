@@ -17,6 +17,12 @@ def main():
         default=False,
         help="After pruning, execute the path only when the decision is high-quality.",
     )
+    p.add_argument(
+        "--max-planning-pruning-loops",
+        type=int,
+        default=5,
+        help="Maximum Planning-Pruning rounds, including the initial round.",
+    )
     p.add_argument("--code-mode",choices=CODE_MODE_CHOICES,default=DEFAULT_CODE_MODE,help="Code execution mode: 'native' (run original language) or 'python' (translate all to Python and run Python).",)
     p.add_argument("--model-name", help="Please specify the OpenAI model to be used.")
     args = p.parse_args()
@@ -37,6 +43,7 @@ def main():
             show_prompt=args.show_prompt,
             run_pruning=not args.no_pruning,
             run_execution=args.run_execution,
+            max_planning_pruning_loops=args.max_planning_pruning_loops,
         )
 
     else:

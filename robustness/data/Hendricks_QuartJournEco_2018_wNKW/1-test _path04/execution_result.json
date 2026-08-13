@@ -1,0 +1,30 @@
+{
+  "plan_id": "Hendricks_QuartJournEco_2018_wNKW_path04",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "Task1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"analysis\": \"Task1_candidate01_all_education_groups_country_FE_HC3\",\n  \"dataset\": \"data/wage_gain_table.xlsx\",\n  \"formula\": \"log_wage_gain ~ C(edu_group, Treatment(reference=\\\"college_degree\\\")) + C(country)\",\n  \"covariance\": \"HC3 robust\",\n  \"focal_term\": \"C(edu_group, Treatment(reference=\\\"college_degree\\\"))[T.never_high_school]\",\n  \"metric\": \"OLS coefficient: log wage gain difference, never_high_school versus college_degree\",\n  \"coefficient_log_points\": 0.18757087068656808,\n  \"percent_difference_exp_coef_minus_1\": 20.631573881622668,\n  \"std_error\": 0.16441381863405935,\n  \"t_value\": 1.14084614203901,\n  \"p_value_two_sided\": 0.25393395517533746,\n  \"confidence_interval_95_log_points\": [\n    -0.13467429239688866,\n    0.5098160337700248\n  ],\n  \"nobs\": 2854,\n  \"r_squared\": 0.020604023487568845,\n  \"education_group_counts\": {\n    \"never_high_school\": 1594,\n    \"some_high_school\": 669,\n    \"high_school_some_college\": 439,\n    \"college_degree\": 152\n  },\n  \"country_counts\": {\n    \"MEX\": 2376,\n    \"PRI\": 228,\n    \"DOM\": 76,\n    \"NIC\": 42,\n    \"SLV\": 40,\n    \"GTM\": 28,\n    \"COL\": 25,\n    \"HTI\": 25,\n    \"PER\": 9,\n    \"ECU\": 5\n  },\n  \"sample_flow\": [\n    {\n      \"step\": \"starting rows in wage_gain_table.xlsx\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    },\n    {\n      \"step\": \"keep finite adjusted home and U.S. wages\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    },\n    {\n      \"step\": \"keep positive adjusted home and U.S. wages for logarithms\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    },\n    {\n      \"step\": \"drop missing focal outcome, education group, or country\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    }\n  ],\n  \"support_rule\": \"clear support if focal coefficient is positive and two-sided p < 0.05; inconclusive if same direction but p >= 0.05; opposite if negative with p < 0.05\"\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task1/Task1_candidate01/analysis_task1.py",
+      "resolved_path": "/workspace/candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task1/Task1_candidate01/analysis_task1.py"
+    },
+    {
+      "name": "Task2",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"analysis\": \"Task2_candidate01_pooled_all_education_groups_no_sector_region_controls_HC3\",\n  \"dataset\": \"data/wage_gain_table.xlsx\",\n  \"formula\": \"log_wage_gain ~ C(edu_group, Treatment(reference=\\\"college_degree\\\"))\",\n  \"covariance\": \"HC3 robust\",\n  \"focal_term\": \"C(edu_group, Treatment(reference=\\\"college_degree\\\"))[T.never_high_school]\",\n  \"metric\": \"OLS coefficient: log wage gain difference, never_high_school versus college_degree\",\n  \"coefficient_log_points\": 0.26034768591091784,\n  \"percent_difference_exp_coef_minus_1\": 29.7381089383453,\n  \"std_error\": 0.12094835672052887,\n  \"t_value\": 2.152552485789403,\n  \"p_value_two_sided\": 0.0313538661531665,\n  \"confidence_interval_95_log_points\": [\n    0.023293262749378263,\n    0.4974021090724574\n  ],\n  \"nobs\": 2854,\n  \"r_squared\": 0.006368747820331144,\n  \"education_group_counts\": {\n    \"never_high_school\": 1594,\n    \"some_high_school\": 669,\n    \"high_school_some_college\": 439,\n    \"college_degree\": 152\n  },\n  \"country_counts_descriptive_only\": {\n    \"MEX\": 2376,\n    \"PRI\": 228,\n    \"DOM\": 76,\n    \"NIC\": 42,\n    \"SLV\": 40,\n    \"GTM\": 28,\n    \"COL\": 25,\n    \"HTI\": 25,\n    \"PER\": 9,\n    \"ECU\": 5\n  },\n  \"sample_flow\": [\n    {\n      \"step\": \"starting rows in pooled wage_gain_table.xlsx\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    },\n    {\n      \"step\": \"keep finite adjusted home and U.S. wages\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    },\n    {\n      \"step\": \"keep positive adjusted home and U.S. wages for logarithms\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    },\n    {\n      \"step\": \"drop missing focal outcome or education group\",\n      \"rows_before\": 2854,\n      \"rows_after\": 2854,\n      \"rows_removed\": 0\n    }\n  ],\n  \"support_rule\": \"clear support if focal coefficient is positive and two-sided p < 0.05; inconclusive if same direction but p >= 0.05; opposite if negative with p < 0.05\"\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task2/Task2_candidate01/analysis_task2.py",
+      "resolved_path": "/workspace/candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task2/Task2_candidate01/analysis_task2.py"
+    }
+  ],
+  "ok": true
+}

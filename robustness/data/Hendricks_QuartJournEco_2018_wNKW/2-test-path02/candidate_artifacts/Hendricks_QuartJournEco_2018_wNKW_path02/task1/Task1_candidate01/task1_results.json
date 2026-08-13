@@ -1,0 +1,49 @@
+{
+  "task": "Task1",
+  "analysis": "median_quantile_regression_adjusted",
+  "sample_flow": [
+    {
+      "step": "starting_rows",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "drop_missing_required_columns",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "drop_nonpositive_adjusted_wages",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "drop_missing_constructed_model_variables",
+      "rows": 2854,
+      "removed": 0
+    }
+  ],
+  "final_analytic_n": 2854,
+  "education_group_counts": {
+    "no_high_school": 1594,
+    "some_high_school": 669,
+    "high_school_some_college": 439,
+    "college_degree": 152
+  },
+  "focal_result": {
+    "metric": "no_high_school_vs_college_degree_median_log_wage_gain_coefficient",
+    "term": "C(edu_group, Treatment(reference=\"college_degree\"))[T.no_high_school]",
+    "estimate": 0.17475644570367876,
+    "p_value": 0.05039965066269267,
+    "confidence_interval_95": [
+      -0.000304570007870375,
+      0.3498174614152279
+    ],
+    "exp_estimate_percent_difference": 19.095611880704322,
+    "expected_direction": "positive",
+    "conclusion_class": "support",
+    "statistical_strength": "weak_directional"
+  },
+  "model_formula": "log_wage_gain ~ C(edu_group, Treatment(reference=\"college_degree\")) + C(country) + C(sex) + age_home_job + age_home_job_sq + yearLastHomeJob + yearLastUsJob",
+  "model_summary_text": "                         QuantReg Regression Results                          \n==============================================================================\nDep. Variable:          log_wage_gain   Pseudo R-squared:               0.1336\nModel:                       QuantReg   Bandwidth:                      0.2902\nMethod:                 Least Squares   Sparsity:                        1.968\nDate:                Thu, 13 Aug 2026   No. Observations:                 2854\nTime:                        12:00:20   Df Residuals:                     2836\n                                        Df Model:                           17\n===================================================================================================================================================\n                                                                                      coef    std err          t      P>|t|      [0.025      0.975]\n---------------------------------------------------------------------------------------------------------------------------------------------------\nIntercept                                                                        -139.2682      6.748    -20.640      0.000    -152.499    -126.037\nC(edu_group, Treatment(reference=\"college_degree\"))[T.no_high_school]               0.1748      0.089      1.957      0.050      -0.000       0.350\nC(edu_group, Treatment(reference=\"college_degree\"))[T.some_high_school]             0.1562      0.092      1.692      0.091      -0.025       0.337\nC(edu_group, Treatment(reference=\"college_degree\"))[T.high_school_some_college]    -0.0256      0.095     -0.268      0.789      -0.213       0.161\nC(country)[T.DOM]                                                                   1.1186      0.233      4.808      0.000       0.662       1.575\nC(country)[T.ECU]                                                                  -0.1319      0.485     -0.272      0.786      -1.084       0.820\nC(country)[T.GTM]                                                                   0.0938      0.276      0.340      0.734      -0.447       0.634\nC(country)[T.HTI]                                                                   0.7804      0.284      2.752      0.006       0.224       1.336\nC(country)[T.MEX]                                                                   0.6494      0.205      3.163      0.002       0.247       1.052\nC(country)[T.NIC]                                                                   0.7670      0.250      3.063      0.002       0.276       1.258\nC(country)[T.PER]                                                                   0.6688      0.384      1.744      0.081      -0.083       1.421\nC(country)[T.PRI]                                                                   0.7370      0.216      3.413      0.001       0.314       1.160\nC(country)[T.SLV]                                                                   0.2480      0.256      0.968      0.333      -0.254       0.750\nC(sex)[T.2]                                                                         0.0562      0.060      0.939      0.348      -0.061       0.173\nage_home_job                                                                        0.0256      0.013      2.019      0.044       0.001       0.050\nage_home_job_sq                                                                    -0.0004      0.000     -2.406      0.016      -0.001   -7.04e-05\nyearLastHomeJob                                                                     0.0883      0.003     27.847      0.000       0.082       0.094\nyearLastUsJob                                                                      -0.0188      0.002     -7.658      0.000      -0.024      -0.014\n===================================================================================================================================================\n\nThe condition number is large, 1.19e+06. This might indicate that there are\nstrong multicollinearity or other numerical problems."
+}

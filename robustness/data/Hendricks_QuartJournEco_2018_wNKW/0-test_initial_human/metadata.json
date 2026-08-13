@@ -1,0 +1,631 @@
+{
+  "plan-analysis": {
+    "status": "Success",
+    "total_time_seconds": 1648.39,
+    "total_tokens": 277234,
+    "prompt_tokens": 267958,
+    "completion_tokens": 9276,
+    "total_turns": 8,
+    "checkpoint_stats": {
+      "Running Action": {
+        "time": 1555.5073549747467,
+        "tokens": 232262,
+        "prompt_tokens": 229318,
+        "completion_tokens": 2944,
+        "turns": 7
+      },
+      "8. Final Output & Parsing": {
+        "time": 92.88574647903442,
+        "tokens": 44972,
+        "prompt_tokens": 38640,
+        "completion_tokens": 6332,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 5.19,
+        "prompt_tokens": 28772,
+        "completion_tokens": 105,
+        "total_tokens": 28877
+      },
+      {
+        "turn": 2,
+        "action": "list_files_in_folder",
+        "checkpoint": "Running Action",
+        "duration_seconds": 6.98,
+        "prompt_tokens": 28924,
+        "completion_tokens": 75,
+        "total_tokens": 28999
+      },
+      {
+        "turn": 3,
+        "action": "read_pdf",
+        "checkpoint": "Running Action",
+        "duration_seconds": 77.32,
+        "prompt_tokens": 29091,
+        "completion_tokens": 91,
+        "total_tokens": 29182
+      },
+      {
+        "turn": 4,
+        "action": "read_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 32.47,
+        "prompt_tokens": 33051,
+        "completion_tokens": 192,
+        "total_tokens": 33243
+      },
+      {
+        "turn": 5,
+        "action": "get_dataset_shape",
+        "checkpoint": "Running Action",
+        "duration_seconds": 30.71,
+        "prompt_tokens": 35015,
+        "completion_tokens": 247,
+        "total_tokens": 35262
+      },
+      {
+        "turn": 6,
+        "action": "write_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 1390.35,
+        "prompt_tokens": 36276,
+        "completion_tokens": 1847,
+        "total_tokens": 38123
+      },
+      {
+        "turn": 7,
+        "action": "edit_file",
+        "checkpoint": "Running Action",
+        "duration_seconds": 12.48,
+        "prompt_tokens": 38189,
+        "completion_tokens": 387,
+        "total_tokens": 38576
+      }
+    ]
+  },
+  "robustness-prune": {
+    "status": "Success",
+    "total_time_seconds": 247.74,
+    "total_tokens": 177037,
+    "prompt_tokens": 169315,
+    "completion_tokens": 7722,
+    "total_turns": 9,
+    "checkpoint_stats": {
+      "2. Read Original Paper": {
+        "time": 52.92009925842285,
+        "tokens": 12795,
+        "prompt_tokens": 12629,
+        "completion_tokens": 166,
+        "turns": 1
+      },
+      "3. Explore Dataset": {
+        "time": 82.33159351348877,
+        "tokens": 93981,
+        "prompt_tokens": 91894,
+        "completion_tokens": 2087,
+        "turns": 5
+      },
+      "4. Review Analysis Code": {
+        "time": 34.75583291053772,
+        "tokens": 42713,
+        "prompt_tokens": 42256,
+        "completion_tokens": 457,
+        "turns": 2
+      },
+      "8. Final Output & Parsing": {
+        "time": 77.73594522476196,
+        "tokens": 27548,
+        "prompt_tokens": 22536,
+        "completion_tokens": 5012,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "read_pdf",
+        "checkpoint": "2. Read Original Paper",
+        "duration_seconds": 52.92,
+        "prompt_tokens": 12629,
+        "completion_tokens": 166,
+        "total_tokens": 12795
+      },
+      {
+        "turn": 2,
+        "action": "load_dataset",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 5.35,
+        "prompt_tokens": 16928,
+        "completion_tokens": 194,
+        "total_tokens": 17122
+      },
+      {
+        "turn": 3,
+        "action": "get_dataset_shape",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 30.32,
+        "prompt_tokens": 17160,
+        "completion_tokens": 379,
+        "total_tokens": 17539
+      },
+      {
+        "turn": 4,
+        "action": "get_dataset_variable_summary",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 10.54,
+        "prompt_tokens": 18137,
+        "completion_tokens": 601,
+        "total_tokens": 18738
+      },
+      {
+        "turn": 5,
+        "action": "get_dataset_description",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 32.31,
+        "prompt_tokens": 19136,
+        "completion_tokens": 635,
+        "total_tokens": 19771
+      },
+      {
+        "turn": 6,
+        "action": "get_dataset_variable_summary",
+        "checkpoint": "3. Explore Dataset",
+        "duration_seconds": 3.82,
+        "prompt_tokens": 20533,
+        "completion_tokens": 278,
+        "total_tokens": 20811
+      },
+      {
+        "turn": 7,
+        "action": "read_txt",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 31.36,
+        "prompt_tokens": 20958,
+        "completion_tokens": 324,
+        "total_tokens": 21282
+      },
+      {
+        "turn": 8,
+        "action": "read_file",
+        "checkpoint": "4. Review Analysis Code",
+        "duration_seconds": 3.39,
+        "prompt_tokens": 21298,
+        "completion_tokens": 133,
+        "total_tokens": 21431
+      }
+    ]
+  },
+  "generate-execute": {
+    "status": "Success",
+    "total_time_seconds": 1760.43,
+    "total_tokens": 1060857,
+    "prompt_tokens": 1048487,
+    "completion_tokens": 12370,
+    "total_turns": 41,
+    "checkpoint_stats": {
+      "1. Generate Dockerfile": {
+        "time": 3.485431432723999,
+        "tokens": 6395,
+        "prompt_tokens": 6268,
+        "completion_tokens": 127,
+        "turns": 1
+      },
+      "2. Build Image": {
+        "time": 252.8343050479889,
+        "tokens": 6810,
+        "prompt_tokens": 6672,
+        "completion_tokens": 138,
+        "turns": 1
+      },
+      "3. Start Container": {
+        "time": 2.940115213394165,
+        "tokens": 6936,
+        "prompt_tokens": 6843,
+        "completion_tokens": 93,
+        "turns": 1
+      },
+      "4. Plan & Preview": {
+        "time": 317.85484886169434,
+        "tokens": 301409,
+        "prompt_tokens": 297120,
+        "completion_tokens": 4289,
+        "turns": 17
+      },
+      "5. Human Approval": {
+        "time": 338.92722034454346,
+        "tokens": 29966,
+        "prompt_tokens": 29812,
+        "completion_tokens": 154,
+        "turns": 1
+      },
+      "6. Execute Code": {
+        "time": 782.0274453163147,
+        "tokens": 626015,
+        "prompt_tokens": 621379,
+        "completion_tokens": 4636,
+        "turns": 18
+      },
+      "7. Stop Container": {
+        "time": 3.5826313495635986,
+        "tokens": 40241,
+        "prompt_tokens": 40133,
+        "completion_tokens": 108,
+        "turns": 1
+      },
+      "8. Final Output & Parsing": {
+        "time": 58.772340297698975,
+        "tokens": 43085,
+        "prompt_tokens": 40260,
+        "completion_tokens": 2825,
+        "turns": 1
+      }
+    },
+    "turn_history": [
+      {
+        "turn": 1,
+        "action": "orchestrator_generate_dockerfile",
+        "checkpoint": "1. Generate Dockerfile",
+        "duration_seconds": 3.49,
+        "prompt_tokens": 6268,
+        "completion_tokens": 127,
+        "total_tokens": 6395
+      },
+      {
+        "turn": 2,
+        "action": "orchestrator_build_image",
+        "checkpoint": "2. Build Image",
+        "duration_seconds": 252.83,
+        "prompt_tokens": 6672,
+        "completion_tokens": 138,
+        "total_tokens": 6810
+      },
+      {
+        "turn": 3,
+        "action": "orchestrator_run_container",
+        "checkpoint": "3. Start Container",
+        "duration_seconds": 2.94,
+        "prompt_tokens": 6843,
+        "completion_tokens": 93,
+        "total_tokens": 6936
+      },
+      {
+        "turn": 4,
+        "action": "orchestrator_plan",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 2.86,
+        "prompt_tokens": 6963,
+        "completion_tokens": 121,
+        "total_tokens": 7084
+      },
+      {
+        "turn": 5,
+        "action": "orchestrator_preview_entry",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 3.55,
+        "prompt_tokens": 7240,
+        "completion_tokens": 119,
+        "total_tokens": 7359
+      },
+      {
+        "turn": 6,
+        "action": "list_files_in_folder",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 2.83,
+        "prompt_tokens": 7442,
+        "completion_tokens": 130,
+        "total_tokens": 7572
+      },
+      {
+        "turn": 7,
+        "action": "read_json",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 3.57,
+        "prompt_tokens": 7706,
+        "completion_tokens": 152,
+        "total_tokens": 7858
+      },
+      {
+        "turn": 8,
+        "action": "list_files_in_folder",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 29.66,
+        "prompt_tokens": 13728,
+        "completion_tokens": 166,
+        "total_tokens": 13894
+      },
+      {
+        "turn": 9,
+        "action": "edit_file",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 15.17,
+        "prompt_tokens": 13938,
+        "completion_tokens": 598,
+        "total_tokens": 14536
+      },
+      {
+        "turn": 10,
+        "action": "edit_file",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 7.9,
+        "prompt_tokens": 14597,
+        "completion_tokens": 210,
+        "total_tokens": 14807
+      },
+      {
+        "turn": 11,
+        "action": "orchestrator_plan",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 27.64,
+        "prompt_tokens": 14868,
+        "completion_tokens": 103,
+        "total_tokens": 14971
+      },
+      {
+        "turn": 12,
+        "action": "read_json",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 3.83,
+        "prompt_tokens": 15127,
+        "completion_tokens": 148,
+        "total_tokens": 15275
+      },
+      {
+        "turn": 13,
+        "action": "edit_file",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 44.1,
+        "prompt_tokens": 20439,
+        "completion_tokens": 285,
+        "total_tokens": 20724
+      },
+      {
+        "turn": 14,
+        "action": "edit_file",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 25.08,
+        "prompt_tokens": 20786,
+        "completion_tokens": 208,
+        "total_tokens": 20994
+      },
+      {
+        "turn": 15,
+        "action": "orchestrator_plan",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 28.25,
+        "prompt_tokens": 21056,
+        "completion_tokens": 102,
+        "total_tokens": 21158
+      },
+      {
+        "turn": 16,
+        "action": "read_json",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 3.75,
+        "prompt_tokens": 21314,
+        "completion_tokens": 163,
+        "total_tokens": 21477
+      },
+      {
+        "turn": 17,
+        "action": "read_txt",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 34.66,
+        "prompt_tokens": 26652,
+        "completion_tokens": 587,
+        "total_tokens": 27239
+      },
+      {
+        "turn": 18,
+        "action": "read_file",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 2.71,
+        "prompt_tokens": 27255,
+        "completion_tokens": 119,
+        "total_tokens": 27374
+      },
+      {
+        "turn": 19,
+        "action": "write_file",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 53.46,
+        "prompt_tokens": 28479,
+        "completion_tokens": 969,
+        "total_tokens": 29448
+      },
+      {
+        "turn": 20,
+        "action": "orchestrator_preview_entry",
+        "checkpoint": "4. Plan & Preview",
+        "duration_seconds": 28.81,
+        "prompt_tokens": 29530,
+        "completion_tokens": 109,
+        "total_tokens": 29639
+      },
+      {
+        "turn": 21,
+        "action": "ask_human_input",
+        "checkpoint": "5. Human Approval",
+        "duration_seconds": 338.93,
+        "prompt_tokens": 29812,
+        "completion_tokens": 154,
+        "total_tokens": 29966
+      },
+      {
+        "turn": 22,
+        "action": "orchestrator_execute_entry",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 4.93,
+        "prompt_tokens": 29980,
+        "completion_tokens": 105,
+        "total_tokens": 30085
+      },
+      {
+        "turn": 23,
+        "action": "list_files_in_folder",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 29.12,
+        "prompt_tokens": 30368,
+        "completion_tokens": 154,
+        "total_tokens": 30522
+      },
+      {
+        "turn": 24,
+        "action": "read_json",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 28.11,
+        "prompt_tokens": 30684,
+        "completion_tokens": 98,
+        "total_tokens": 30782
+      },
+      {
+        "turn": 25,
+        "action": "edit_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 157.25,
+        "prompt_tokens": 31094,
+        "completion_tokens": 830,
+        "total_tokens": 31924
+      },
+      {
+        "turn": 26,
+        "action": "run_shell_command",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 43.47,
+        "prompt_tokens": 32004,
+        "completion_tokens": 193,
+        "total_tokens": 32197
+      },
+      {
+        "turn": 27,
+        "action": "orchestrator_execute_entry",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 30.72,
+        "prompt_tokens": 32223,
+        "completion_tokens": 134,
+        "total_tokens": 32357
+      },
+      {
+        "turn": 28,
+        "action": "read_json",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 32.81,
+        "prompt_tokens": 32996,
+        "completion_tokens": 438,
+        "total_tokens": 33434
+      },
+      {
+        "turn": 29,
+        "action": "write_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 91.91,
+        "prompt_tokens": 34107,
+        "completion_tokens": 239,
+        "total_tokens": 34346
+      },
+      {
+        "turn": 30,
+        "action": "run_shell_command",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 7.3,
+        "prompt_tokens": 34427,
+        "completion_tokens": 140,
+        "total_tokens": 34567
+      },
+      {
+        "turn": 31,
+        "action": "orchestrator_execute_entry",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 30.19,
+        "prompt_tokens": 34593,
+        "completion_tokens": 128,
+        "total_tokens": 34721
+      },
+      {
+        "turn": 32,
+        "action": "read_json",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 28.73,
+        "prompt_tokens": 35305,
+        "completion_tokens": 122,
+        "total_tokens": 35427
+      },
+      {
+        "turn": 33,
+        "action": "list_files_in_folder",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 28.63,
+        "prompt_tokens": 36045,
+        "completion_tokens": 120,
+        "total_tokens": 36165
+      },
+      {
+        "turn": 34,
+        "action": "read_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 29.73,
+        "prompt_tokens": 36225,
+        "completion_tokens": 95,
+        "total_tokens": 36320
+      },
+      {
+        "turn": 35,
+        "action": "read_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 29.96,
+        "prompt_tokens": 37269,
+        "completion_tokens": 95,
+        "total_tokens": 37364
+      },
+      {
+        "turn": 36,
+        "action": "read_file",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 30.79,
+        "prompt_tokens": 38148,
+        "completion_tokens": 111,
+        "total_tokens": 38259
+      },
+      {
+        "turn": 37,
+        "action": "load_dataset",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 32.97,
+        "prompt_tokens": 38379,
+        "completion_tokens": 283,
+        "total_tokens": 38662
+      },
+      {
+        "turn": 38,
+        "action": "get_dataset_shape",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 30.51,
+        "prompt_tokens": 38700,
+        "completion_tokens": 113,
+        "total_tokens": 38813
+      },
+      {
+        "turn": 39,
+        "action": "run_shell_command",
+        "checkpoint": "6. Execute Code",
+        "duration_seconds": 114.91,
+        "prompt_tokens": 38832,
+        "completion_tokens": 1238,
+        "total_tokens": 40070
+      },
+      {
+        "turn": 40,
+        "action": "orchestrator_stop_container",
+        "checkpoint": "7. Stop Container",
+        "duration_seconds": 3.58,
+        "prompt_tokens": 40133,
+        "completion_tokens": 108,
+        "total_tokens": 40241
+      }
+    ]
+  }
+}

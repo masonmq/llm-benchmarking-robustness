@@ -1,0 +1,277 @@
+{
+  "case_id": "Powell_CompPolitStu_2009_0PZl",
+  "memory_records": [
+    {
+      "path_id": "Powell_CompPolitStu_2009_0PZl_path01",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Regress Manifesto-method plurality-winner distance from the median voter on an SMD indicator, adjusting for decade fixed effects and clustering standard errors by country.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "pldist1",
+                  "main_predictor": "smd_bin",
+                  "controls": [
+                    "decade fixed effects"
+                  ],
+                  "sample_restriction": "Rows with election rule coded smd or pr and nonmissing variables required by the model.",
+                  "missing_data_rule": "Listwise deletion for pldist1, smd, decade, and country.",
+                  "variable_construction": "Clean smd labels, create binary SMD indicator, create categorical decade.",
+                  "inference_rule": "Expected direction is negative. Expected direction with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only for a meaningful estimate whose interval narrowly crosses the null; clearly weak aligned evidence is inconclusive; affirmative positive coefficient with p < 0.05 and interval above zero is opposite.",
+                  "estimand_quantity": "Decade-adjusted coefficient on smd_bin from OLS, interpreted as the mean difference in pldist1 for SMD versus PR elections conditional on decade.",
+                  "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                  "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                  "target_population": "Authorized Powell election observations with smd or pr election-rule coding.",
+                  "time_scope": "1945-2003."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "aligned",
+                  "inference": "aligned",
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path01/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path01/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task1 path exactly: pldist1 was regressed on smd_bin with decade fixed effects and country-clustered standard errors. No implementation repairs or analysis changes were made.",
+                "result": {
+                  "metric": "regression_coefficient",
+                  "value": 0.42055367109995356,
+                  "direction": "positive",
+                  "p_value": 0.8368752828972367,
+                  "confidence_interval": "[-3.5828563263373017, 4.423963668537208]",
+                  "sample_size": 329,
+                  "conclusion": "inconclusive"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the instructed 1945-2003 Manifesto-method data and estimate the simple SMD-vs-PR difference in plurality-winner distance from the median voter.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "pldist1",
+                  "main_predictor": "smd_bin",
+                  "controls": [],
+                  "sample_restriction": "Years 1945-2003 inclusive, rows with election rule coded smd or pr, and nonmissing focal variables.",
+                  "missing_data_rule": "Listwise deletion for pldist1, smd, and year.",
+                  "variable_construction": "Clean smd labels and create binary SMD indicator.",
+                  "inference_rule": "Expected direction is negative. Expected direction with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only for a meaningful estimate whose interval narrowly crosses the null; clearly weak aligned evidence is inconclusive; affirmative positive coefficient with p < 0.05 and interval above zero is opposite.",
+                  "estimand_quantity": "Coefficient on smd_bin from OLS, interpreted as the mean Manifesto-method pldist1 difference for SMD versus PR elections during 1945-2003.",
+                  "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                  "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                  "target_population": "Authorized Powell election observations from 1945 through 2003 with smd or pr election-rule coding.",
+                  "time_scope": "1945-2003 inclusive."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "aligned",
+                  "inference": "aligned",
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path01/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path01/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task2 path exactly: the analysis used the authorized 1945-2003 Manifesto-method data, constructed smd_bin, and estimated pldist1 ~ smd_bin with HC1 robust standard errors. No implementation repairs or analysis changes were made.",
+                "result": {
+                  "metric": "regression_coefficient",
+                  "value": 0.3309658133947186,
+                  "direction": "positive",
+                  "p_value": 0.7790441528629991,
+                  "confidence_interval": "[-1.9810878709281527, 2.64301949771759]",
+                  "sample_size": 329,
+                  "conclusion": "inconclusive"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    },
+    {
+      "path_id": "Powell_CompPolitStu_2009_0PZl_path02",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use all authorized observations with smd or pr election-rule coding and estimate whether SMD elections have a lower median Manifesto-method plurality-winner distance from the median voter than PR elections.",
+                "path_signature": {
+                  "model_family": "quantile_regression",
+                  "outcome": "pldist1",
+                  "main_predictor": "smd_bin",
+                  "controls": [],
+                  "sample_restriction": "Rows in the authorized dataset with smd coded as smd or pr and nonmissing required focal variables.",
+                  "missing_data_rule": "Listwise deletion for pldist1, smd, and year.",
+                  "variable_construction": "No scaling or categorization of pldist1; smd is cleaned and converted to a binary SMD-versus-PR contrast.",
+                  "inference_rule": "Expected direction is negative. Support requires a negative SMD coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the interval narrowly crosses zero. A positive coefficient is opposite only with affirmative p < 0.05 evidence and an interval above zero; otherwise inconclusive.",
+                  "estimand_quantity": "SMD-minus-PR difference in the conditional median of pldist1.",
+                  "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                  "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                  "target_population": "Authorized Powell election observations with smd/pr election-rule coding and nonmissing pldist1, smd, and year.",
+                  "time_scope": "1945-2003, the observed dataset range."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Median quantile regression of pldist1 on smd_bin.",
+                      "justification": "The focal claim concerns closeness to the median voter, and the inspected pldist1 distribution is continuous and right-skewed. A median contrast is a minimal, defensible robustness change that preserves outcome, contrast, sample, and inference while avoiding duplication of the prior OLS path."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path02/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path02/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task1 path exactly: authorized Stata data, pldist1 outcome, SMD-versus-PR contrast, listwise deletion for required variables, and median quantile regression. No repairs or implementation deviations were required.",
+                "result": {
+                  "metric": "coefficient_on_smd_bin",
+                  "value": 1.7409769704427343,
+                  "direction": "positive",
+                  "p_value": 0.2875030059434602,
+                  "confidence_interval": "[-1.473858031188427, 4.955811972073896]",
+                  "sample_size": 329,
+                  "conclusion": "inconclusive"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the instructed 1945-2003 Manifesto-method data and estimate the raw-scale median SMD-vs-PR difference in plurality-winner distance from the median voter.",
+                "path_signature": {
+                  "model_family": "quantile_regression",
+                  "outcome": "pldist1",
+                  "main_predictor": "smd_bin",
+                  "controls": [],
+                  "sample_restriction": "Years 1945-2003 inclusive, observations with smd coded smd or pr, and nonmissing required focal variables.",
+                  "missing_data_rule": "Listwise deletion for year, smd, and pldist1.",
+                  "variable_construction": "No scaling or categorization of pldist1; smd is cleaned and converted to a binary SMD-versus-PR contrast.",
+                  "inference_rule": "Expected direction is negative. Support requires a negative SMD coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the interval narrowly crosses zero. A positive coefficient is opposite only with affirmative p < 0.05 evidence and an interval above zero; otherwise inconclusive.",
+                  "estimand_quantity": "SMD-minus-PR difference in the conditional median of pldist1 for elections from 1945 through 2003.",
+                  "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                  "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                  "target_population": "Authorized Powell election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing focal variables.",
+                  "time_scope": "1945-2003 inclusive."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Median quantile regression of pldist1 on smd_bin.",
+                      "justification": "This changes the fewest dimensions needed to avoid repeating the prior Task2 path: outcome, contrast, sample, and inference rule are preserved, while the model targets raw-scale median closeness to reduce sensitivity to skewed distances."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path02/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path02/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task2 path exactly: authorized Stata data, 1945-2003 restriction, Manifesto-method pldist1 outcome, SMD-versus-PR contrast, and median quantile regression. No repairs or implementation deviations were required.",
+                "result": {
+                  "metric": "coefficient_on_smd_bin",
+                  "value": 1.7409769704427343,
+                  "direction": "positive",
+                  "p_value": 0.2875030059434602,
+                  "confidence_interval": "[-1.473858031188427, 4.955811972073896]",
+                  "sample_size": 329,
+                  "conclusion": "inconclusive"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    }
+  ]
+}

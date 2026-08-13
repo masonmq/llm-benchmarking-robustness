@@ -1,0 +1,52 @@
+{
+  "analysis": "country_fixed_effects_within_ols_clustered_by_country",
+  "conclusion": "inconclusive",
+  "confidence_interval_95": [
+    -9.074441031616827,
+    6.143095080385772
+  ],
+  "countries": 20,
+  "countries_with_within_smd_variation": 2,
+  "dataset": "data/powell_original.dta",
+  "direction": "negative",
+  "estimate": -1.4656729756155276,
+  "final_analytic_rows": 329,
+  "inference_rule": "Support requires a negative SMD-minus-PR coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing zero; opposite requires affirmative positive evidence with p < 0.05 and CI above zero; otherwise inconclusive.",
+  "metric": "country_fixed_effect_coefficient_smd_minus_pr_pldist1",
+  "p_value": 0.7057672708967295,
+  "pr_count": 244,
+  "sample_flow": [
+    {
+      "rows": 331,
+      "step": "starting_rows"
+    },
+    {
+      "remaining": 331,
+      "removed": 0,
+      "step": "remove_missing_pldist1"
+    },
+    {
+      "remaining": 329,
+      "removed": 2,
+      "step": "remove_missing_smd"
+    },
+    {
+      "remaining": 329,
+      "removed": 0,
+      "step": "keep_smd_or_pr"
+    },
+    {
+      "remaining": 329,
+      "removed": 0,
+      "step": "remove_missing_country"
+    },
+    {
+      "remaining": 329,
+      "removed": 0,
+      "step": "remove_missing_constructed_model_variables"
+    }
+  ],
+  "smd_count": 85,
+  "std_error": 3.882095852790302,
+  "task_id": "Task1"
+}

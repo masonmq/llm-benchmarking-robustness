@@ -51,6 +51,41 @@
     ]
   },
 
+  "analysis_anchors": [
+    {
+      "task_id": "Task1 or Task2.",
+      "estimand": {
+        "outcome": "Paper-defined focal outcome or constructed outcome.",
+        "outcome_scale": "Scale used by the focal claim or result, such as raw units, log units, percentage change, probability, or odds.",
+        "contrast": "Exact focal treatment, group, exposure, or predictor contrast.",
+        "target_population": "Population or analytic sample addressed by the focal claim.",
+        "time_scope": "Relevant wave, period, or temporal contrast, or NA."
+      },
+      "sample_definition": {
+        "scope": "full_sample, subgroup, or not_stated.",
+        "inclusion_rules": ["Paper-supported inclusion rules, or an empty list."],
+        "exclusion_rules": ["Paper-supported exclusion rules, or an empty list."]
+      },
+      "reference_specification": {
+        "model_family": "Model family tied to the paper's focal result, or not_stated.",
+        "variable_construction": "Paper-supported focal variable construction, or not_stated.",
+        "controls": ["Paper-supported controls, or an empty list."],
+        "fixed_effects": ["Paper-supported fixed effects, or an empty list."],
+        "uncertainty_method": "Standard-error, confidence-interval, or other uncertainty method, or not_stated."
+      },
+      "conclusion_rule": {
+        "expected_direction": "Direction or pattern stated by the focal claim, or not_stated.",
+        "statistical_threshold": "Threshold used to distinguish support, borderline support, and inconclusive evidence, or not_stated.",
+        "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+      },
+      "evidence": {
+        "paper": "Paper section, table, figure, or passage supporting this anchor.",
+        "dataset_mapping": "Verified dataset columns and constructions that implement the anchor."
+      },
+      "uncertainties": ["Unresolved anchor details, or an empty list."]
+    }
+  ],
+
   "plan": {
     "planned_id": "Unique ID for this planned path. Example: Bruner_ExpEco_2017_amYY_path04.",
     "task_scope": ["Task1", "Task2"],
@@ -71,6 +106,8 @@
       {
 
         "task_id": "Task1 or Task2.",
+        "candidate_id": "Unique candidate ID for this task within the path lineage. Example: Task1_candidate01.",
+        "status": "null for a newly planned candidate; high-quality after Pruning; executed_success or execution_failed after Execution.",
         "task_role": "conclusion_oriented_reanalysis or comparable_result_oriented_reanalysis.",
 
         "analysis_path": {
@@ -91,7 +128,7 @@
             "missing_data_rule": "Missing-data handling rule, or null.",
             "data_processing": "Any reshaping, recoding, aggregation, scaling, or transformation.",
             "model_choice": "Main model or statistical test used.",
-            "inference_rule": "Rule used to judge support. Example: expected direction and p < 0.05."
+            "inference_rule": "Rule used to classify the result. Example: expected direction with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only for a meaningful estimate whose interval narrowly crosses the null; clearly weak aligned evidence is inconclusive."
           },
           "models": [
             {
@@ -141,8 +178,85 @@
           ]
         },
 
+        "method_quality": {
+          "estimand": {
+            "quantity": "Exact quantity to estimate, such as a mean difference, coefficient, risk ratio, or change score.",
+            "outcome_scale": "Scale on which the outcome and effect are interpreted, such as raw units, log units, percentage change, probability, or odds.",
+            "contrast": "Exact treatment, group, exposure, or predictor contrast.",
+            "target_population": "Population or analytic sample to which the estimate applies.",
+            "time_scope": "Relevant wave, period, or temporal contrast, or NA.",
+            "claim_mapping": "Why this quantity directly answers the focal claim or Task2 instruction."
+          },
+          "anchor_alignment": {
+            "outcome": {
+              "status": "aligned or justified_deviation.",
+              "note": "How the candidate outcome relates to the task anchor."
+            },
+            "contrast": {
+              "status": "aligned or justified_deviation.",
+              "note": "How the candidate contrast relates to the task anchor."
+            },
+            "sample": {
+              "status": "aligned or justified_deviation.",
+              "note": "How the candidate sample relates to the task anchor."
+            },
+            "model": {
+              "status": "aligned or justified_deviation.",
+              "note": "How the candidate model, controls, fixed effects, and uncertainty method relate to the task anchor."
+            },
+            "inference": {
+              "status": "aligned or justified_deviation.",
+              "note": "How the candidate inference and conclusion rule relates to the task anchor."
+            },
+            "deviations": [
+              {
+                "dimension": "outcome, contrast, sample, model, or inference.",
+                "anchor_choice": "Choice recorded in the task anchor.",
+                "candidate_choice": "Different choice proposed for this candidate.",
+                "justification": "Evidence-based reason this deviation remains faithful to the assigned task."
+              }
+            ]
+          },
+          "evidence_basis": {
+            "outcome": "Authorized evidence supporting the outcome choice and construction.",
+            "main_predictor": "Authorized evidence supporting the predictor, treatment, or grouping construction.",
+            "controls": [
+              {
+                "name": "Control or fixed effect name.",
+                "role": "Confounder adjustment, design variable, precision variable, fixed effect, or other role.",
+                "evidence": "Authorized source and substantive reason for including it."
+              }
+            ],
+            "restrictions": [
+              {
+                "rule": "Sample, missing-data, outlier, transformation, or cutoff rule.",
+                "evidence": "Authorized source or methodological justification for the rule."
+              }
+            ]
+          },
+          "sample_audit": {
+            "starting_sample_size": "Observed dataset rows if inspected, otherwise not_stated.",
+            "inclusion_rules": ["Ordered inclusion rules."],
+            "exclusion_rules": ["Ordered exclusion rules with reasons."],
+            "code_reports_sample_flow": true
+          },
+          "focal_variable_structure": {
+            "source_structure": "Continuous, binary, ordinal, nominal, repeated, multilevel, or other source structure.",
+            "analysis_structure": "How the variable enters the analysis.",
+            "information_loss": "Information discarded through categorization, aggregation, subgrouping, or transformation, or none.",
+            "justification": "Why preserving or changing the source structure is appropriate for the focal claim."
+          },
+          "code_preflight": {
+            "referenced_columns": ["Every dataset column referenced by this task's code."],
+            "missing_columns": ["Referenced columns not found in the authorized dataset; must be empty for a valid candidate."],
+            "plan_code_consistency": "pass only when code implements the declared outcome, predictor, sample, transformations, controls, model, inference rule, and focal output.",
+            "preflight_note": "Short evidence-based verification note."
+          }
+        },
+
         "analysis_code": {
           "available": "true if analysis code for this task exists; false otherwise.",
+          "artifact_dir": "Candidate-specific directory under candidate_artifacts/<path_id>/<task_id>/<candidate_id>/.",
           "code_files": ["Files needed for this specific task."],
           "entry_file": "Main script to run for this task, or null.",
           "run_command": "Command to run this task, or null.",

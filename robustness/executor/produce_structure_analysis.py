@@ -22,7 +22,7 @@ def run_gen_gold_analysis(study_path, tier: str = "easy", code_mode: str = "pyth
     configure_file_logging(logger, study_path, f"gen_gold_analysis.log")
     # Load json template
     logger.info(f"Starting gold analysis extraction for study path: {study_path}")
-    analysis_schema =  read_file(GEN_GOLD_ANALYSIS_CONSTANTS['analysis_schema'])
+    analysis_schema = read_file(GEN_GOLD_ANALYSIS_CONSTANTS['analysis_schema'])
     code_policy = ROBUSTNESS_DESIGN_CODE_MODE_POLICY.get(code_mode, ROBUSTNESS_DESIGN_CODE_MODE_POLICY["native"])
     extract_input_rules = ROBUSTNESS_EXTRACT_POLICY.get("input", "")
     
@@ -52,14 +52,14 @@ Output Requirements:\n- Return a valid JSON object only.\n- Do NOT wrap the outp
     print(f"starting design phase with {model_name}\n")
     tool_definitions = get_tool_definitions()
     return run_react_loop(
-    	system_prompt,
-    	known_actions,
-    	tool_definitions,
-    	question,
-    	session_state={"analyzers": {}},
-    	study_path=study_path,
+        system_prompt,
+        known_actions,
+        tool_definitions,
+        question,
+        session_state={"analyzers": {}},
+        study_path=study_path,
         stage_name="execute-gen_gold_analysis",
-    	on_final=lambda ans: save_output(ans, study_path, "execute_in_schema.json", "execute-gen_gold_analysis"),
-    	model_name=model_name,
-        logger=logger
+        on_final=lambda ans: save_output(ans, study_path, "universal_schema.json", "execute-gen_gold_analysis"),
+        model_name=model_name,
+        logger=logger,
     )

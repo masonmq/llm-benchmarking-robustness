@@ -254,11 +254,13 @@ Answer: {
     "case_mode": "reference_guided"
   },
 
-  "planned_method": {
+  "plan": {
     "planned_id": "Bruner_ExpEco_2017_amYY_plan",
     "tasks": [
       {
         "task_id": "Task1",
+        "candidate_id": "Task1_candidate01",
+        "status": null,
         "task_role": "conclusion_oriented_reanalysis",
         "task_instruction": "Conduct the analysis without additional restriction.",
         "analysis_path": {
@@ -307,6 +309,8 @@ Answer: {
 
       {
         "task_id": "Task2",
+        "candidate_id": "Task2_candidate01",
+        "status": null,
         "task_role": "comparable_result_oriented_reanalysis",
         "task_instruction": "Do not use rank-order tests.",
         "analysis_path": {
@@ -363,26 +367,31 @@ GENERATE_GOLD_ANALYSIS = """
 Remember, you don't have to read all provided files if you don't think they are necessary to fill out the required JSON.
 """.strip()
 
+PREAMBLE_PLAN = """
+You are the Planning Agent in the PaperRobust pipeline. Reconstruct the focal analytical target from the original paper, task instructions, and authorized dataset, then propose and write executable analysis code for Task1 and Task2.
+
+You operate in a loop of Thought, Action, PAUSE, Observation.
+
+Planning does not execute analyses, inspect human reanalysis materials or expected results, update Shared Memory, or choose methods because they may favor the focal claim. Use tools to read the authorized evidence, inspect the dataset, and write candidate code. At the end, return only the required universal-schema JSON object.
+
+For tools with JSON arguments, provide valid JSON and escape line breaks inside JSON strings. Use ask_human_input only when truly blocked.
+""".strip()
+
 ROBUSTNESS_DESIGN_CODE_MODE_POLICY = {
     "native": """
-RUN POLICY (DESIGN)
-- Do NOT translate code to Python.
-- Run the original language code (R/.do/etc.).
-- If the code is incompatible with the data, you should rewrite the code to make it compatible using the edit_file tool.
-- Otherwise only make minimal fixes needed to run (paths to /app/data, deps, small execution bugs etc.).
-- Identify the correct entrypoint and execution order.
+CODE POLICY (PLANNING)
+- Write separate executable entry files for Task1 and Task2 in a language appropriate for the planned methods.
+- Reconstruct the implementation from the paper, task instructions, and authorized dataset. Authorized original-paper code may inform the method when available; human reanalysis code may not.
+- Do not execute the code during Planning.
+- Use paths that will work inside the execution container and list the exact entry file and run command for each task.
  """.strip(),
 
     "python": """
-RUN POLICY (DESIGN)
-- Translate every non-Python analysis script (.R/.do/etc.) into Python. Any necessary translation must be performed BEFORE filling out the given JSON template.
-- Keep originals unchanged; write new files like: <basename>__py.py
-- Ensure all IO uses /app/data.
-- Write the python script to the /data subfolder inside the study path.
-- If the original code is incompatible with the data, rewrite the code so that it is compatible. 
-- Set the executed entrypoint to the Python rewrite (or a Python wrapper that runs the translated scripts in order).
-- Preserve logic, outputs, and seeds as closely as possible.
-- Make sure that the changes are reflected in the your structured report. All docker related information must also be compatible with Python execution.
+CODE POLICY (PLANNING)
+- Write separate executable Python entry files for Task1 and Task2.
+- Reconstruct the implementation from the paper, task instructions, and authorized dataset. Translate authorized original-paper code only when it exists and is relevant; human reanalysis code may not be used.
+- Do not execute the code during Planning.
+- Use container-compatible data paths and list the exact Python entry file and run command for each task.
  """.strip(),
  }
 
@@ -407,7 +416,18 @@ EXTRACT RULES (DESIGN)
 - Keep Task1 and Task2 if both are available. Task1 is usually the conclusion oriented analysis. Task2 is usually the comparable result oriented analysis.
 - Use simple, concrete wording. Prefer exact file names, exact commands, and exact variable names when available.
 - If a field is not stated after checking the available materials, write \"not_stated\". If a field is truly not applicable, write \"NA\".
-- You have to write all necessary code for the analysis in this planning step. All necessary code files must be creaated before filling out the final output.
+- Write all necessary analysis code before the final output. Create separate executable entry files for Task1 and Task2; do not use one shared entrypoint for both tasks. Use a shared helper file only for common loading or reusable functions.
+- Before choosing a candidate, reconstruct each task's paper analysis anchor from the paper, task instruction, and verified dataset: outcome and scale, focal contrast, target sample, reference model structure, and conclusion rule. Record uncertainty as not_stated instead of guessing.
+- Treat the anchor as the default. Keep every candidate dimension aligned unless a different choice is needed for a defensible robustness analysis; document each deviation and its evidence.
+- When Shared Memory requires a non-duplicate candidate, preserve the anchor and change the fewest analytical dimensions needed. Do not create novelty by simultaneously changing the sample, focal contrast, controls, and inference rule.
+- Identify the focal estimand before selecting an outcome, contrast, population, model, or inference rule. State how the estimand maps to the focal claim.
+- Use only variables and construction rules supported by the paper, task instruction, dataset metadata, or verified dataset columns. Record the evidence source for each focal variable, control, and restriction.
+- Preserve the focal variable's meaningful structure unless collapsing or categorizing it is required or substantively justified. State any information loss.
+- Justify every sample restriction, outlier rule, control, fixed effect, transformation, and missing-data rule. Do not treat additional controls as automatically better.
+- Include sample-flow reporting in each task's code: starting rows, rows removed by each material rule, and final analytic rows. Planning must not use those counts to choose a favorable path.
+- Before returning the schema, compare the plan with the generated code and verify referenced dataset columns, outcome construction, predictor construction, sample rules, model, and reported focal statistic.
+- Do not restrict the sample to focal categories, add controls or fixed effects, or impose a significance threshold merely because those choices are conventional. Follow the task anchor or give an evidence-based justification.
+- Generate defensible paths without using human reanalysis code, expected results, or whether a path is likely to support the claim.
  """.strip(),
  }
 
@@ -429,7 +449,7 @@ ROBUSTNESS_EXECUTE_CODE_MODE_POLICY = {
 RUN POLICY (EXECUTE)
 - Do NOT translate code to Python.
 - If the code is incompatible with the data, you should rewrite the code to make it compatible using the edit_file tool.
-- Execute the original-language entrypoint from analysis_info.json.
+- Execute the original-language entrypoint from universal_schema.json.
 - If it fails, debug in the same language or adjust dependencies.
  """.strip(),
     "python": """
@@ -437,8 +457,8 @@ RUN POLICY (EXECUTE)
 - Execute using Python.
 - Any missing code should be written to "data" folder inside the study path.
 - If the original code is incompatible with the data, rewrite the code to Python so that it is compatible. 
-- If analysis_info.json points to a non-.py entrypoint, create/complete the Python translations (keeping originals unchanged),
-  create a single Python entrypoint, and update analysis_info.json to that .py entrypoint.
+- If universal_schema.json points to a non-.py entrypoint, create/complete the Python translations (keeping originals unchanged),
+  create a single Python entrypoint, and update universal_schema.json to that .py entrypoint.
 - If it fails, fix the Python rewrite / deps (don’t switch back to the original language).
  """.strip(),
  }
@@ -699,11 +719,13 @@ Answer: {
     "case_mode": "reference_guided"
   },
 
-  "planned_method": {
+  "plan": {
     "planned_id": "Bruner_ExpEco_2017_amYY_plan",
     "tasks": [
       {
         "task_id": "Task1",
+        "candidate_id": "Task1_candidate01",
+        "status": null,
         "task_role": "conclusion_oriented_reanalysis",
         "task_instruction": "Conduct the analysis without additional restriction.",
         "analysis_path": {
@@ -752,6 +774,8 @@ Answer: {
 
       {
         "task_id": "Task2",
+        "candidate_id": "Task2_candidate01",
+        "status": null,
         "task_role": "comparable_result_oriented_reanalysis",
         "task_instruction": "Do not use rank-order tests.",
         "analysis_path": {
@@ -810,24 +834,19 @@ Remember, you don't have to read all provided files if you don't think they are 
 
 ROBUSTNESS_DESIGN_CODE_MODE_POLICY = {
     "native": """
-RUN POLICY (DESIGN)
-- Do NOT translate code to Python.
-- Run the original language code (R/.do/etc.).
-- If the code is incompatible with the data, you should rewrite the code to make it compatible using the edit_file tool.
-- Otherwise only make minimal fixes needed to run (paths to /app/data, deps, small execution bugs etc.).
-- Identify the correct entrypoint and execution order.
+CODE POLICY (PLANNING)
+- Write separate executable entry files for Task1 and Task2 in a language appropriate for the planned methods.
+- Reconstruct the implementation from the paper, task instructions, and authorized dataset. Authorized original-paper code may inform the method when available; human reanalysis code may not.
+- Do not execute the code during Planning.
+- Use paths that will work inside the execution container and list the exact entry file and run command for each task.
  """.strip(),
 
     "python": """
-RUN POLICY (DESIGN)
-- Translate every non-Python analysis script (.R/.do/etc.) into Python. Any necessary translation must be performed BEFORE filling out the given JSON template.
-- Keep originals unchanged; write new files like: <basename>__py.py
-- Ensure all IO uses /app/data.
-- Write the python script to the /data subfolder inside the study path.
-- If the original code is incompatible with the data, rewrite the code so that it is compatible. 
-- Set the executed entrypoint to the Python rewrite (or a Python wrapper that runs the translated scripts in order).
-- Preserve logic, outputs, and seeds as closely as possible.
-- Make sure that the changes are reflected in the your structured report. All docker related information must also be compatible with Python execution.
+CODE POLICY (PLANNING)
+- Write separate executable Python entry files for Task1 and Task2.
+- Reconstruct the implementation from the paper, task instructions, and authorized dataset. Translate authorized original-paper code only when it exists and is relevant; human reanalysis code may not be used.
+- Do not execute the code during Planning.
+- Use container-compatible data paths and list the exact Python entry file and run command for each task.
  """.strip(),
  }
 
@@ -862,7 +881,7 @@ ROBUSTNESS_EXECUTE_CODE_MODE_POLICY = {
 RUN POLICY (EXECUTE)
 - Do NOT translate code to Python.
 - If the code is incompatible with the data, you should rewrite the code to make it compatible using the edit_file tool.
-- Execute the original-language entrypoint from analysis_info.json.
+- Execute the original-language entrypoint from universal_schema.json.
 - If it fails, debug in the same language or adjust dependencies.
  """.strip(),
     "python": """
@@ -870,8 +889,8 @@ RUN POLICY (EXECUTE)
 - Execute using Python.
 - Any missing code should be written to "data" folder inside the study path.
 - If the original code is incompatible with the data, rewrite the code to Python so that it is compatible.
-- If analysis_info.json points to a non-.py entrypoint, create/complete the Python translations (keeping originals unchanged),
-  create a single Python entrypoint, and update analysis_info.json to that .py entrypoint.
+- If universal_schema.json points to a non-.py entrypoint, create/complete the Python translations (keeping originals unchanged),
+  create a single Python entrypoint, and update universal_schema.json to that .py entrypoint.
 - If it fails, fix the Python rewrite / deps (don’t switch back to the original language).
  """.strip(),
  }
@@ -881,30 +900,8 @@ RUN POLICY (EXECUTE)
 # PRUNING AGENT prompts
 # =====================================================================
 
-GENERATE_PRUNE_INPUT = """
-Remember, you don't have to read all provided files if you don't think they are necessary to fill out the required JSON.
-""".strip()
-
-# Rules specific to building the Pruning Agent input file from the materials.
-PRUNE_INPUT_EXTRACT_POLICY = {
-    "input": """
-EXTRACT RULES (PRUNE INPUT)
-- The proposed analysis path to extract is the planned reanalysis described in the review / proposed-analysis PDF (often a file ending in "_review.pdf"). Treat it as ONE planned analysis path, not a human reference path.
-- Extract the focal claim, hypothesis, study type, and authorized original dataset(s) from the original paper and the provided data folder.
-- Fill case_reference from the case (focal claim, hypothesis, authorized_datasets, Task1 and Task2 instructions).
-- Fill planning_output with the single proposed path (plan_out shape): planned_id, task_scope, path_summary, path_signature, planned_method, method_justification, codebase, and self_check.
-- Use the original dataset only. Do not substitute a new dataset.
-- Keep Task1 and Task2 if both are available. Task1 is usually the conclusion oriented analysis. Task2 is usually the comparable result oriented analysis.
-- Copy the "pruning_rules" section VERBATIM from the provided template. Do not invent or reword the rules.
-- Set "shared_memory" to {"case_id": <case id>, "memory_records": []} because no prior analysis paths are provided to the extractor.
-- Use simple, concrete wording. Prefer exact file names, exact commands, and exact variable names when available.
-- If a field is not stated after checking the available materials, write "not_stated". If a field is truly not applicable, write "NA".
-- Do not invent code files, variables, packages, or results that are not supported by the materials.
- """.strip(),
-}
-
 PREAMBLE_PRUNE = """
-You are the Pruning Agent in the PaperRobust multi-agent pipeline. Your job is to REVIEW exactly one candidate analysis path (plan + analysis code) proposed by the Planning Agent for a single focal claim, decide whether it is high-quality or low-quality, and ROUTE it: high-quality (send to execution) or low-quality (return to planning). You REVIEW AND ROUTE ONLY.
+You are the Pruning Agent in the PaperRobust multi-agent pipeline. Review the new active Task1 and Task2 candidates independently and decide whether each is high-quality or low-quality. Do not re-evaluate an active candidate that is already high-quality. You review only; the pipeline determines the next stage from both active statuses.
 
 You operate in a loop of Thought, Action, PAUSE, Observation.
 
@@ -946,7 +943,10 @@ MANDATORY REVIEW PROCEDURE (complete ALL steps BEFORE deciding; a decision made 
 Step 1 - Read the original paper. Read original_paper.pdf to understand the focal claim, the study design (experimental or observational, treatment, comparison groups), how the data were collected, and the unit of observation. Never read the human analysis / review PDF.
 Step 2 - Explore the dataset in depth. Do not stop after loading it. For every authorized dataset: check shape and columns; run variable summaries on the focal outcome, the main predictor / treatment / grouping variables, and the ID variables; determine the dependence structure (repeated measures per participant, panel structure, clustering by person, school, firm, state, or group); look for implausible values or coding problems in the focal variables.
 Step 3 - Review the analysis code efficiently. Read only genuine text-based source-code files listed in the analysis_code section, using the reader appropriate to the extension. Source-code extensions include .py, .R, .r, .do, .m, .jl, .sas, .sql, .sh, .ipynb, .txt, .md, .yaml, .yml, .json, and similar plain-text scripts/configuration files. Do NOT open binary or data files with read_file/read_txt, including .xlsx, .xls, .dta, .sav, .rds, .RData, .mat, .pkl, .parquet, .pdf, .docx, images, archives, or executables. Inspect datasets with dataset tools, PDFs with read_pdf, and skip unrelated artifacts. If the analysis_code field mixes code and data, review only the code needed to implement Task1 and Task2. Verify that the reviewed code implements the claimed model and produces the focal statistical results.
-Step 4 - Cross-check. Compare the plan text, the code, the Task1/Task2 instructions, and the observed data structure against the rules below, then decide.
+Step 4 - Verify the task anchor and estimand. Check the task-specific analysis anchor against the paper, task instruction, and dataset. Then compare the candidate with the anchor across outcome, contrast, sample, model, and inference. Treat a deviation as acceptable only when it is explicit, evidence-based, and still answers the assigned task.
+Step 5 - Audit analytical choices. Verify evidence for focal variables, transformations, controls, restrictions, cutoffs, outlier handling, missing-data handling, and any collapse of the focal variable's structure. Confirm that referenced columns exist.
+Step 6 - Audit sample flow and code. Verify that the code reports starting rows, exclusions at each material step, and final analytic rows. Cross-check the declared plan against the code's outcome, predictor, sample, transformations, controls, model, inference rule, and focal output.
+Step 7 - Decide. Apply the rules below without using expected results, the original conclusion, or whether the method is likely to support the claim.
 
 CORE DECISION STANDARD:
 For each task, label the pipeline low-quality only when ALL four conditions below are satisfied:
@@ -961,14 +961,29 @@ IMPORTANT DISTINCTION:
 - Reproducibility/verification asks whether the supplied artifacts can be executed exactly in the current environment.
 The Pruning Agent is expected to receive candidate analysis code. If the candidate path has no identifiable candidate code, entry file, or executable specification linked to its claimed analysis and result, label the affected task low-quality. Broken paths, unavailable software, or unavailable external objects do not independently make a task low-quality when the candidate code and executable specification are otherwise present and traceable.
 
-SCHEMA CHECKS (fill check_results):
+SCHEMA CHECKS (fill every check_results entry):
 1. same_focal_claim: The path tests the SAME focal claim as case.focal_claim.
 2. same_dataset: The path uses the authorized original dataset in datasets.files and does not substitute a new dataset.
-3. not_duplicate: The path is NOT a semantic duplicate of any shared_memory record. Report closest_memory_path_id, or null when memory is empty.
+3. not_duplicate: The candidate is NOT a semantic duplicate of any planned_path or executor_fixed_path for the same task in Shared Memory.
 4. task_completeness: Task1 and Task2 are both present. If one is absent or materially underspecified, mark the affected task low-quality.
-5. method_justification: A coherent justification explains why the variables, model, and inference rule test the focal claim.
-6. executable_in_principle: The candidate path must include identifiable candidate analysis code or a concrete executable specification, including the relevant code file or entry file and enough information to connect the implementation to the claimed analysis and result. If no candidate code or executable specification is supplied, fail this check.
+5. estimand_alignment: The quantity, outcome scale, contrast, target population, and time scope directly answer the focal claim or Task2 instruction.
+6. variable_support: Focal variables, transformations, and cutoffs are supported by authorized evidence and use verified dataset columns.
+7. sample_audit: Inclusion and exclusion rules are explicit, and code reports starting rows, each material exclusion, and final analytic rows.
+8. restriction_justification: Every sample restriction, cutoff, transformation, outlier rule, and missing-data rule has an authorized or methodological justification.
+9. control_justification: Every control and fixed effect has a stated role and defensible evidence. Pass with a note when no controls are used and none are required.
+10. focal_variable_structure: The analysis preserves the focal variable's relevant structure, or clearly justifies categorization, aggregation, subgrouping, or other information loss.
+11. plan_code_consistency: Referenced columns exist and code implements the declared outcome, predictor, sample, transformations, controls, model, inference rule, and focal output.
+12. method_justification: A coherent justification explains why the variables, model, and inference rule test the focal claim.
+13. executable_in_principle: The candidate path includes identifiable candidate code, a valid task-specific entry file and run command, and enough information to connect the implementation to the claimed analysis.
 Also inspect the Planning Agent self_check and summarize any unresolved failure in decision_summary.
+
+METHOD-QUALITY RULES (apply the four-part standard):
+M1. Label low-quality when the task anchor is unsupported, or when the candidate estimates a materially different quantity, scale, contrast, population, or time scope from the assigned claim or task anchor without a defensible mapping.
+M2. Label low-quality when a focal variable, transformation, cutoff, control, or restriction depends on an invented or unverified dataset field, or lacks authorized evidence and a defensible methodological reason.
+M3. Label low-quality when undocumented exclusions or avoidable complete-case requirements could materially change the analytic sample, or when the code does not report sample flow.
+M4. Label low-quality when a restriction, outlier rule, missing-data rule, transformation, control, or fixed effect lacks a clear role and could materially change the estimand or result.
+M5. Label low-quality when collapsing, categorizing, aggregating, or subsetting a focal variable discards information material to the claim and is not required or justified.
+M6. Label low-quality when the code materially differs from the plan or references missing columns. Do not defer a known plan-code mismatch to Execution.
 
 EVIDENCE-USE RULES:
 - Use only authorized inputs. Never read the human analysis/review PDF or expected results.
@@ -985,7 +1000,7 @@ A materially different structure includes replacing an explicitly planned hierar
 
 1.2 Label low-quality when the implemented pipeline mainly answers a different question from the focal claim, such as changing the focal outcome, predictor, population, contrast, or estimand without a defensible mapping. A different but reasonable operationalization that still tests the same claim is allowed.
 
-1.3 Label low-quality when the conclusion materially overstates, reverses, or otherwise does not follow from the analyst's own reported result and stated inference rule. Do not require agreement with the original paper. Examples include claiming a positive effect from a negative estimate, claiming support when the stated threshold is not met, or treating significance in one group and non-significance in another as proof that the groups differ without a direct test.
+1.3 Label low-quality when the conclusion materially overstates, reverses, or otherwise does not follow from the analyst's own reported result and stated inference rule. Do not require agreement with the original paper. Examples include claiming strong support when the stated strength threshold is not met, reversing the estimate's direction, or treating significance in one group and non-significance in another as proof that the groups differ without a direct test.
 
 1.4 Label low-quality when the candidate path claims a completed analysis or reported result but provides no identifiable candidate analysis code, entry file, run command, or executable specification that can be connected to that analysis and result. Also label low-quality when the supplied candidate code does not correspond to the reported method or result and no explanation is provided. Do not trigger solely because otherwise identifiable candidate code cannot run in the current environment due to unavailable software, dependencies, paths, or external saved objects.
 
@@ -1010,7 +1025,7 @@ TASK2 LOW-QUALITY RULES (Task2 is primarily an instruction-compliance and result
 
 2.5 Label low-quality when the required Task2 result cannot be identified, clearly belongs to another outcome, model, sample, or task, or is reported without identifiable candidate code or an executable specification linking the result to the claimed Task2 analysis. Do not trigger solely because the result appears in text rather than a table, only selected statistics are printed, or otherwise identifiable candidate code cannot run because of unavailable software, dependencies, paths, or external saved objects.
 
-2.6 Label low-quality when support, opposition, or inconclusive categorization does not reasonably follow from the Task2 result. A non-significant frequentist result may reasonably be categorized as no evidence for or against; do not require Bayesian evidence merely for that wording.
+2.6 Label low-quality when support, opposition, or inconclusive categorization does not follow the fixed conclusion classification rules. For a frequentist result in the expected direction, classify p <= 0.05 as support. Classify 0.05 < p <= 0.055 as support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null; describe that evidence as borderline. Classify clearly weak aligned evidence as inconclusive. Do not classify an opposite-signed estimate as opposite unless it provides affirmative evidence of a material contrary effect; otherwise classify it as inconclusive.
 
 2.7 Apply the same threshold as Rules 1.5 and 1.6. Do not automatically reject ordinary regression because data are clustered or blocked; explain why the specific issue materially affects the focal Task2 result.
 
@@ -1029,7 +1044,7 @@ G8. a preferred diagnostic, robustness check, control, or test is absent but is 
 G9. an evaluator cannot personally execute otherwise identifiable candidate code;
 G10. a code comment conflicts with the report unless the executed specification/output confirms a material contradiction;
 G11. the concern depends only on ambiguous variable names, wave labels, or undocumented assumptions;
-G12. the analyst uses no evidence for or against for a non-significant frequentist result;
+G12. an aligned estimate with 0.05 < p <= 0.055 is classified as support when it is substantively meaningful and its uncertainty interval narrowly crosses the null, and its evidence is accurately described as borderline;
 G13. the issue was corrected in the final submission;
 G14. the analyst makes a defensible methodological choice that another evaluator would not personally choose.
 A guardrail may contribute to a joint assessment only when accompanied by clear, material substantive defects; it cannot be the sole basis for low-quality.
@@ -1046,92 +1061,18 @@ D7. Verify that identifiable candidate code or an executable specification is pr
 D8. Assign low-quality when candidate code or an executable specification is absent for a claimed completed analysis, or when another low-quality rule passes the four-part standard. Assign low-quality for correctable planning underspecification only when candidate implementation is present. Otherwise assign high-quality when no low-quality rule applies.
 When substantive evidence is ambiguous, do not reject based on speculation. However, complete absence of candidate code or an executable specification is not treated as substantive ambiguity; it is a low-quality traceability failure.
 
-DECISION AND ROUTING RULE:
-- For each task, set path_signature.task_decisions.<TaskX>.decision to high-quality, or low-quality. In the reason cite exact rule numbers and guardrails considered, identify the evidence, explain materiality, and list verification limitations separately.
-- overall_decision = high_quality_path only if both tasks are high-quality and all substantive schema checks pass.
-- overall_decision = low_quality_path if any task is low-quality or same_focal_claim, same_dataset, or not_duplicate fails.
-- decision = high-quality only for high_quality_path; otherwise decision = low-quality, because the current outer schema supports only routing to execution versus returning to planning.
-- next_step = send_to_execution for high_quality_path; otherwise return_to_planning.
-- Record all six check_results and write exactly one memory_record with status equal to decision and source_agent = pruning_agent.
-- Do not fabricate a pass. When a check cannot be evaluated, determine whether the problem is substantive, correctable underspecification, or verification-only, and route accordingly rather than automatically treating uncertainty as low-quality.
+DECISION RULE:
+- Review only active candidates whose status is null. Never re-evaluate a retained high-quality candidate.
+- For each reviewed candidate, assign high-quality or low-quality independently. In decision_summary, cite exact rule numbers and guardrails considered, identify the evidence, explain materiality, and list verification limitations separately.
+- Record all thirteen task-specific check_results for every reviewed candidate.
+- A high-quality decision is valid only when every required check has status pass. Any failed check requires a low-quality decision.
+- The task-pair assessment is high-quality only when both active candidates are high-quality after the current review. Otherwise it is low-quality.
+- Do not fabricate a pass. When a check cannot be evaluated, determine whether the problem is substantive, correctable underspecification, or verification-only rather than automatically treating uncertainty as low-quality.
+- Do not propose routing or a Shared Memory update. The pipeline derives both from the candidate decisions after the agent returns.
 """.strip()
 
 EXAMPLE_PRUNE = """
-Example Session (abbreviated; observations are truncated):
+Example review standard:
 
-Question: Review the single candidate analysis path in the provided prune_in JSON for case Bruner_ExpEco_2017_amYY and decide whether it is high-quality or low-quality, then fill out the Pruning Agent output JSON.
-
-Thought: Before deciding I must complete the mandatory review procedure: read the original paper, explore the dataset in depth, and read the analysis code end to end. I start with the original paper (never the review PDF).
-Action: read_pdf: {"file_path": "pruning_test_data/Bruner_ExpEco_2017_amYY/Y2GLE/original_paper.pdf"}
-PAUSE
-
-Observation: [PAPER TEXT truncated] ... Each of the 328 participants made 20 repeated lottery choices ...
-
-Thought: The paper says each participant made 20 repeated choices, so observations are clustered within participants. Now I explore the dataset structure and the focal variables.
-Action: load_dataset: {"file_path": "pruning_test_data/Bruner_ExpEco_2017_amYY/Y2GLE/data/RiskData.dta"}
-PAUSE
-
-Observation: Dataset loaded: 6560 rows x 14 columns.
-
-Thought: 6560 rows for 328 participants confirms repeated measures (20 rows per subject). I check the subject identifier and the focal variables.
-Action: get_dataset_variable_summary: {"file_path": "pruning_test_data/Bruner_ExpEco_2017_amYY/Y2GLE/data/RiskData.dta", "variable_name": "subject_id"}
-PAUSE
-
-Observation: subject_id: 328 unique values, 20 rows per value ...
-
-Thought: Now I read the analysis code end to end to verify it implements the planned model and produces concrete results.
-Action: read_txt: {"file_path": "pruning_test_data/Bruner_ExpEco_2017_amYY/Y2GLE/data/analysis_task1.R"}
-PAUSE
-
-Observation: [CODE truncated] ... m <- lm(decision_error ~ risk_aversion, data = df); summary(m) ...
-
-Thought: The code fits plain OLS on all 6560 rows, treating repeated choices from the same participant as independent. Under Rules 1.6 and 2.7, the existence of repeated observations alone is not enough for rejection. I must determine whether this dependence materially affects the focal inference, considering the inferential target, cluster structure, uncertainty, and whether the conclusion is sensitive. If materiality is not established, I should treat this as a methodological concern rather than a low-quality trigger.
-Answer: {
-  "pruning_output": {
-    "case_id": "Bruner_ExpEco_2017_amYY",
-    "planned_id": "Bruner_ExpEco_2017_amYY_path01",
-    "decision": "high-quality",
-    "decision_summary": "The paper and dataset show repeated choices per participant, but the authorized evidence does not establish that ordinary OLS materially changes the focal inference. Under Rules 1.6 and 2.7 and guardrail G1, clustering alone is insufficient for rejection; both tasks remain high-quality with this concern recorded.",
-    "check_results": {
-      "same_focal_claim": {"status": "pass", "note": "Same focal claim about risk aversion and decision error."},
-      "same_dataset": {"status": "pass", "note": "Uses the authorized RiskData.dta."},
-      "not_duplicate": {"status": "pass", "closest_memory_path_id": null, "note": "Shared memory has no records."},
-      "task_completeness": {"status": "pass", "note": "Task1 and Task2 are both specified."},
-      "method_justification": {"status": "pass", "note": "Explains why regressing decision error on risk aversion tests the claim."},
-      "executable_in_principle": {"status": "pass", "note": "Required variables exist in the dataset and the code runs the stated model."}
-    },
-    "memory_record": {
-      "path_id": "Bruner_ExpEco_2017_amYY_path01",
-      "case_id": "Bruner_ExpEco_2017_amYY",
-      "status": "high-quality",
-      "task_scope": ["Task1", "Task2"],
-      "path_summary": "Regress constructed decision error on constructed risk aversion score with plain OLS.",
-      "path_signature": {
-        "model_family": "linear_regression",
-        "outcome": "decision_error",
-        "main_predictor": "risk_aversion_score",
-        "controls": [],
-        "sample_restriction": null,
-        "missing_data_rule": null,
-        "variable_construction": "risk_aversion_score from PV and RV tasks; decision_error from LV task.",
-        "inference_rule": "Support if coefficient is negative and p < 0.05.",
-        "task_decisions": {
-          "Task1": {
-            "decision": "high-quality",
-            "reason": "Rules 1.6 and G1 considered: repeated observations are present, but the available evidence does not establish that the uncertainty problem is materially consequential for the focal conclusion."
-          },
-          "Task2": {
-            "decision": "high-quality",
-            "reason": "Rules 2.7 and G1 considered: Task2 reuses the same model, but material harm to the focal Task2 inference is not established."
-          }
-        },
-        "overall_decision": "high_quality_path"
-      },
-      "status_reason": "Both tasks pass because repeated measures are documented but material inferential harm is not established under Rules 1.6 and 2.7.",
-      "source_agent": "pruning_agent",
-      "iteration": "1"
-    },
-    "next_step": "send_to_execution"
-  }
-}
+Before deciding, reconstruct the claim's estimand, inspect the authorized dataset and candidate code, and verify every required check. A candidate is high-quality only when all thirteen checks pass. For example, a regression may be executable and statistically conventional but still be low-quality if it changes an absolute-difference claim into a log-ratio estimand without evidence, silently discards a large part of the sample, invents unavailable controls, or implements code that differs from the declared plan. Conversely, a defensible candidate remains high-quality even when it may produce an inconclusive or opposing result. Never use expected results or agreement with the paper's conclusion as a quality criterion.
 """.strip()

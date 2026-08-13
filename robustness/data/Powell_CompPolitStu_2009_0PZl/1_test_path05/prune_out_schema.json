@@ -1,0 +1,616 @@
+{
+  "pruning_output": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_id": "Powell_CompPolitStu_2009_0PZl",
+    "task_pair_records": [
+      {
+        "path_id": "Powell_CompPolitStu_2009_0PZl_path06",
+        "tasks": {
+          "task1": {
+            "candidates": [
+              {
+                "candidate_id": "Task1_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use all authorized SMD/PR observations and compare raw Manifesto-method plurality-winner distance between SMD and PR election rules using a fixed-seed permutation test for the mean difference.",
+                  "path_signature": {
+                    "model_family": "permutation_test_mean_difference",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Authorized rows with smd coded smd or pr and nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for smd and pldist1 after retaining the focal SMD/PR election-rule categories.",
+                    "variable_construction": "No aggregation, no scaling, and no outcome transformation; only label cleaning and binary coding of the focal election-rule contrast.",
+                    "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR mean difference with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive.",
+                    "estimand_quantity": "SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter.",
+                    "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                    "contrast": "SMD election-rule observations minus PR election-rule observations.",
+                    "target_population": "Authorized Powell country-election observations with smd/pr election-rule coding and nonmissing pldist1.",
+                    "time_scope": "1945-2003, the observed dataset range."
+                  },
+                  "analysis_anchor": {
+                    "task_id": "Task1",
+                    "estimand": {
+                      "outcome": "pldist1",
+                      "outcome_scale": "Raw Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell country-election observations with SMD or PR election-rule coding and nonmissing Manifesto-method plurality-winner distance",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Use nonmissing pldist1 observations."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations with missing election-rule category because they cannot contribute to the SMD-versus-PR contrast.",
+                        "Exclude observations with missing pldist1 if any are encountered."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear_regression or mean-comparison style analysis of election-rule differences; exact original focal test specification not fully stated in the extracted PDF summary",
+                      "variable_construction": "pldist1 is the Manifesto-method plurality-winner distance from the median voter; smd identifies PR versus SMD election rules.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "negative SMD-minus-PR distance difference, because the claim predicts plurality winners are closer to the median voter under SMD",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 is borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    },
+                    "evidence": {
+                      "paper": "The PDF summary identifies the focal mechanism as Hypothesis 4a: under SMD, Duverger's and Downsian theories suggest convergence of the largest/plurality parties toward the median voter. It also states that the paper uses the party vote/party manifesto method to estimate ideological positions and distances from the median voter.",
+                      "dataset_mapping": "Verified columns include smd with categories pr=244, smd=85, missing=2; pldist1 with no missing values and raw distance summaries; year ranges from 1945 to 2003; country identifies country-election observations."
+                    },
+                    "uncertainties": [
+                      "The exact original focal table and standard-error specification for this particular sentence were not fully available because the PDF reader summarized the long paper rather than returning all table text."
+                    ]
+                  },
+                  "analysis_path": {
+                    "path_name": "permutation_mean_difference_manifesto_pldist1",
+                    "path_description": "Use all authorized SMD/PR observations and compare raw Manifesto-method plurality-winner distance between SMD and PR election rules using a fixed-seed permutation test for the mean difference.",
+                    "software": "Python",
+                    "original_software": "not_stated",
+                    "model_family": "permutation_test_mean_difference",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with Stata categorical value labels.",
+                      "Record the starting number of rows.",
+                      "Verify that smd and pldist1 exist.",
+                      "Create smd_clean by lowercasing and stripping the smd category labels.",
+                      "Retain rows where smd_clean is smd or pr and record rows removed.",
+                      "Drop rows with missing pldist1 and record rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Compute the SMD-minus-PR mean difference in pldist1.",
+                      "Compute a two-sided fixed-seed permutation p-value using 100000 permutations.",
+                      "Compute a fixed-seed within-group percentile bootstrap 95 percent confidence interval using 20000 bootstrap draws.",
+                      "Classify the result using the prespecified conclusion rule and write result_task1.json and sample_flow_task1.json."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, the Manifesto-method distance of the plurality vote winner from the median voter.",
+                      "main_predictor_measure": "smd_bin, coded 1 for SMD election-rule observations and 0 for PR election-rule observations.",
+                      "control_variables": [],
+                      "sample_restriction": "Authorized rows with smd coded smd or pr and nonmissing pldist1.",
+                      "outlier_rule": "No outlier deletion or winsorization.",
+                      "missing_data_rule": "Listwise deletion for smd and pldist1 after retaining the focal SMD/PR election-rule categories.",
+                      "data_processing": "No aggregation, no scaling, and no outcome transformation; only label cleaning and binary coding of the focal election-rule contrast.",
+                      "model_choice": "Fixed-seed randomization/permutation test for the SMD-minus-PR mean difference, with a bootstrap confidence interval.",
+                      "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR mean difference with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Permutation test for independent-group mean difference",
+                        "formula": "mean(pldist1 | smd_bin=1) - mean(pldist1 | smd_bin=0)",
+                        "planned_estimation": "SMD-minus-PR mean difference in raw pldist1, two-sided permutation p-value, and bootstrap percentile 95 percent confidence interval",
+                        "inference_criteria": "Negative estimate with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only if substantively meaningful and the bootstrap interval narrowly crosses zero; positive estimate with p < 0.05 and bootstrap interval above zero is opposite; otherwise inconclusive.",
+                        "deviation": "true",
+                        "qualification": "This preserves the focal outcome, contrast, and sample while changing only the inferential test from previously planned regression, quantile, Gamma, Mann-Whitney, and log-outcome paths. A permutation test is defensible for a binary election-rule contrast and a skewed continuous distance outcome because it does not rely on a parametric outcome distribution."
+                      }
+                    ],
+                    "variables": {
+                      "outcome": {
+                        "name": "pldist1",
+                        "definition": "Manifesto-method ideological distance between the plurality vote winner and the median voter.",
+                        "variable_construction": "Use raw pldist1 values without transformation.",
+                        "missing_data_handling": "Drop rows with missing pldist1 after applying the election-rule contrast restriction.",
+                        "deviation": "false",
+                        "qualification": "The focal claim is specifically about the plurality vote winner being close to the median voter; pldist1 directly operationalizes that distance in the authorized dataset.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "main_predictor": {
+                        "name": "smd_bin",
+                        "definition": "Binary election-rule indicator comparing SMD observations with PR observations.",
+                        "variable_construction": "Construct from smd after cleaning labels: smd_bin=1 when smd_clean is smd and smd_bin=0 when smd_clean is pr.",
+                        "missing_data_handling": "Rows with smd not coded as smd or pr are excluded from the focal contrast.",
+                        "deviation": "false",
+                        "qualification": "The focal claim concerns SMD election rules; PR observations provide the comparison category used in the paper's broader SMD versus PR electoral-system framework.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "controls": []
+                    },
+                    "expected_outputs": [
+                      "sample_flow_task1.json reporting starting rows, rows removed by each rule, final analytic rows, and SMD/PR group counts.",
+                      "result_task1.json and printed JSON reporting the SMD-minus-PR mean difference, permutation p-value, bootstrap confidence interval, sample size, group counts, and conclusion classification."
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                      "contrast": "SMD election-rule observations minus PR election-rule observations.",
+                      "target_population": "Authorized Powell country-election observations with smd/pr election-rule coding and nonmissing pldist1.",
+                      "time_scope": "1945-2003, the observed dataset range.",
+                      "claim_mapping": "If SMD party competition leads plurality winners to be closer to the median voter, the mean pldist1 for SMD observations should be lower than for PR observations, yielding a negative SMD-minus-PR difference."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "The candidate uses raw pldist1, the anchor's Manifesto-method plurality-winner distance outcome."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "The candidate preserves the SMD-versus-PR election-rule contrast."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "The candidate uses authorized observations with focal election-rule categories and nonmissing focal outcome."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "The candidate replaces the anchor's regression or mean-comparison style reference with a permutation test for the same mean-difference estimand."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "The inference rule preserves the focal expected direction and the universal conclusion-classification thresholds."
+                      },
+                      "deviations": [
+                        {
+                          "dimension": "model",
+                          "anchor_choice": "linear_regression or mean-comparison style analysis; exact original uncertainty method not fully stated",
+                          "candidate_choice": "Fixed-seed permutation test for the SMD-minus-PR mean difference with a bootstrap confidence interval.",
+                          "justification": "The outcome is continuous and right-skewed, and the focal contrast is a binary SMD-versus-PR grouping. A permutation test changes only the inference method while preserving the focal estimand, outcome, sample, and contrast, and it avoids repeating previous OLS, quantile, Gamma, Mann-Whitney, and log-outcome paths."
+                        }
+                      ]
+                    },
+                    "evidence_basis": {
+                      "outcome": "The PDF summary states that the paper uses Manifesto-method ideological positions and analyzes distances from the median voter; the verified dataset contains pldist1 with nonmissing raw distance values.",
+                      "main_predictor": "The focal claim names SMD election rules; the verified dataset contains smd categories pr=244, smd=85, and missing=2.",
+                      "controls": [],
+                      "restrictions": [
+                        {
+                          "rule": "Retain only observations with smd coded smd or pr.",
+                          "evidence": "The focal contrast requires known election-rule categories; verified smd has pr, smd, and missing categories."
+                        },
+                        {
+                          "rule": "Drop missing pldist1 if any occur.",
+                          "evidence": "The estimand is defined only for observations with a plurality-winner distance; verified summary showed no missing pldist1 but code audits the rule."
+                        },
+                        {
+                          "rule": "No outlier deletion or transformation.",
+                          "evidence": "No authorized paper or task instruction provides an outlier cutoff, and the focal outcome scale is the raw distance."
+                        }
+                      ]
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "inclusion_rules": [
+                        "Start with all rows in data/powell_original.dta.",
+                        "Retain rows where smd is coded as smd or pr.",
+                        "Retain rows with nonmissing pldist1."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude rows with missing or non-focal election-rule category.",
+                        "Exclude rows with missing pldist1 if present."
+                      ],
+                      "code_reports_sample_flow": true
+                    },
+                    "focal_variable_structure": {
+                      "source_structure": "pldist1 is continuous; smd is nominal categorical with pr and smd focal categories.",
+                      "analysis_structure": "pldist1 remains continuous on its raw scale; smd is represented as a binary contrast required by the claim.",
+                      "information_loss": "No information loss for pldist1; smd rows with missing category cannot be used for the focal SMD-versus-PR contrast.",
+                      "justification": "The focal claim is about closeness, naturally measured as a continuous distance, and about SMD rules, requiring a direct SMD-versus-PR contrast."
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "smd",
+                        "pldist1"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass",
+                      "preflight_note": "The read-back code loads the authorized Stata file, verifies smd and pldist1, constructs smd_clean and smd_bin as declared, applies the declared sample rules, computes the SMD-minus-PR mean difference, permutation p-value, bootstrap CI, conclusion classification, and sample-flow files."
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py",
+                    "notes": "Run from the study root directory. The script writes result_task1.json and sample_flow_task1.json in its artifact directory."
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task1 targets the same focal claim: under SMD rules, plurality vote winners should be closer to the median voter than under PR. The original paper summary identifies this as the Duverger-Downs/SMD plurality-party convergence mechanism and describes the manifesto method as a relevant source of party/voter positions. Dataset inspection verified 331 country-election observations, years 1945-2003, repeated observations by country, smd categories pr=244, smd=85, missing=2, and nonmissing positive/right-skewed pldist1. The code reads the authorized Stata file with categorical labels, verifies smd and pldist1, constructs smd_clean and smd_bin as planned, excludes only non-SMD/PR smd rows and missing pldist1, computes the SMD-minus-PR raw pldist1 mean difference, uses the declared fixed-seed two-sided permutation test and within-group bootstrap CI, applies the fixed conclusion rule, and writes both result and sample-flow JSON files. No low-quality rule is triggered: under M1/M2/M3/M4/M5/M6 and Task1 rules 1.1-1.9, the outcome, contrast, population, sample, model deviation, and inference rule are explicit, supported, and capable of answering the assigned question. Guardrails G1, G8, and G14 apply: the method differs from earlier regression paths and does not cluster by country, but this is a justified robustness inference choice, not a clear material defect by itself. Verification limitation: the PDF tool returned a long-document summary rather than full table text, but the focal claim, study design, manifesto measure, and country-election structure were sufficiently confirmed from authorized inputs.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The candidate directly tests whether plurality vote winners are closer to the median voter under SMD than PR by comparing SMD-minus-PR pldist1."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The plan and code use only data/powell_original.dta from the authorized study folder."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared Memory contains OLS, quantile regression, Gamma GLM, Mann-Whitney/Hodges-Lehmann, and a low-quality log-outcome path; this path uses a fixed-seed permutation test with bootstrap CI for the raw mean difference and is not a semantic duplicate of an existing executed Task1 path."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task1 and Task2 candidates are both present; this Task1 candidate is fully specified with path, code, entry file, and outputs."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The quantity is the SMD-minus-PR mean difference in raw Manifesto-method pldist1 for authorized SMD/PR country-election observations from 1945-2003, which directly answers the focal claim."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified smd and pldist1; pldist1 is the manifesto plurality-winner distance and smd supplies pr/smd categories."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code records starting rows, exclusion of non-smd/pr election-rule rows, exclusion of missing pldist1, final analytic rows, and group counts."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "Excluding rows without smd/pr coding is required for the focal contrast; dropping missing pldist1 is necessary for the outcome; no outlier deletion or transformation is applied."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used, and none are required by the Task1 anchor for this mean-comparison style analysis."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 remains continuous and raw; smd is reduced only to the required binary SMD-versus-PR contrast, excluding two missing-category observations."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The reviewed Python code implements the declared outcome, predictor, sample rules, raw-scale mean difference, 100000-permutation p-value, 20000-bootstrap CI, conclusion rule, and JSON outputs."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "A permutation test is coherently justified as a distribution-light test of the same binary-group mean difference for a right-skewed continuous distance outcome."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "The candidate includes an identifiable Python source file, entry file, run command, package requirements, and traceable output files."
+                  }
+                }
+              }
+            ]
+          },
+          "task2": {
+            "candidates": [
+              {
+                "candidate_id": "Task2_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use the required 1945-2003 Manifesto-method data and compare raw Manifesto-method plurality-winner distance between SMD and PR election rules using a fixed-seed permutation test for the mean difference.",
+                  "path_signature": {
+                    "model_family": "permutation_test_mean_difference",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Years 1945-2003 inclusive, authorized rows with smd coded smd or pr, and nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for year, smd, and pldist1 after applying the required year range and focal election-rule categories.",
+                    "variable_construction": "Apply instructed year restriction; no aggregation, no scaling, and no outcome transformation; only label cleaning and binary coding of the focal election-rule contrast.",
+                    "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR mean difference with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive.",
+                    "estimand_quantity": "SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter during 1945-2003.",
+                    "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                    "contrast": "SMD election-rule observations minus PR election-rule observations.",
+                    "target_population": "Authorized Powell country-election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing pldist1.",
+                    "time_scope": "1945-2003 inclusive."
+                  },
+                  "analysis_anchor": {
+                    "task_id": "Task2",
+                    "estimand": {
+                      "outcome": "pldist1",
+                      "outcome_scale": "Raw Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell country-election observations from 1945 through 2003 with SMD or PR election-rule coding and nonmissing Manifesto-method plurality-winner distance",
+                      "time_scope": "1945-2003 inclusive"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset.",
+                        "Restrict to years 1945 through 2003 inclusive.",
+                        "Use the Manifesto-method pldist1 variable.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Use nonmissing pldist1 observations."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations outside 1945-2003 if any are encountered.",
+                        "Exclude observations with missing election-rule category because they cannot contribute to the SMD-versus-PR contrast.",
+                        "Exclude observations with missing pldist1 if any are encountered."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear_regression or mean-comparison style analysis of election-rule differences; exact original focal test specification not fully stated in the extracted PDF summary",
+                      "variable_construction": "Task2 requires the Manifesto Method; pldist1 is the verified Manifesto-method plurality-winner distance variable and smd identifies PR versus SMD election rules.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "negative SMD-minus-PR distance difference, because the claim predicts plurality winners are closer to the median voter under SMD",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 is borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    },
+                    "evidence": {
+                      "paper": "The PDF summary states that the paper uses a party vote/party manifesto method and discusses Hypothesis 4a, in which SMD party competition should promote convergence of the plurality vote-winning party toward the median voter.",
+                      "dataset_mapping": "Verified columns include year with min=1945 and max=2003, smd with categories pr and smd, and pldist1 as the Manifesto-method plurality-winner distance with no missing values."
+                    },
+                    "uncertainties": [
+                      "The exact original focal table and standard-error specification for this particular sentence were not fully available because the PDF reader summarized the long paper rather than returning all table text."
+                    ]
+                  },
+                  "analysis_path": {
+                    "path_name": "permutation_mean_difference_manifesto_pldist1_1945_2003",
+                    "path_description": "Use the required 1945-2003 Manifesto-method data and compare raw Manifesto-method plurality-winner distance between SMD and PR election rules using a fixed-seed permutation test for the mean difference.",
+                    "software": "Python",
+                    "original_software": "not_stated",
+                    "model_family": "permutation_test_mean_difference",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with Stata categorical value labels.",
+                      "Record the starting number of rows.",
+                      "Verify that year, smd, and pldist1 exist.",
+                      "Restrict to year >= 1945 and year <= 2003 and record rows removed.",
+                      "Create smd_clean by lowercasing and stripping the smd category labels.",
+                      "Retain rows where smd_clean is smd or pr and record rows removed.",
+                      "Drop rows with missing pldist1 and record rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Compute the SMD-minus-PR mean difference in pldist1.",
+                      "Compute a two-sided fixed-seed permutation p-value using 100000 permutations.",
+                      "Compute a fixed-seed within-group percentile bootstrap 95 percent confidence interval using 20000 bootstrap draws.",
+                      "Classify the result using the prespecified conclusion rule and write result_task2.json and sample_flow_task2.json."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, the Manifesto-method distance of the plurality vote winner from the median voter.",
+                      "main_predictor_measure": "smd_bin, coded 1 for SMD election-rule observations and 0 for PR election-rule observations.",
+                      "control_variables": [],
+                      "sample_restriction": "Years 1945-2003 inclusive, authorized rows with smd coded smd or pr, and nonmissing pldist1.",
+                      "outlier_rule": "No outlier deletion or winsorization.",
+                      "missing_data_rule": "Listwise deletion for year, smd, and pldist1 after applying the required year range and focal election-rule categories.",
+                      "data_processing": "Apply instructed year restriction; no aggregation, no scaling, and no outcome transformation; only label cleaning and binary coding of the focal election-rule contrast.",
+                      "model_choice": "Fixed-seed randomization/permutation test for the SMD-minus-PR mean difference, with a bootstrap confidence interval.",
+                      "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR mean difference with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Permutation test for independent-group mean difference",
+                        "formula": "mean(pldist1 | smd_bin=1, 1945<=year<=2003) - mean(pldist1 | smd_bin=0, 1945<=year<=2003)",
+                        "planned_estimation": "SMD-minus-PR mean difference in raw pldist1 during 1945-2003, two-sided permutation p-value, and bootstrap percentile 95 percent confidence interval",
+                        "inference_criteria": "Negative estimate with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only if substantively meaningful and the bootstrap interval narrowly crosses zero; positive estimate with p < 0.05 and bootstrap interval above zero is opposite; otherwise inconclusive.",
+                        "deviation": "true",
+                        "qualification": "This preserves Task2's required time period and Manifesto-method outcome while changing only the inferential test from earlier planned paths. A permutation test is defensible for a binary election-rule contrast and a skewed continuous distance outcome because it does not rely on a parametric outcome distribution."
+                      }
+                    ],
+                    "variables": {
+                      "outcome": {
+                        "name": "pldist1",
+                        "definition": "Manifesto-method ideological distance between the plurality vote winner and the median voter.",
+                        "variable_construction": "Use raw pldist1 values without transformation.",
+                        "missing_data_handling": "Drop rows with missing pldist1 after applying the year and election-rule restrictions.",
+                        "deviation": "false",
+                        "qualification": "Task2 explicitly requires the Manifesto Method, and pldist1 directly operationalizes plurality-winner distance from the median voter in the authorized dataset.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "main_predictor": {
+                        "name": "smd_bin",
+                        "definition": "Binary election-rule indicator comparing SMD observations with PR observations.",
+                        "variable_construction": "Construct from smd after cleaning labels: smd_bin=1 when smd_clean is smd and smd_bin=0 when smd_clean is pr.",
+                        "missing_data_handling": "Rows with smd not coded as smd or pr are excluded from the focal contrast.",
+                        "deviation": "false",
+                        "qualification": "The focal claim concerns SMD election rules; PR observations provide the comparison category in the paper's SMD versus PR framework.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "controls": []
+                    },
+                    "expected_outputs": [
+                      "sample_flow_task2.json reporting starting rows, rows removed by the year restriction, rows removed by the election-rule and outcome rules, final analytic rows, and SMD/PR group counts.",
+                      "result_task2.json and printed JSON reporting the SMD-minus-PR mean difference, permutation p-value, bootstrap confidence interval, sample size, group counts, and conclusion classification."
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter during 1945-2003.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                      "contrast": "SMD election-rule observations minus PR election-rule observations.",
+                      "target_population": "Authorized Powell country-election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing pldist1.",
+                      "time_scope": "1945-2003 inclusive.",
+                      "claim_mapping": "Task2 requires 1945-2003 Manifesto-method data. If SMD party competition leads plurality winners to be closer to the median voter, the mean pldist1 for SMD observations in that period should be lower than for PR observations, yielding a negative SMD-minus-PR difference."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "The candidate uses raw pldist1, satisfying the Manifesto Method instruction."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "The candidate preserves the SMD-versus-PR election-rule contrast."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "The candidate applies the required 1945-2003 restriction and uses authorized observations with focal election-rule categories and nonmissing focal outcome."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "The candidate replaces the anchor's regression or mean-comparison style reference with a permutation test for the same mean-difference estimand."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "The inference rule preserves the focal expected direction and the universal conclusion-classification thresholds."
+                      },
+                      "deviations": [
+                        {
+                          "dimension": "model",
+                          "anchor_choice": "linear_regression or mean-comparison style analysis; exact original uncertainty method not fully stated",
+                          "candidate_choice": "Fixed-seed permutation test for the SMD-minus-PR mean difference with a bootstrap confidence interval.",
+                          "justification": "The outcome is continuous and right-skewed, and the focal contrast is a binary SMD-versus-PR grouping. A permutation test changes only the inference method while preserving Task2's required sample, Manifesto-method outcome, and focal contrast, and it avoids repeating previous OLS, quantile, Gamma, Mann-Whitney, and log-outcome paths."
+                        }
+                      ]
+                    },
+                    "evidence_basis": {
+                      "outcome": "Task2 requires the Manifesto Method; the PDF summary states that the manifesto method uses party manifestos and voter behavior to estimate ideological positions; the verified dataset contains pldist1 with nonmissing raw distance values.",
+                      "main_predictor": "The focal claim names SMD election rules; the verified dataset contains smd categories pr=244, smd=85, and missing=2.",
+                      "controls": [],
+                      "restrictions": [
+                        {
+                          "rule": "Restrict to years 1945 through 2003 inclusive.",
+                          "evidence": "This is required by the Task2 instruction; the verified dataset year range is 1945-2003."
+                        },
+                        {
+                          "rule": "Use pldist1 as the Manifesto-method outcome.",
+                          "evidence": "This is required by Task2's Manifesto Method instruction and verified as a dataset column."
+                        },
+                        {
+                          "rule": "Retain only observations with smd coded smd or pr.",
+                          "evidence": "The focal contrast requires known election-rule categories; verified smd has pr, smd, and missing categories."
+                        },
+                        {
+                          "rule": "Drop missing pldist1 if any occur.",
+                          "evidence": "The estimand is defined only for observations with a plurality-winner distance; verified summary showed no missing pldist1 but code audits the rule."
+                        },
+                        {
+                          "rule": "No outlier deletion or transformation.",
+                          "evidence": "No authorized paper or task instruction provides an outlier cutoff, and the focal outcome scale is the raw distance."
+                        }
+                      ]
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "inclusion_rules": [
+                        "Start with all rows in data/powell_original.dta.",
+                        "Retain years 1945 through 2003 inclusive.",
+                        "Retain rows where smd is coded as smd or pr.",
+                        "Retain rows with nonmissing pldist1."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude rows outside 1945-2003 if present.",
+                        "Exclude rows with missing or non-focal election-rule category.",
+                        "Exclude rows with missing pldist1 if present."
+                      ],
+                      "code_reports_sample_flow": true
+                    },
+                    "focal_variable_structure": {
+                      "source_structure": "pldist1 is continuous; smd is nominal categorical with pr and smd focal categories; year is numeric.",
+                      "analysis_structure": "pldist1 remains continuous on its raw scale; smd is represented as a binary contrast required by the claim; year is used only for the instructed inclusion restriction.",
+                      "information_loss": "No information loss for pldist1; smd rows with missing category cannot be used for the focal SMD-versus-PR contrast; the year restriction follows Task2 but does not discard observations because the verified range is already 1945-2003.",
+                      "justification": "The focal claim is about closeness, naturally measured as a continuous distance, and Task2 specifically requires Manifesto-method data from 1945-2003."
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "year",
+                        "smd",
+                        "pldist1"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass",
+                      "preflight_note": "The read-back code loads the authorized Stata file, verifies year, smd, and pldist1, applies the 1945-2003 restriction, constructs smd_clean and smd_bin as declared, applies the declared sample rules, computes the SMD-minus-PR mean difference, permutation p-value, bootstrap CI, conclusion classification, and sample-flow files."
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py",
+                    "notes": "Run from the study root directory. The script writes result_task2.json and sample_flow_task2.json in its artifact directory."
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task2 explicitly requires use of 1945-2003 data and the Manifesto Method. The candidate satisfies those requirements by using the authorized powell_original.dta file, restricting to year 1945-2003 inclusive, using raw pldist1 as the Manifesto-method plurality-winner distance, and comparing SMD versus PR observations. Dataset inspection verified that the authorized file contains 331 country-election observations, year range 1945-2003, smd categories pr=244, smd=85, missing=2, and nonmissing pldist1. The reviewed code reads the authorized Stata file with labels, verifies year/smd/pldist1, applies the year restriction, constructs smd_clean and smd_bin, reports each sample-flow step, computes the SMD-minus-PR raw mean difference, calculates the declared permutation p-value and bootstrap CI, applies the fixed conclusion rule, and writes Task2-specific result and sample-flow JSON. No Task2 low-quality rule is triggered: under 2.1-2.8, the explicit time-window, Manifesto-method outcome, contrast, sample, result mapping, and classification rule are implemented. Under M1-M6 the model deviation is explicit and defensible because it preserves the assigned estimand while changing inference. Guardrails G1, G4, G8, and G14 apply: using a different inference family from the prior OLS path or original-paper model is not by itself low-quality, and the reused structure from Task1 satisfies all Task2-specific requirements. Verification limitation: the PDF was available through a summary extraction rather than full table text, but the task-specific requirements and dataset mapping were independently verified from authorized inputs.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The candidate tests the focal SMD convergence claim using the Task2-required Manifesto-method pldist1 measure."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The plan and code use only the authorized data/powell_original.dta file."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared Memory contains OLS, quantile, Gamma, Mann-Whitney, and low-quality log-outcome paths; this candidate uses a fixed-seed permutation test with bootstrap CI and is not a semantic duplicate of an existing Task2 path."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task2 is fully specified and paired with a Task1 candidate; the Task2 candidate includes path details, code, entry file, run command, and expected outputs."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The estimand is the SMD-minus-PR mean difference in raw pldist1 among authorized 1945-2003 SMD/PR observations, directly matching Task2's time and Manifesto-method requirements."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified year, smd, and pldist1; the pldist1 outcome is supported as the Manifesto-method plurality-winner distance."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code reports starting rows, rows removed by the 1945-2003 year rule, rows removed by smd/pr restriction, missing pldist1 exclusions, final analytic rows, and group counts."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "The year restriction is explicitly required by Task2; smd/pr restriction is necessary for the focal contrast; missing-outcome deletion is necessary; no unsupported outlier rule or transformation is introduced."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used, and none are required by the Task2 anchor for this comparable mean-comparison result."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 is retained as a continuous raw Manifesto distance; smd is coded only into the required binary SMD-versus-PR contrast."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The reviewed Python code matches the declared Task2 path: authorized dataset, 1945-2003 restriction, pldist1 outcome, smd_bin predictor, no controls, permutation p-value, bootstrap CI, conclusion rule, and JSON outputs."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The method is coherently justified as a distribution-light test of the same mean-difference estimand for a binary election-rule contrast and skewed continuous distance outcome."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "The candidate includes identifiable Python source code, a task-specific entry file and run command, package requirements, and traceable expected JSON outputs."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "task_pair_assessment": {
+          "decision": "high-quality",
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "reason": "Both tasks have a high-quality candidate selected for Execution."
+        }
+      }
+    ]
+  }
+}

@@ -1,6 +1,9 @@
 from robustness.memory.shared_memory import (
-    build_memory_record_from_execute_spec,
+    accumulate_prune_output,
+    apply_pruning_decisions,
+    build_memory_record_from_execution_results,
     build_memory_record_from_prune_output,
+    build_prune_audit_update,
     derive_execution_status,
     get_prune_case_id,
     get_prune_path_id,
@@ -8,6 +11,9 @@ from robustness.memory.shared_memory import (
     get_case_memory_path,
     load_case_memory,
     load_execute_spec,
+    normalize_planning_output,
+    route_after_pruning,
     update_memory_record,
+    validate_execution_ready,
     write_memory_update_with_confirmation,
 )

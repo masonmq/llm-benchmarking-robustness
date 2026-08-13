@@ -1,71 +1,85 @@
 {
   "pruning_output": {
-    "case_id": "ID of the paper or case. Example: Bruner_ExpEco_2017_amYY.",
-    "planned_id": "ID of the candidate path reviewed by the Pruning Agent.",
-
-    "decision": "high-quality | low-quality",
-
-    "decision_summary": "Short explanation of why the path was high-quality or low-quality.",
-
-    "check_results": {
-      "same_focal_claim": {
-        "status": "pass | fail",
-        "note": "Whether the path tests the same focal claim."
-      },
-      "same_dataset": {
-        "status": "pass | fail",
-        "note": "Whether the path uses the authorized original dataset."
-      },
-      "not_duplicate": {
-        "status": "pass | fail",
-        "closest_memory_path_id": "Path ID of the closest existing memory record, or null.",
-        "note": "Whether the path repeats an existing path."
-      },
-      "task_completeness": {
-        "status": "pass | fail",
-        "note": "Whether Task1 and Task2 are clearly specified."
-      },
-      "method_justification": {
-        "status": "pass | fail",
-        "note": "Whether the path explains why the model, variables, and inference rule are reasonable."
-      },
-      "executable_in_principle": {
-        "status": "pass | fail",
-        "note": "Whether the path looks possible to execute from the available data and instructions."
-      }
-    },
-
-    "memory_record": {
-      "path_id": "Same as planned_id.",
-      "case_id": "Same as case_id.",
-      "status": "high-quality | low-quality",
-      "task_scope": ["Task1", "Task2"],
-      "path_summary": "Short summary copied from the planning output.",
-      "path_signature": {
-        "model_family": "Main model or test family.",
-        "outcome": "Outcome variable or constructed outcome.",
-        "main_predictor": "Main predictor, treatment, or grouping variable.",
-        "controls": ["List of control variables, or empty list."],
-        "sample_restriction": "Sample inclusion or exclusion rule, or null.",
-        "missing_data_rule": "Missing data handling rule, or null.",
-        "variable_construction": "How the main variables are created or changed before analysis, or null.",
-        "inference_rule": "How the result will be judged.",
-          "task_decisions": {
-            "Task1": {
-              "decision": "high-quality | revise | low-quality",
-              "reason": "Reason why the analysis path was high-quality or low-quality for Task 1"
-            },
-            "Task2": {
-              "decision": "high-quality | revise | low-quality",
-              "reason": "Reason why the analysis path was high-quality or low-quality for Task 2"
-            }
+    "case_id": "ID of the paper or case.",
+    "paper_id": "Same value as case_id.",
+    "task_pair_records": [
+      {
+        "path_id": "Paper-level path ID copied from plan.planned_id.",
+        "tasks": {
+          "task1": {
+            "candidates": [
+              {
+                "candidate_id": "Active Task1 candidate ID. Omit this entry when Task1 is already high-quality and is not reviewed again.",
+                "planning_pruning_iteration": "Current Planning-Pruning loop number.",
+                "candidate_snapshot": {
+                  "path_summary": "Task-specific path summary.",
+                  "path_signature": "Task-specific analytical signature.",
+                  "analysis_anchor": "Task-specific paper analysis anchor copied from the universal schema.",
+                  "analysis_path": "Task-specific analysis_path copied from the universal schema.",
+                  "method_quality": "Task-specific method_quality evidence copied from the universal schema.",
+                  "analysis_code": "Task-specific analysis_code copied from the universal schema."
+                },
+                "decision": "high-quality | low-quality",
+                "decision_summary": "Evidence-based reason for the Task1 judgment, including applicable pruning rule numbers.",
+                "check_results": {
+                  "same_focal_claim": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "same_dataset": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "not_duplicate": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "task_completeness": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "estimand_alignment": {"status": "pass | fail", "note": "Whether the quantity, scale, contrast, population, and time scope answer the assigned question."},
+                  "variable_support": {"status": "pass | fail", "note": "Whether focal variables and construction rules have authorized evidence and verified columns."},
+                  "sample_audit": {"status": "pass | fail", "note": "Whether exclusions are documented and code reports sample flow."},
+                  "restriction_justification": {"status": "pass | fail", "note": "Whether restrictions, cutoffs, transformations, outlier rules, and missing-data rules are justified."},
+                  "control_justification": {"status": "pass | fail", "note": "Whether every control and fixed effect has a defensible role and evidence."},
+                  "focal_variable_structure": {"status": "pass | fail", "note": "Whether variable structure is preserved or information loss is justified."},
+                  "plan_code_consistency": {"status": "pass | fail", "note": "Whether code columns and implementation match the declared path."},
+                  "method_justification": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "executable_in_principle": {"status": "pass | fail", "note": "Task-specific finding."}
+                }
+              }
+            ]
           },
-          "overall_decision": "high_quality_path | incomplete_path | low_quality_path"
-      },
-      "status_reason": "Short reason for accepting or rejecting this path.",
-      "source_agent": "pruning_agent",
-      "iteration": "Planning or pruning round number."
-    },
-    "next_step": "send_to_execution | return_to_planning"
+          "task2": {
+            "candidates": [
+              {
+                "candidate_id": "Active Task2 candidate ID. Omit this entry when Task2 is already high-quality and is not reviewed again.",
+                "planning_pruning_iteration": "Current Planning-Pruning loop number.",
+                "candidate_snapshot": {
+                  "path_summary": "Task-specific path summary.",
+                  "path_signature": "Task-specific analytical signature.",
+                  "analysis_anchor": "Task-specific paper analysis anchor copied from the universal schema.",
+                  "analysis_path": "Task-specific analysis_path copied from the universal schema.",
+                  "method_quality": "Task-specific method_quality evidence copied from the universal schema.",
+                  "analysis_code": "Task-specific analysis_code copied from the universal schema."
+                },
+                "decision": "high-quality | low-quality",
+                "decision_summary": "Evidence-based reason for the Task2 judgment, including applicable pruning rule numbers.",
+                "check_results": {
+                  "same_focal_claim": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "same_dataset": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "not_duplicate": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "task_completeness": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "estimand_alignment": {"status": "pass | fail", "note": "Whether the quantity, scale, contrast, population, and time scope answer the assigned question."},
+                  "variable_support": {"status": "pass | fail", "note": "Whether focal variables and construction rules have authorized evidence and verified columns."},
+                  "sample_audit": {"status": "pass | fail", "note": "Whether exclusions are documented and code reports sample flow."},
+                  "restriction_justification": {"status": "pass | fail", "note": "Whether restrictions, cutoffs, transformations, outlier rules, and missing-data rules are justified."},
+                  "control_justification": {"status": "pass | fail", "note": "Whether every control and fixed effect has a defensible role and evidence."},
+                  "focal_variable_structure": {"status": "pass | fail", "note": "Whether variable structure is preserved or information loss is justified."},
+                  "plan_code_consistency": {"status": "pass | fail", "note": "Whether code columns and implementation match the declared path."},
+                  "method_justification": {"status": "pass | fail", "note": "Task-specific finding."},
+                  "executable_in_principle": {"status": "pass | fail", "note": "Task-specific finding."}
+                }
+              }
+            ]
+          }
+        },
+        "task_pair_assessment": {
+          "decision": "high-quality only when both active candidates are high-quality; otherwise low-quality.",
+          "task1_candidate_id": "Selected high-quality Task1 candidate ID, or null.",
+          "task2_candidate_id": "Selected high-quality Task2 candidate ID, or null.",
+          "reason": "Reason for the combined task-pair assessment."
+        }
+      }
+    ]
   }
 }

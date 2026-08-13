@@ -1,0 +1,46 @@
+{
+  "task_id": "Task2",
+  "metric": "permutation_test_mean_difference_smd_minus_pr_pldist1_1945_2003_manifesto",
+  "estimate": 0.3309658133947231,
+  "direction": "positive",
+  "p_value_two_sided_permutation": 0.8030019699803002,
+  "confidence_interval_bootstrap_percentile_95": [
+    -1.9669586666209855,
+    2.662042619394702
+  ],
+  "sample_size": 329,
+  "group_counts": {
+    "smd": 85,
+    "pr": 244
+  },
+  "conclusion": "inconclusive",
+  "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR mean difference with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive.",
+  "sample_flow": {
+    "starting_rows": 331,
+    "rules": [
+      {
+        "rule": "retain years 1945 through 2003 inclusive",
+        "rows_before": 331,
+        "rows_after": 331,
+        "rows_removed": 0
+      },
+      {
+        "rule": "retain rows with smd coded as 'smd' or 'pr'",
+        "rows_before": 331,
+        "rows_after": 329,
+        "rows_removed": 2
+      },
+      {
+        "rule": "drop rows with missing pldist1",
+        "rows_before": 329,
+        "rows_after": 329,
+        "rows_removed": 0
+      }
+    ],
+    "final_analytic_rows": 329,
+    "group_counts": {
+      "smd": 85,
+      "pr": 244
+    }
+  }
+}

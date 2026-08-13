@@ -1,0 +1,601 @@
+{
+  "case_id": "Hendricks_QuartJournEco_2018_wNKW",
+  "memory_records": [
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path01",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the full authorized wage-gain table to regress individual log wage gain on education groups, estimating the no-high-school versus college-degree contrast while adjusting for country, sex, age at last home job, and job timing.",
+                "path_signature": {
+                  "model_family": "OLS linear regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "country",
+                    "sex",
+                    "age_home_job",
+                    "age_home_job squared",
+                    "yearLastHomeJob",
+                    "yearLastUsJob"
+                  ],
+                  "sample_restriction": "Authorized dataset rows with nonmissing required variables and positive adjusted wages.",
+                  "missing_data_rule": "Listwise deletion on required columns and constructed variables; drop nonpositive adjusted wages for log transformation.",
+                  "variable_construction": "Compute log wage gain, education groups, and age at last home job; no aggregation.",
+                  "inference_rule": "A positive no_high_school coefficient relative to college_degree is support; p < 0.05 indicates strong statistical evidence and p >= 0.05 with a positive estimate is weak directional support. A negative estimate is inconclusive unless affirmative contrary evidence is established.",
+                  "estimand_quantity": "Adjusted coefficient for no_high_school relative to college_degree in individual log wage gain.",
+                  "outcome_scale": "Log wage-gain units and exponentiated percent difference.",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling categories retained in the model.",
+                  "target_population": "Immigrants in the authorized wage_gain_table.xlsx sample with positive adjusted home and U.S. wages and nonmissing model variables.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Adjusted OLS with country, sex, age_home_job, age_home_job squared, yearLastHomeJob, and yearLastUsJob controls.",
+                      "justification": "Task1 has no restrictions, and these are verified demographic, country, and timing variables relevant to wage comparisons. Sector and region controls are not introduced."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path01/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path01/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task1 path exactly: it used the authorized wage-gain table, constructed log wage gain and education categories as planned, and estimated the adjusted OLS model with HC1 robust standard errors. No implementation repairs were made.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_log_wage_gain_coefficient",
+                  "value": 0.19355067881991042,
+                  "direction": "positive",
+                  "p_value": 0.13851267911063517,
+                  "confidence_interval": "[-0.06253446834198848, 0.4496358259818093]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the supplied pooled poor-country wage-gain table, retain Mexico, and estimate the no-high-school versus college-degree difference in log wage gains without sector or region controls.",
+                "path_signature": {
+                  "model_family": "OLS linear regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [],
+                  "sample_restriction": "Use the authorized pooled poor-country table and retain Mexico; no additional country restriction is possible because the file has no GDP-per-worker variable or source indicator.",
+                  "missing_data_rule": "Listwise deletion on required variables and constructed variables; drop nonpositive adjusted wages for log transformation.",
+                  "variable_construction": "Compute log wage gain and education groups; no controls, aggregation, sector adjustment, or region adjustment.",
+                  "inference_rule": "A positive no_high_school coefficient relative to college_degree is support; p < 0.05 indicates strong statistical evidence and p >= 0.05 with a positive estimate is weak directional support. A negative estimate is inconclusive unless affirmative contrary evidence is established.",
+                  "estimand_quantity": "Unadjusted coefficient for no_high_school relative to college_degree in individual log wage gain.",
+                  "outcome_scale": "Log wage-gain units and exponentiated percent difference.",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling categories retained in the model.",
+                  "target_population": "Authorized pooled poor-country NIS/Migration Projects wage-gain sample including Mexico, with positive adjusted wages and nonmissing education.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "aligned",
+                  "inference": "aligned",
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path01/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path01/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task2 path exactly: it used the pooled authorized wage-gain table, retained Mexico, constructed log wage gain and education categories, and estimated the unadjusted OLS model without sector or region controls. No implementation repairs were made.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_log_wage_gain_coefficient",
+                  "value": 0.2603476859109187,
+                  "direction": "positive",
+                  "p_value": 0.030458722986519155,
+                  "confidence_interval": "[0.02455526434560637, 0.49614010747623105]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    },
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path02",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Run a median quantile regression of log wage gain on education groups, using college degree as the reference and estimating the no-high-school contrast while adjusting for country, sex, age at last home job, age squared, and last home/U.S. job years.",
+                "path_signature": {
+                  "model_family": "median quantile regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "country",
+                    "sex",
+                    "age_home_job",
+                    "age_home_job_sq",
+                    "yearLastHomeJob",
+                    "yearLastUsJob"
+                  ],
+                  "sample_restriction": "Authorized dataset rows with nonmissing required variables and positive adjusted wages.",
+                  "missing_data_rule": "Listwise deletion on required raw and constructed model variables.",
+                  "variable_construction": "Compute log wage gain and education categories; construct age at last home job and age squared; no aggregation.",
+                  "inference_rule": "An estimate in the expected positive direction is support; it is strong support when p < 0.05 and weak or directional support otherwise. Opposite requires affirmative evidence of a material negative effect; an opposite-signed estimate alone is inconclusive.",
+                  "estimand_quantity": "Conditional median-regression coefficient for no_high_school relative to college_degree in log_wage_gain.",
+                  "outcome_scale": "Log wage-gain units and exponentiated percent difference.",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling groups retained in the model.",
+                  "target_population": "Immigrants in the authorized wage_gain_table.xlsx sample with positive adjusted home and U.S. wages and nonmissing model variables.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Median quantile regression with country, sex, age, age squared, and job-year controls.",
+                      "justification": "The authorized dataset contains extreme adjusted wage values; median regression is a robustness analysis for the same focal contrast without deleting data. Task1 imposes no restrictions, and the controls are verified variables relevant to country composition, demographic differences, lifecycle timing, and wage observation timing."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path02/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path02/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task1 median quantile regression path using the authorized wage_gain_table.xlsx dataset, planned log wage-gain construction, education grouping, and planned controls. No implementation repairs or analytical changes were made.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_median_log_wage_gain_coefficient",
+                  "value": 0.17475644570367876,
+                  "direction": "positive",
+                  "p_value": 0.05039965066269267,
+                  "confidence_interval": "[-0.000304570007870375, 0.3498174614152279]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Run a median quantile regression of log wage gain on education groups only, using the authorized file as the pooled poor-country NIS/Migration Projects sample, retaining Mexico and excluding sector and rural/urban region controls.",
+                "path_signature": {
+                  "model_family": "median quantile regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [],
+                  "sample_restriction": "Use the authorized pooled poor-country file, including Mexico; no further country exclusion.",
+                  "missing_data_rule": "Listwise deletion on required raw and constructed model variables.",
+                  "variable_construction": "Compute log wage gain and education categories; no controls, aggregation, sector adjustment, or rural/urban region adjustment.",
+                  "inference_rule": "An estimate in the expected positive direction is support; it is strong support when p < 0.05 and weak or directional support otherwise. Opposite requires affirmative evidence of a material negative effect; an opposite-signed estimate alone is inconclusive.",
+                  "estimand_quantity": "Unadjusted median-regression coefficient for no_high_school relative to college_degree in log_wage_gain.",
+                  "outcome_scale": "Log wage-gain units and exponentiated percent difference.",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling groups retained in the model.",
+                  "target_population": "Authorized pooled poor-country NIS/Migration Projects wage-gain sample including Mexico, with positive adjusted wages and nonmissing education.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Median quantile regression of log wage gain on education groups only.",
+                      "justification": "The authorized dataset contains extreme adjusted wage values; median regression is a defensible robustness analysis of the same focal result and does not add prohibited sector or rural/urban region controls."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path02/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path02/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task2 unadjusted median quantile regression path using the authorized pooled wage_gain_table.xlsx dataset, retaining Mexico and adding no sector or region controls. No implementation repairs or analytical changes were made.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_median_log_wage_gain_coefficient",
+                  "value": 0.510144905786551,
+                  "direction": "positive",
+                  "p_value": 5.719193191337494e-08,
+                  "confidence_interval": "[0.32633214458218374, 0.6939576669909183]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    },
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path03",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the authorized wage-gain table to regress trimmed individual log wage gain on education groups, estimating the no-high-school versus college-degree contrast while adjusting for country, sex, age at last home job, age squared, and last home/U.S. job years.",
+                "path_signature": {
+                  "model_family": "OLS linear regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "country",
+                    "sex",
+                    "age_home_job",
+                    "age_home_job_sq",
+                    "yearLastHomeJob",
+                    "yearLastUsJob"
+                  ],
+                  "sample_restriction": "Authorized dataset rows with positive adjusted wages, nonmissing required variables, and log_wage_gain inside the 1st to 99th percentile range.",
+                  "missing_data_rule": "Listwise deletion on required raw and constructed variables.",
+                  "variable_construction": "Log-transform wage ratio through differenced logs; categorize edyrs into five paper-aligned education groups; compute age at last home job and squared age; no aggregation.",
+                  "inference_rule": "A positive no_high_school coefficient relative to college_degree is support; p < 0.05 describes strong statistical evidence and p >= 0.05 describes weak directional support. A negative estimate is inconclusive unless p < 0.05 and the confidence interval excludes zero in the negative direction.",
+                  "estimand_quantity": "Adjusted OLS coefficient for no_high_school relative to college_degree in trimmed log_wage_gain.",
+                  "outcome_scale": "Log wage-gain units and exponentiated proportional difference.",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling categories retained in the regression.",
+                  "target_population": "Immigrants in the authorized wage_gain_table.xlsx file satisfying required-variable, positive-wage, and 1%/99% log-gain trimming rules.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "justified_deviation",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "sample",
+                      "candidate_choice": "Additionally trim log_wage_gain below the 1st percentile and above the 99th percentile.",
+                      "justification": "The paper summary notes outlier exclusions in sample construction, and inspected dataset summaries show extreme adjusted wage values. Trimming is prespecified symmetrically and not based on the focal result."
+                    },
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Adjusted OLS with country, sex, age at last home job, squared age, yearLastHomeJob, and yearLastUsJob.",
+                      "justification": "Task1 is unrestricted and these are verified variables relevant to origin composition, demographics, lifecycle timing, and wage observation timing."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task1 path exactly: it used the authorized wage_gain_table.xlsx dataset, constructed log wage gain and education groups, applied the planned 1%/99% trimming rule, and estimated the planned adjusted OLS model with HC1 robust standard errors. No implementation repairs were needed.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_log_wage_gain_coefficient",
+                  "value": 0.2627449868135698,
+                  "direction": "positive",
+                  "p_value": 0.0035568718391513665,
+                  "confidence_interval": "[0.08608272243411047, 0.4394072511930291]",
+                  "sample_size": 2797,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the supplied pooled poor-country wage-gain table, retain Mexico, and estimate the no-high-school versus college-degree difference in trimmed log wage gains without sector, agriculture/nonagriculture, rural/urban region, or other controls.",
+                "path_signature": {
+                  "model_family": "OLS linear regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [],
+                  "sample_restriction": "Authorized pooled poor-country file including Mexico, positive adjusted wages, nonmissing required variables, and log_wage_gain inside the 1st to 99th percentile range.",
+                  "missing_data_rule": "Listwise deletion on required raw and constructed variables.",
+                  "variable_construction": "Log-transform wage ratio through differenced logs; categorize edyrs into five paper-aligned education groups; no aggregation; no sector/agriculture/nonagriculture, rural/urban region, or other controls.",
+                  "inference_rule": "A positive no_high_school coefficient relative to college_degree is support; p < 0.05 describes strong statistical evidence and p >= 0.05 describes weak directional support. A negative estimate is inconclusive unless p < 0.05 and the confidence interval excludes zero in the negative direction.",
+                  "estimand_quantity": "Unadjusted OLS coefficient for no_high_school relative to college_degree in trimmed log_wage_gain.",
+                  "outcome_scale": "Log wage-gain units and exponentiated proportional difference.",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling categories retained in the regression.",
+                  "target_population": "Authorized pooled poor-country NIS/Migration Projects wage-gain sample including Mexico, satisfying required-variable, positive-wage, and 1%/99% log-gain trimming rules.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "justified_deviation",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "sample",
+                      "candidate_choice": "Additionally trim log_wage_gain below the 1st percentile and above the 99th percentile.",
+                      "justification": "The paper summary notes outlier exclusions in sample construction, and inspected dataset summaries show extreme adjusted wage values. Trimming is prespecified symmetrically and does not add prohibited controls."
+                    },
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Unadjusted OLS education-group regression with HC1 robust standard errors after trimming.",
+                      "justification": "OLS estimates the same mean log-wage-gain contrast. HC1 standard errors affect uncertainty estimation only and do not control for sector, agriculture/nonagriculture, or rural/urban region."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task2 path exactly: it used the authorized pooled poor-country wage-gain file including Mexico, constructed log wage gain and education groups, applied the planned 1%/99% trimming rule, and estimated the planned unadjusted OLS model with HC1 robust standard errors and no prohibited controls. No implementation repairs were needed.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_log_wage_gain_coefficient",
+                  "value": 0.34777071183845515,
+                  "direction": "positive",
+                  "p_value": 0.0009080083942965858,
+                  "confidence_interval": "[0.14231431699990973, 0.5532271066770006]",
+                  "sample_size": 2797,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    },
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path04",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Run Huber robust linear regression of individual log wage gain on education groups, using college degree as the reference and estimating the no-high-school contrast while adjusting for country, sex, age at last home job, squared age, and last home/U.S. job years.",
+                "path_signature": {
+                  "model_family": "Huber M-estimation robust linear regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "country",
+                    "sex",
+                    "age_home_job",
+                    "age_home_job_sq",
+                    "yearLastHomeJob",
+                    "yearLastUsJob"
+                  ],
+                  "sample_restriction": "Authorized dataset rows with nonmissing required variables and positive adjusted home and U.S. wages.",
+                  "missing_data_rule": "Listwise deletion on required raw and constructed variables.",
+                  "variable_construction": "Log-transform wage ratio through differenced logs; recode education years into five groups; create age at last home job and squared age; use categorical indicators for country and sex.",
+                  "inference_rule": "An estimate in the expected positive direction is support; it is strong support when p < 0.05 and weak or directional support otherwise. Opposite requires p < 0.05 and an approximate 95% confidence interval excluding zero in the contrary direction.",
+                  "estimand_quantity": "Huber robust-regression coefficient for no_high_school relative to college_degree in individual log_wage_gain",
+                  "outcome_scale": "Log wage-gain units and exponentiated proportional wage-gain difference",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling groups retained",
+                  "target_population": "Immigrants in authorized wage_gain_table.xlsx with positive adjusted wages and nonmissing required variables",
+                  "time_scope": "Last home-country job to last U.S. job"
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Huber robust linear regression with the same controls and focal contrast.",
+                      "justification": "The inspected dataset contains extreme adjusted wage values; robust M-estimation is a defensible robustness analysis that retains observations while reducing outlier influence. This is the minimum analytical change needed to avoid duplicating prior OLS, median quantile, and trimmed OLS paths."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task1 path: it used the authorized wage_gain_table.xlsx dataset, constructed log wage gain and education groups, retained the planned controls, and estimated the planned Huber robust linear regression. No implementation repairs were needed.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_robust_log_wage_gain_coefficient",
+                  "value": 0.2797689252850407,
+                  "direction": "positive",
+                  "p_value": 0.0005352058195697269,
+                  "confidence_interval": "[0.121400983880523, 0.4381368666895584]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Run Huber robust linear regression of individual log wage gain on education groups only, using the authorized pooled poor-country NIS/Migration Projects sample including Mexico and no sector or rural/urban region controls.",
+                "path_signature": {
+                  "model_family": "Huber M-estimation robust linear regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [],
+                  "sample_restriction": "Use the authorized pooled poor-country wage_gain_table.xlsx file, retaining Mexico; no additional country exclusion.",
+                  "missing_data_rule": "Listwise deletion on required raw and constructed variables.",
+                  "variable_construction": "Log-transform wage ratio through differenced logs; recode education years into five groups; no sector, agriculture/nonagriculture, rural/urban region, or other controls.",
+                  "inference_rule": "An estimate in the expected positive direction is support; it is strong support when p < 0.05 and weak or directional support otherwise. Opposite requires p < 0.05 and an approximate 95% confidence interval excluding zero in the contrary direction.",
+                  "estimand_quantity": "Unadjusted Huber robust-regression coefficient for no_high_school relative to college_degree in individual log_wage_gain",
+                  "outcome_scale": "Log wage-gain units and exponentiated proportional wage-gain difference",
+                  "contrast": "edyrs <= 8 versus edyrs >= 16, with intermediate schooling groups retained",
+                  "target_population": "Authorized pooled poor-country NIS/Migration Projects wage-gain sample including Mexico, with positive adjusted wages and nonmissing education",
+                  "time_scope": "Last home-country job to last U.S. job"
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "justified_deviation",
+                  "inference": "aligned",
+                  "deviations": [
+                    {
+                      "dimension": "model",
+                      "candidate_choice": "Unadjusted Huber robust linear regression of log wage gain on education groups only.",
+                      "justification": "The inspected dataset contains extreme adjusted wage values; robust M-estimation is a defensible robustness analysis that preserves the Task2-required sample, does not add sector or rural/urban region controls, and changes only the model family to avoid duplicating prior unadjusted OLS, median, and trimmed OLS paths."
+                    }
+                  ]
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "The agent followed the planned Task2 path: it used the authorized pooled wage_gain_table.xlsx dataset including Mexico, constructed log wage gain and education groups, added no sector or rural/urban controls, and estimated the planned unadjusted Huber robust linear regression. No implementation repairs were needed.",
+                "result": {
+                  "metric": "no_high_school_vs_college_degree_robust_log_wage_gain_coefficient",
+                  "value": 0.4259207258547928,
+                  "direction": "positive",
+                  "p_value": 1.2554686132282623e-07,
+                  "confidence_interval": "[0.2679702469469507, 0.5838712047626349]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    }
+  ]
+}

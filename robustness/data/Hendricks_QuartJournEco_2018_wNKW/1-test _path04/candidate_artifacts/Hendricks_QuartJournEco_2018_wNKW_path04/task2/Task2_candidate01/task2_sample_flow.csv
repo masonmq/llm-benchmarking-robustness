@@ -1,0 +1,5 @@
+step,rows_before,rows_after,rows_removed
+starting rows in pooled wage_gain_table.xlsx,2854,2854,0
+keep finite adjusted home and U.S. wages,2854,2854,0
+keep positive adjusted home and U.S. wages for logarithms,2854,2854,0
+drop missing focal outcome or education group,2854,2854,0

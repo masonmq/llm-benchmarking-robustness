@@ -1,36 +1,4 @@
 {
-  "case_id": "Bruner_ExpEco_2017_amYY",
-  "memory_records": [
-    {
-      "path_id": "Unique ID for this analysis path. For example, Bruner_ExpEco_2017_amYY_path01",
-      "case_id": "ID of the paper or case.",
-      "status": "low-quality | high-quality | executed_success | execution_failed_retryable | abandoned",
-      "task_scope": ["Task1", "Task2"],
-      "path_summary": "Short summary of the analysis path.",
-      "path_signature": {
-        "model_family": "Main model or test family.",
-        "outcome": "Outcome variable or constructed outcome.",
-        "main_predictor": "Main predictor or treatment variable.",
-        "controls": ["List of control variables, or empty list."],
-        "sample_restriction": "Sample inclusion or exclusion rule, or null.",
-        "missing_data_rule": "Missing data handling rule, or null.",
-        "variable_construction": "explains how the main variables are created or changed before analysis, or null. For example, Create risk_aversion_score by averaging safe choices across PV and RV tasks, then standardize the score before regression.",
-        "inference_rule": "How the result will be judged.",
-          "task_decisions": {
-            "Task1": {
-              "decision": "high-quality | revise | low-quality",
-              "reason": "Reason why the analysis path was high-quality or low-quality for Task 1"
-            },
-            "Task2": {
-              "decision": "high-quality | revise | low-quality",
-              "reason": "Reason why the analysis path was high-quality or low-quality for Task 2"
-            }
-          },
-          "overall_decision": "high_quality_path | incomplete_path | low_quality_path"
-      },
-      "status_reason": "Short reason explaining why this status was assigned.",
-      "source_agent": "pruning_agent | execution_agent",
-      "iteration": "Planning or execution round number."
-    }
-  ]
+  "case_id": "",
+  "memory_records": []
 }

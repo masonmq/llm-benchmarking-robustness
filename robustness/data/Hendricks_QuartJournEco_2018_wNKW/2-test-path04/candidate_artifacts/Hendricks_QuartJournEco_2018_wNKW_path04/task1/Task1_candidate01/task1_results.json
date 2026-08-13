@@ -1,0 +1,102 @@
+{
+  "analysis": "Huber robust linear model of log wage gain with demographic, country, and timing controls",
+  "conclusion_class": "support",
+  "confidence_interval_approx_95": [
+    0.121400983880523,
+    0.4381368666895584
+  ],
+  "data_file": "data/wage_gain_table.xlsx",
+  "direction": "positive",
+  "education_group_counts": {
+    "college_degree": 152,
+    "high_school": 329,
+    "no_high_school": 1594,
+    "some_college": 110,
+    "some_high_school": 669
+  },
+  "estimate_log_units": 0.2797689252850407,
+  "exponentiated_percent_difference": 0.3228241058150809,
+  "final_analytic_n": 2854,
+  "focal_parameter": "C(edu_group, Treatment(reference='college_degree'))[T.no_high_school]",
+  "formula": "log_wage_gain ~ C(edu_group, Treatment(reference='college_degree')) + C(country) + C(sex) + age_home_job + age_home_job_sq + yearLastHomeJob + yearLastUsJob",
+  "metric": "no_high_school_vs_college_degree_robust_log_wage_gain_coefficient",
+  "model_parameters": {
+    "C(country)[T.DOM]": 1.2337900571962386,
+    "C(country)[T.ECU]": -0.013079894537826178,
+    "C(country)[T.GTM]": 0.08342015423338904,
+    "C(country)[T.HTI]": 0.8183625588152084,
+    "C(country)[T.MEX]": 0.5352929718861138,
+    "C(country)[T.NIC]": 0.6908639567795984,
+    "C(country)[T.PER]": 0.6534709997316197,
+    "C(country)[T.PRI]": 0.8736554928038313,
+    "C(country)[T.SLV]": 0.14709374695566063,
+    "C(edu_group, Treatment(reference='college_degree'))[T.high_school]": 0.1010392367211192,
+    "C(edu_group, Treatment(reference='college_degree'))[T.no_high_school]": 0.2797689252850407,
+    "C(edu_group, Treatment(reference='college_degree'))[T.some_college]": -0.27838886696153825,
+    "C(edu_group, Treatment(reference='college_degree'))[T.some_high_school]": 0.25013186311407,
+    "C(sex)[T.2]": 0.07319211198176406,
+    "Intercept": -155.30577708554253,
+    "age_home_job": 0.02704586481432689,
+    "age_home_job_sq": -0.0004244251516383278,
+    "yearLastHomeJob": 0.09805826004721459,
+    "yearLastUsJob": -0.020571063626565182
+  },
+  "p_value": 0.0005352058195697269,
+  "referenced_columns": [
+    "edyrs",
+    "yearLastHomeJob",
+    "yearLastUsJob",
+    "sex",
+    "yrborn",
+    "lastHomeWageAdjusted",
+    "lastUsWageAdjusted",
+    "country"
+  ],
+  "sample_flow": [
+    {
+      "removed": 0,
+      "rows": 2854,
+      "step": "starting_rows"
+    },
+    {
+      "columns": [
+        "edyrs",
+        "yearLastHomeJob",
+        "yearLastUsJob",
+        "sex",
+        "yrborn",
+        "lastHomeWageAdjusted",
+        "lastUsWageAdjusted",
+        "country"
+      ],
+      "removed": 0,
+      "rows": 2854,
+      "step": "drop_missing_required_columns"
+    },
+    {
+      "removed": 0,
+      "rows": 2854,
+      "step": "keep_positive_adjusted_wages_for_log_transform"
+    },
+    {
+      "columns": [
+        "log_wage_gain",
+        "edu_group",
+        "age_home_job",
+        "age_home_job_sq"
+      ],
+      "removed": 0,
+      "rows": 2854,
+      "step": "drop_missing_or_nonfinite_constructed_variables"
+    },
+    {
+      "removed": 0,
+      "rows": 2854,
+      "step": "drop_rows_outside_defined_education_groups"
+    }
+  ],
+  "standard_error": 0.08079997010434577,
+  "statistical_strength": "strong",
+  "task": "Task1",
+  "z_value": 3.4624879801780217
+}

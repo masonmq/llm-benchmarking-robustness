@@ -1,0 +1,59 @@
+{
+  "task": "Task1",
+  "model": "adjusted OLS with HC1 robust standard errors after 1%/99% log-wage-gain trimming",
+  "formula": "log_wage_gain ~ C(edu_group, Treatment(reference='college_degree')) + C(country) + C(sex) + age_home_job + age_home_job_sq + yearLastHomeJob + yearLastUsJob",
+  "sample_flow": [
+    {
+      "step": "starting_rows",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "drop_missing_required_columns",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "require_positive_adjusted_wages",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "drop_missing_constructed_variables",
+      "rows": 2854,
+      "removed": 0
+    },
+    {
+      "step": "trim_log_wage_gain_outside_1st_99th_percentiles",
+      "rows": 2797,
+      "removed": 57,
+      "lower_cutoff": -4.3828929582537315,
+      "upper_cutoff": 3.3571672577795137
+    }
+  ],
+  "trim_cutoffs": {
+    "lower_log_wage_gain": -4.3828929582537315,
+    "upper_log_wage_gain": 3.3571672577795137
+  },
+  "education_group_counts": {
+    "no_high_school": 1563,
+    "some_high_school": 659,
+    "high_school": 320,
+    "college_degree": 149,
+    "some_college": 106
+  },
+  "focal_result": {
+    "metric": "no_high_school_vs_college_degree_log_wage_gain_coefficient",
+    "estimate": 0.2627449868135698,
+    "percent_difference_exp_coef_minus_1": 0.30049503327903837,
+    "p_value": 0.0035568718391513665,
+    "confidence_interval_95": [
+      0.08608272243411047,
+      0.4394072511930291
+    ],
+    "direction": "positive",
+    "conclusion_class": "support",
+    "statistical_strength": "strong"
+  },
+  "n_final": 2797
+}

@@ -1,0 +1,863 @@
+2026-08-13 15:31:00,986 - robustness - DEBUG - [core.utils] File logging configured: data/Powell_CompPolitStu_2009_0PZl/test/_log/prune.log
+2026-08-13 15:31:00,986 - robustness - INFO - [agent] pruning review loop for: data/Powell_CompPolitStu_2009_0PZl/test
+2026-08-13 15:31:00,986 - robustness - INFO - [repro] stage=prune model=gpt-5.5 prompt_version=pruning_agent.v2 temperature=0_or_reasoning_default seed=NA(controlled by temperature=0/reasoning model)
+2026-08-13 15:31:00,987 - robustness - INFO - [memory] loaded shared memory for pruning: case=Powell_CompPolitStu_2009_0PZl path=Powell_CompPolitStu_2009_0PZl_path06
+2026-08-13 15:31:00,989 - robustness - INFO - 
+--- Turn 1 ---
+2026-08-13 15:31:00,989 - robustness - INFO - ***Agent input:
+Review the active analytical candidates for one paper. Review only these tasks: ["Task1", "Task2"].
+
+An active task with status null is new and must receive a high-quality or low-quality decision. An active task already marked high-quality has passed an earlier review: preserve it, do not review it again, and do not add another candidate record for it.
+
+Your authorized inputs are:
+1. The universal-schema candidate document below.
+2. original_paper.pdf in the study folder.
+3. The authorized datasets listed in datasets.files.
+4. The source-code files listed for the candidates being reviewed.
+5. Case Shared Memory, supplied read-only inside the input.
+
+Never read a human analysis/review PDF or expected or ground-truth results. Do not run, modify, or create an analytical path.
+Verify each reviewed candidate against its task-specific analysis anchor. A method is not high-quality merely because it is statistically conventional; its outcome, contrast, sample, model, and inference choices must align with the anchor or have a documented, evidence-based deviation that still answers the task.
+
+=== START OF PRUNING INPUT ===
+{
+  "iteration": 1,
+  "case": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_title": "The Ideological Congruence Controversy: The Impact of Alternative Measures, Data, and Time Periods on the Effects of Election Rules",
+    "paper_file": "original_paper.pdf",
+    "focal_claim": "Under SMD (single member district) election rules, party competition should lead the plurality vote winner to be close to the median voter. (p. 1484.)",
+    "hypothesis": "Plurality vote winners in SMD elections should have smaller Manifesto-method ideological distances from the median voter than plurality vote winners in PR elections.",
+    "study_type": "Observational"
+  },
+  "tasks_info": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "task_instruction": "In Task 1, the analyst was asked to conduct the analysis without any restrictions.",
+      "task_goal": "Test whether the focal claim is supported."
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "task_instruction": "You should use the data from 1945-2003. You should use the Manifesto Method instead of the Cit-Expert and Method in your analysis.",
+      "task_goal": "Produce one statistical result comparable to the original paper's focal result."
+    }
+  ],
+  "datasets": {
+    "authorized_only": "true. No agent may substitute a dataset not listed here.",
+    "source_type": "Comparative election and party-position archive with Manifesto-method measures",
+    "wave_or_subset": "Country-election observations from 1945 through 2003 in the authorized Stata file",
+    "sample_size": "331 rows in the authorized file; focal SMD/PR analytic sample expected to exclude 2 rows with missing election-rule category",
+    "unit_of_analysis": "country-election",
+    "notes": "The Stata file contains 331 rows and 107 columns. The variable smd is categorical with categories pr, smd, and missing. The focal Manifesto-method plurality-winner distance variable pldist1 is positive and right-skewed. The observed year range is 1945-2003.",
+    "files": [
+      {
+        "name": "powell_original",
+        "file_path": "data/powell_original.dta",
+        "file_format": "dta",
+        "columns": [
+          "country",
+          "year",
+          "elecdate",
+          "edate",
+          "eleccoun",
+          "smd",
+          "govid_el",
+          "voter_id",
+          "med_parl",
+          "govdisto",
+          "legdisto",
+          "ptyname",
+          "ptysize",
+          "ptyideo",
+          "v15_a",
+          "v16_a",
+          "v17_a",
+          "v18_a",
+          "v19_a",
+          "v20_a",
+          "v21_a",
+          "v22_a",
+          "v23_a",
+          "v24_a",
+          "v25_a",
+          "v26_a",
+          "v27_a",
+          "v28_a",
+          "v29_a",
+          "v30_a",
+          "v31_a",
+          "v32_a",
+          "v33_a",
+          "v34_a",
+          "v35_a",
+          "v36_a",
+          "v37_a",
+          "v38_a",
+          "v39_a",
+          "v40_a",
+          "v41_a",
+          "v42_a",
+          "v43_a",
+          "v44_a",
+          "v45_a",
+          "v46_a",
+          "v47_a",
+          "v48_a",
+          "v49_a",
+          "v50_a",
+          "v51_a",
+          "v52_a",
+          "v53_a",
+          "v54_a",
+          "v55_a",
+          "v56_a",
+          "decade",
+          "france",
+          "britain",
+          "canada",
+          "aul",
+          "nz",
+          "sweden",
+          "norway",
+          "denmark",
+          "finland",
+          "ice",
+          "belgium",
+          "neth",
+          "lux",
+          "italy",
+          "spain",
+          "port",
+          "germany",
+          "austria",
+          "switz",
+          "ireland",
+          "ideosdw",
+          "elecsize",
+          "count",
+          "effptyv1",
+          "pty1d",
+          "pty2d...
+2026-08-13 15:31:03,993 - robustness - INFO - ***Agent output (Thought):
+Thought: I will first read the authorized original paper PDF to verify the focal claim, design, measures, and unit of observation without consulting any forbidden review materials.
+Action: read_pdf({"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/original_paper.pdf"})
+PAUSE 
+
+2026-08-13 15:31:03,993 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: read_pdf [Checkpoint: 2. Read Original Paper]
+2026-08-13 15:31:30,800 - robustness - INFO - ***Observation (read_pdf):
+--- PDF SUMMARY (Document was 23 pages long) ---
+The document was too long to read directly, so here is a detailed summary of all sections:
+
+**Summary:** 
+
+The paper by G. Bingham Powell, Jr. examines the ideological congruence between citizens and their representatives, focusing on differences between single member district (SMD) systems and proportional representation (PR) systems using the left-right political scale. Notably, recent studies challenge previous findings that PR systems traditionally offered better congruence, asserting no significant difference between SMD and PR systems in current data.
+
+**Methodologies:** 
+
+1. **Citizen Survey/Expert Survey (cit-ex):** Utilizes citizen surveys to determine the median citizen's left-right position and expert surveys to place political parties. Congruence is evaluated by measuring the distance between the median citizen and the government or median legislator.
+
+2. **Party Vote/Party Manifesto (manifesto):** Uses party positions derived from the Comparative Manifesto Project, estimating the median voter's position based on party votes. Congruence is the distance between median voter and government positions.
+
+3. **Citizen Identification/Citizen Perception (cit-perc):** Relies on citizen surveys for both self and party placements on the left-right scale. Congruence is measured by the distance between the self-placement of citizens and the placement of representatives.
+
+**Findings:**
+
+- The associations between electoral systems and ideological congruence are relatively robust across different measurement methods. However, the reported effectiveness of PR systems in facilitating congruence has decreased recently, attributed primarily to SMD systems' parties converging toward the median voter position.
+  
+- Historical studies showed PR systems having a representational edge, but recent data sets, including those provided by the Comparative Study of Electoral Systems (CSES), do not confirm this, suggesting these finding
+... (truncated)
+2026-08-13 15:31:30,800 - robustness - INFO - 
+--- Turn 2 ---
+2026-08-13 15:31:34,030 - robustness - INFO - ***Agent output (Thought):
+Thought: Next I will load and inspect the authorized Stata dataset, including shape, columns, focal outcome, treatment/grouping variable, ID/time variables, and dependence structure.
+Action: load_dataset({"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta"})
+PAUSE
+
+2026-08-13 15:31:34,030 - robustness - INFO -  -- Running Action(s): 1 tools requested. Primary: load_dataset [Checkpoint: 3. Explore Dataset]
+2026-08-13 15:31:34,055 - robustness - INFO - ***Observation (load_dataset):
+Successfully loaded dataset 'data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta'.
+2026-08-13 15:31:34,055 - robustness - INFO - 
+--- Turn 3 ---
+2026-08-13 15:32:08,196 - robustness - INFO - ***Agent output (Thought):
+Thought: I will query the dataset structure and key summaries in parallel where possible: dimensions, columns, head, info, and variable summaries for outcome, election rule, country, year, and election identifiers.
+Action: parallel({"tool_uses":[{"recipient_name":"functions.get_dataset_shape","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta"}},{"recipient_name":"functions.get_dataset_columns","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta"}},{"recipient_name":"functions.get_dataset_head","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta"}},{"recipient_name":"functions.get_dataset_info","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"pldist1"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"smd"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"country"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"year"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"elecdate"}}]})
+PAUSE
+
+2026-08-13 15:32:08,196 - robustness - INFO -  -- Running Action(s): 9 tools requested. Primary: get_dataset_shape [Checkpoint: 3. Explore Dataset]
+2026-08-13 15:32:08,197 - robustness - INFO - ***Observation (get_dataset_shape):
+(331, 107)
+2026-08-13 15:32:08,197 - robustness - INFO - ***Observation (get_dataset_columns):
+['country', 'year', 'elecdate', 'edate', 'eleccoun', 'smd', 'govid_el', 'voter_id', 'med_parl', 'govdisto', 'legdisto', 'ptyname', 'ptysize', 'ptyideo', 'v15_a', 'v16_a', 'v17_a', 'v18_a', 'v19_a', 'v20_a', 'v21_a', 'v22_a', 'v23_a', 'v24_a', 'v25_a', 'v26_a', 'v27_a', 'v28_a', 'v29_a', 'v30_a', 'v31_a', 'v32_a', 'v33_a', 'v34_a', 'v35_a', 'v36_a', 'v37_a', 'v38_a', 'v39_a', 'v40_a', 'v41_a', 'v42_a', 'v43_a', 'v44_a', 'v45_a', 'v46_a', 'v47_a', 'v48_a', 'v49_a', 'v50_a', 'v51_a', 'v52_a', 'v53_a', 'v54_a', 'v55_a', 'v56_a', 'decade', 'france', 'britain', 'canada', 'aul', 'nz', 'sweden', 'norway', 'denmark', 'finland', 'ice', 'belgium', 'neth', 'lux', 'italy', 'spain', 'port', 'germany', 'austria', 'switz', 'ireland', 'ideosdw', 'elecsize', 'count', 'effptyv1', 'pty1d', 'pty2d', 'pty3d', 'pty4d', 'pty5d', 'pty6d', 'pty7d', 'pty8d', 'pty9d', 'pty10d', 'pty11d', 'pty12d', 'pty13d', 'pty14d', 'pty15d', 'clptymed', 'clptydlg', 'pldist1', 'secdist1', 'decade1', 'decade50', 'decade60', 'decade70', 'decade80', 'decade90', 'decade20']
+2026-08-13 15:32:08,237 - robustness - INFO - ***Observation (get_dataset_head):
+  country  year  elecdate      edate  eleccoun smd  ...  decade50  decade60  decade70  decade80  decade90  decade20
+0  sweden  1948      4809 1948-09-19         1  pr  ...         1         0         0         0         0         0
+1  sweden  1952      5209 1952-09-21         2  pr  ...         1         0         0         0         0         0
+2  sweden  1956      5609 1956-09-26         3  pr  ...         0         1         0         0         0         0
+3  sweden  1958      5806 1958-06-01         4  pr  ...         0         1         0         0         0         0
+4  sweden  1960      6009 1960-09-18         5  pr  ...         0         1         0         0         0         0
+
+[5 rows x 107 columns]
+2026-08-13 15:32:08,240 - robustness - INFO - ***Observation (get_dataset_info):
+<class 'pandas.DataFrame'>
+RangeIndex: 331 entries, 0 to 330
+Columns: 107 entries, country to decade20
+dtypes: category(2), datetime64[s](1), float32(48), float64(20), int16(3), int32(3), int8(30)
+memory usage: 133.5 KB
+
+2026-08-13 15:32:08,241 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'pldist1' ---
+Min:    3.800000058618025e-06
+Q1:     2.736071467399597
+Median: 8.726407051086426
+Q3:     16.574419021606445
+Max:    59.00920867919922
+missing_values: 0
+2026-08-13 15:32:08,242 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Categorical Summary for 'smd' ---
+Total Unique Categories: 3
+- pr: 244
+- smd: 85
+- nan: 2
+2026-08-13 15:32:08,242 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Categorical Summary for 'country' ---
+Total Unique Categories: 20
+- denmark: 23
+- australia: 23
+- new zealand: 20
+- belgium: 19
+- sweden: 18
+- iceland: 18
+- netherlands: 18
+- canada: 18
+- finland: 17
+- austria: 17
+- ireland: 17
+- britain: 16
+- norway: 15
+- france: 15
+- italy: 15
+- germany: 15
+- switz: 15
+- luxem: 13
+- portugal: 11
+- spain: 8
+2026-08-13 15:32:08,243 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'year' ---
+Min:    1945
+Q1:     1959.5
+Median: 1975.0
+Q3:     1988.0
+Max:    2003
+missing_values: 0
+2026-08-13 15:32:08,244 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'elecdate' ---
+Min:    4503
+Q1:     5910.0
+Median: 7509.0
+Q3:     8805.5
+Max:    200310
+missing_values: 0
+2026-08-13 15:32:08,244 - robustness - INFO - 
+--- Turn 4 ---
+2026-08-13 15:32:42,617 - robustness - INFO - ***Agent output (Thought):
+Thought: To further assess dependence and coding, I will inspect additional ID/election variables and a broad descriptive summary for numerical focal and auxiliary variables.
+Action: parallel({"tool_uses":[{"recipient_name":"functions.get_dataset_description","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"eleccoun"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"govid_el"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"voter_id"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"decade"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"govdisto"}},{"recipient_name":"functions.get_dataset_variable_summary","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/data/powell_original.dta","variable_name":"legdisto"}}]})
+PAUSE
+
+2026-08-13 15:32:42,618 - robustness - INFO -  -- Running Action(s): 7 tools requested. Primary: get_dataset_description [Checkpoint: 3. Explore Dataset]
+2026-08-13 15:32:42,733 - robustness - INFO - ***Observation (get_dataset_description):
+              year       elecdate                edate    eleccoun  ...    decade70    decade80    decade90    decade20
+count   331.000000     331.000000                  303  331.000000  ...  331.000000  331.000000  331.000000  331.000000
+mean   1974.262840   18912.320242  1972-05-02 02:46:20    9.135952  ...    0.175227    0.184290    0.175227    0.126888
+min    1945.000000    4503.000000  1945-03-18 00:00:00    1.000000  ...    0.000000    0.000000    0.000000    0.000000
+25%    1959.500000    5910.000000  1958-11-22 12:00:00    5.000000  ...    0.000000    0.000000    0.000000    0.000000
+50%    1975.000000    7509.000000  1973-02-28 00:00:00    9.000000  ...    0.000000    0.000000    0.000000    0.000000
+75%    1988.000000    8805.500000  1985-04-20 12:00:00   13.000000  ...    0.000000    0.000000    0.000000    0.000000
+max    2003.000000  200310.000000  1998-10-03 00:00:00   23.000000  ...    1.000000    1.000000    1.000000    1.000000
+std      16.825137   46063.495079                  NaN    5.330553  ...    0.380736    0.388308    0.380736    0.333352
+
+[8 rows x 105 columns]
+2026-08-13 15:32:42,734 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'eleccoun' ---
+Min:    1
+Q1:     5.0
+Median: 9.0
+Q3:     13.0
+Max:    23
+missing_values: 0
+2026-08-13 15:32:42,735 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'govid_el' ---
+Min:    2.6613900661468506
+Q1:     41.31598377227783
+Median: 53.66462516784668
+Q3:     65.83236503601074
+Max:    97.96875
+missing_values: 1
+2026-08-13 15:32:42,735 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'voter_id' ---
+Min:    18.978530883789062
+Q1:     46.22173500061035
+Median: 55.630001068115234
+Q3:     64.52059936523438
+Max:    90.94397735595703
+missing_values: 0
+2026-08-13 15:32:42,736 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'decade' ---
+Min:    40
+Q1:     50.0
+Median: 70.0
+Q3:     80.0
+Max:    2000
+missing_values: 0
+2026-08-13 15:32:42,736 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'govdisto' ---
+Min:    9.999999747378752e-06
+Q1:     2.9474324584007263
+Median: 7.13138484954834
+Q3:     13.401782751083374
+Max:    45.65340042114258
+missing_values: 1
+2026-08-13 15:32:42,737 - robustness - INFO - ***Observation (get_dataset_variable_summary):
+--- Numeric Summary for 'legdisto' ---
+Min:    0.0
+Q1:     1.3342900276184082
+Median: 3.69854998588562
+Q3:     8.567224979400635
+Max:    34.0063591003418
+missing_values: 0
+2026-08-13 15:32:42,737 - robustness - INFO - 
+--- Turn 5 ---
+2026-08-13 15:33:12,318 - robustness - INFO - ***Agent output (Thought):
+Thought: I will now read the two listed source-code files end to end to verify implementation, sample-flow reporting, and consistency with the declared plans.
+Action: parallel({"tool_uses":[{"recipient_name":"functions.read_txt","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py"}},{"recipient_name":"functions.read_txt","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py"}}]})
+PAUSE
+
+2026-08-13 15:33:12,318 - robustness - INFO -  -- Running Action(s): 2 tools requested. Primary: read_txt [Checkpoint: 4. Review Analysis Code]
+2026-08-13 15:33:12,319 - robustness - INFO - ***Observation (read_txt):
+not a .txt file
+2026-08-13 15:33:12,319 - robustness - INFO - ***Observation (read_txt):
+not a .txt file
+2026-08-13 15:33:12,319 - robustness - INFO - 
+--- Turn 6 ---
+2026-08-13 15:33:43,466 - robustness - INFO - ***Agent output (Thought):
+Thought: The plain-text reader rejected the .py extension, so I will use the generic file reader on the listed Python source files, which is allowed for source code and does not execute them.
+Action: parallel({"tool_uses":[{"recipient_name":"functions.read_file","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py"}},{"recipient_name":"functions.read_file","parameters":{"file_path":"data/Powell_CompPolitStu_2009_0PZl/test/candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py"}}]})
+PAUSE
+
+2026-08-13 15:33:43,466 - robustness - INFO -  -- Running Action(s): 2 tools requested. Primary: read_file [Checkpoint: 4. Review Analysis Code]
+2026-08-13 15:33:43,467 - robustness - INFO - ***Observation (read_file):
+#!/usr/bin/env python3
+"""Task 1 robustness analysis for Powell_CompPolitStu_2009_0PZl.
+
+Tests whether plurality-vote winners are closer to the median voter under SMD
+than under PR using the Manifesto-method distance variable pldist1. The focal
+estimand is the SMD-minus-PR mean difference in pldist1; a negative value is
+consistent with the claim. Inference uses a fixed-seed randomization/permutation
+test rather than a regression model.
+"""
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+
+
+def clean_smd(series: pd.Series) -> pd.Series:
+    return series.astype(str).str.strip().str.lower()
+
+
+def two_sided_permutation_p(y: np.ndarray, g: np.ndarray, n_perm: int = 100000, seed: int = 20250306) -> float:
+    """Two-sided permutation p-value for SMD-minus-PR mean difference."""
+    rng = np.random.default_rng(seed)
+    observed = y[g == 1].mean() - y[g == 0].mean()
+    n_smd = int(g.sum())
+    n = len(y)
+    extreme = 0
+    for _ in range(n_perm):
+        idx = rng.permutation(n)
+        smd_idx = idx[:n_smd]
+        pr_idx = idx[n_smd:]
+        diff = y[smd_idx].mean() - y[pr_idx].mean()
+        if abs(diff) >= abs(observed) - 1e-15:
+            extreme += 1
+    return (extreme + 1) / (n_perm + 1)
+
+
+def bootstrap_ci(y: np.ndarray, g: np.ndarray, n_boot: int = 20000, seed: int = 20250307, alpha: float = 0.05):
+    """Percentile bootstrap CI resampling within election-rule groups."""
+    rng = np.random.default_rng(seed)
+    smd_y = y[g == 1]
+    pr_y = y[g == 0]
+    diffs = np.empty(n_boot)
+    for b in range(n_boot):
+        smd_b = rng.choice(smd_y, size=len(smd_y), replace=True)
+        pr_b = rng.choice(pr_y, size=len(pr_y), replace=True)
+        diffs[b] = smd_b.mean() - pr_b.mean()
+    return [float(np.quantile(diffs, alpha / 2)), float(np.quantile(diffs, 1 - alpha / 2))]
+
+
+def classify(estimate: float, p_value: float, ci_low: float, ci_high: float) -> str:
+    if estimate < 0 and p_value <= 0.05:
+        return "support"
+    if estimate 
+... (truncated)
+2026-08-13 15:33:43,467 - robustness - INFO - ***Observation (read_file):
+#!/usr/bin/env python3
+"""Task 2 robustness analysis for Powell_CompPolitStu_2009_0PZl.
+
+Uses the required 1945-2003 Manifesto-method data. Tests whether plurality-vote
+winners are closer to the median voter under SMD than under PR. The focal
+estimand is the SMD-minus-PR mean difference in pldist1; a negative value is
+consistent with the claim. Inference uses a fixed-seed randomization/permutation
+test rather than a regression model.
+"""
+from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+
+
+def clean_smd(series: pd.Series) -> pd.Series:
+    return series.astype(str).str.strip().str.lower()
+
+
+def two_sided_permutation_p(y: np.ndarray, g: np.ndarray, n_perm: int = 100000, seed: int = 20250306) -> float:
+    """Two-sided permutation p-value for SMD-minus-PR mean difference."""
+    rng = np.random.default_rng(seed)
+    observed = y[g == 1].mean() - y[g == 0].mean()
+    n_smd = int(g.sum())
+    n = len(y)
+    extreme = 0
+    for _ in range(n_perm):
+        idx = rng.permutation(n)
+        smd_idx = idx[:n_smd]
+        pr_idx = idx[n_smd:]
+        diff = y[smd_idx].mean() - y[pr_idx].mean()
+        if abs(diff) >= abs(observed) - 1e-15:
+            extreme += 1
+    return (extreme + 1) / (n_perm + 1)
+
+
+def bootstrap_ci(y: np.ndarray, g: np.ndarray, n_boot: int = 20000, seed: int = 20250307, alpha: float = 0.05):
+    """Percentile bootstrap CI resampling within election-rule groups."""
+    rng = np.random.default_rng(seed)
+    smd_y = y[g == 1]
+    pr_y = y[g == 0]
+    diffs = np.empty(n_boot)
+    for b in range(n_boot):
+        smd_b = rng.choice(smd_y, size=len(smd_y), replace=True)
+        pr_b = rng.choice(pr_y, size=len(pr_y), replace=True)
+        diffs[b] = smd_b.mean() - pr_b.mean()
+    return [float(np.quantile(diffs, alpha / 2)), float(np.quantile(diffs, 1 - alpha / 2))]
+
+
+def classify(estimate: float, p_value: float, ci_low: float, ci_high: float) -> str:
+    if estimate < 0 and p_value <= 0.05:
+        return "support"
+    if estimate < 
+... (truncated)
+2026-08-13 15:33:43,467 - robustness - INFO - 
+--- Turn 7 ---
+2026-08-13 15:35:23,157 - robustness - INFO - ***Agent output (Thought):
+{
+  "pruning_output": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_id": "Powell_CompPolitStu_2009_0PZl",
+    "task_pair_records": [
+      {
+        "path_id": "Powell_CompPolitStu_2009_0PZl_path06",
+        "tasks": {
+          "task1": {
+            "candidates": [
+              {
+                "candidate_id": "Task1_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Estimate the SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter using all authorized SMD/PR observations and a fixed-seed permutation test with bootstrap confidence interval.",
+                  "path_signature": {
+                    "model_family": "permutation_test_mean_difference",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Task1 uses authorized observations with smd coded smd or pr and nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for focal variables required by Task1: smd and pldist1.",
+                    "variable_construction": "Read Stata value labels; clean smd labels to lowercase strings; create smd_bin=1 for smd and 0 for pr; use raw pldist1 without transformation.",
+                    "inference_rule": "Expected direction is negative for SMD-minus-PR mean distance. Support requires a negative estimate with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive."
+                  },
+                  "analysis_anchor": {
+                    "estimand": {
+                      "outcome": "pldist1",
+                      "outcome_scale": "Raw Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell country-election observations with SMD or PR election-rule coding and nonmissing Manifesto-method plurality-winner distance",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Use nonmissing pldist1 observations."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations with missing election-rule category because they cannot contribute to the SMD-versus-PR contrast.",
+                        "Exclude observations with missing pldist1 if any are encountered."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear_regression or mean-comparison style analysis of election-rule differences; exact original focal test specification not fully stated in the extracted PDF summary",
+                      "variable_construction": "pldist1 is the Manifesto-method plurality-winner distance from the median voter; smd identifies PR versus SMD election rules.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "negative SMD-minus-PR distance difference, because the claim predicts plurality winners are closer to the median voter under SMD",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 is borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    }
+                  },
+                  "analysis_path": {
+                    "path_name": "permutation_mean_difference_manifesto_pldist1",
+                    "path_description": "Use all authorized SMD/PR observations and compare raw Manifesto-method plurality-winner distance between SMD and PR election rules using a fixed-seed permutation test for the mean difference.",
+                    "software": "Python",
+                    "model_family": "permutation_test_mean_difference",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with Stata categorical value labels.",
+                      "Record the starting number of rows.",
+                      "Verify that smd and pldist1 exist.",
+                      "Create smd_clean by lowercasing and stripping the smd category labels.",
+                      "Retain rows where smd_clean is smd or pr and record rows removed.",
+                      "Drop rows with missing pldist1 and record rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Compute the SMD-minus-PR mean difference in pldist1.",
+                      "Compute a two-sided fixed-seed permutation p-value using 100000 permutations.",
+                      "Compute a fixed-seed within-group percentile bootstrap 95 percent confidence interval using 20000 bootstrap draws.",
+                      "Classify the result using the prespecified conclusion rule and write result_task1.json and sample_flow_task1.json."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, the Manifesto-method distance of the plurality vote winner from the median voter.",
+                      "main_predictor_measure": "smd_bin, coded 1 for SMD election-rule observations and 0 for PR election-rule observations.",
+                      "control_variables": [],
+                      "sample_restriction": "Authorized rows with smd coded smd or pr and nonmissing pldist1.",
+                      "outlier_rule": "No outlier deletion or winsorization.",
+                      "missing_data_rule": "Listwise deletion for smd and pldist1 after retaining the focal SMD/PR election-rule categories.",
+                      "data_processing": "No aggregation, no scaling, and no outcome transformation; only label cleaning and binary coding of the focal election-rule contrast.",
+                      "model_choice": "Fixed-seed randomization/permutation test for the SMD-minus-PR mean difference, with a bootstrap confidence interval."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Permutation test for independent-group mean difference",
+                        "formula": "mean(pldist1 | smd_bin=1) - mean(pldist1 | smd_bin=0)",
+                        "planned_estimation": "SMD-minus-PR mean difference in raw pldist1, two-sided permutation p-value, and bootstrap percentile 95 percent confidence interval",
+                        "deviation": "true",
+                        "qualification": "This preserves the focal outcome, contrast, and sample while changing the inferential test to a permutation test, which is defensible for a binary election-rule contrast and a skewed continuous distance outcome."
+                      }
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                      "contrast": "SMD election-rule observations minus PR election-rule observations.",
+                      "target_population": "Authorized Powell country-election observations with smd/pr election-rule coding and nonmissing pldist1.",
+                      "time_scope": "1945-2003, the observed dataset range.",
+                      "claim_mapping": "If SMD party competition leads plurality winners to be closer to the median voter, the mean pldist1 for SMD observations should be lower than for PR observations, yielding a negative SMD-minus-PR difference."
+                    },
+                    "anchor_alignment": {
+                      "outcome": "aligned",
+                      "contrast": "aligned",
+                      "sample": "aligned",
+                      "model": "justified_deviation",
+                      "inference": "aligned"
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "code_reports_sample_flow": true
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "smd",
+                        "pldist1"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass"
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task1/Task1_candidate01/analysis_task1.py"
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task1 targets the same focal claim: under SMD rules, plurality vote winners should be closer to the median voter than under PR. The original paper summary identifies this as the Duverger-Downs/SMD plurality-party convergence mechanism and describes the manifesto method as a relevant source of party/voter positions. Dataset inspection verified 331 country-election observations, years 1945-2003, repeated observations by country, smd categories pr=244, smd=85, missing=2, and nonmissing positive/right-skewed pldist1. The code reads the authorized Stata file with categorical labels, verifies smd and pldist1, constructs smd_clean and smd_bin as planned, excludes only non-SMD/PR smd rows and missing pldist1, computes the SMD-minus-PR raw pldist1 mean difference, uses the declared fixed-seed two-sided permutation test and within-group bootstrap CI, applies the fixed conclusion rule, and writes both result and sample-flow JSON files. No low-quality rule is triggered: under M1/M2/M3/M4/M5/M6 and Task1 rules 1.1-1.9, the outcome, contrast, population, sample, model deviation, and inference rule are explicit, supported, and capable of answering the assigned question. Guardrails G1, G8, and G14 apply: the method differs from earlier regression paths and does not cluster by country, but this is a justified robustness inference choice, not a clear material defect by itself. Verification limitation: the PDF tool returned a long-document summary rather than full table text, but the focal claim, study design, manifesto measure, and country-election structure were sufficiently confirmed from authorized inputs.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The candidate directly tests whether plurality vote winners are closer to the median voter under SMD than PR by comparing SMD-minus-PR pldist1."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The plan and code use only data/powell_original.dta from the authorized study folder."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared Memory contains OLS, quantile regression, Gamma GLM, Mann-Whitney/Hodges-Lehmann, and a low-quality log-outcome path; this path uses a fixed-seed permutation test with bootstrap CI for the raw mean difference and is not a semantic duplicate of an existing executed Task1 path."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task1 and Task2 candidates are both present; this Task1 candidate is fully specified with path, code, entry file, and outputs."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The quantity is the SMD-minus-PR mean difference in raw Manifesto-method pldist1 for authorized SMD/PR country-election observations from 1945-2003, which directly answers the focal claim."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified smd and pldist1; pldist1 is the manifesto plurality-winner distance and smd supplies pr/smd categories."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code records starting rows, exclusion of non-smd/pr election-rule rows, exclusion of missing pldist1, final analytic rows, and group counts."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "Excluding rows without smd/pr coding is required for the focal contrast; dropping missing pldist1 is necessary for the outcome; no outlier deletion or transformation is applied."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used, and none are required by the Task1 anchor for this mean-comparison style analysis."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 remains continuous and raw; smd is reduced only to the required binary SMD-versus-PR contrast, excluding two missing-category observations."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The reviewed Python code implements the declared outcome, predictor, sample rules, raw-scale mean difference, 100000-permutation p-value, 20000-bootstrap CI, conclusion rule, and JSON outputs."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "A permutation test is coherently justified as a distribution-light test of the same binary-group mean difference for a right-skewed continuous distance outcome."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "The candidate includes an identifiable Python source file, entry file, run command, package requirements, and traceable output files."
+                  }
+                }
+              }
+            ]
+          },
+          "task2": {
+            "candidates": [
+              {
+                "candidate_id": "Task2_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Estimate the SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter using the required 1945-2003 data and a fixed-seed permutation test with bootstrap confidence interval.",
+                  "path_signature": {
+                    "model_family": "permutation_test_mean_difference",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Task2 applies the instructed 1945-2003 year restriction and uses authorized observations with smd coded smd or pr and nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for focal variables required by Task2: year, smd, and pldist1.",
+                    "variable_construction": "Read Stata value labels; clean smd labels to lowercase strings; create smd_bin=1 for smd and 0 for pr; use raw pldist1 without transformation.",
+                    "inference_rule": "Expected direction is negative for SMD-minus-PR mean distance. Support requires a negative estimate with p <= 0.05, or borderline support for 0.05 < p <= 0.055 only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero. A positive estimate is opposite only with affirmative p < 0.05 evidence and a confidence interval above zero; otherwise inconclusive."
+                  },
+                  "analysis_anchor": {
+                    "estimand": {
+                      "outcome": "pldist1",
+                      "outcome_scale": "Raw Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell country-election observations from 1945 through 2003 with SMD or PR election-rule coding and nonmissing Manifesto-method plurality-winner distance",
+                      "time_scope": "1945-2003 inclusive"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset.",
+                        "Restrict to years 1945 through 2003 inclusive.",
+                        "Use the Manifesto-method pldist1 variable.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Use nonmissing pldist1 observations."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations outside 1945-2003 if any are encountered.",
+                        "Exclude observations with missing election-rule category because they cannot contribute to the SMD-versus-PR contrast.",
+                        "Exclude observations with missing pldist1 if any are encountered."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear_regression or mean-comparison style analysis of election-rule differences; exact original focal test specification not fully stated in the extracted PDF summary",
+                      "variable_construction": "Task2 requires the Manifesto Method; pldist1 is the verified Manifesto-method plurality-winner distance variable and smd identifies PR versus SMD election rules.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "negative SMD-minus-PR distance difference, because the claim predicts plurality winners are closer to the median voter under SMD",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 is borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    }
+                  },
+                  "analysis_path": {
+                    "path_name": "permutation_mean_difference_manifesto_pldist1_1945_2003",
+                    "path_description": "Use the required 1945-2003 Manifesto-method data and compare raw Manifesto-method plurality-winner distance between SMD and PR election rules using a fixed-seed permutation test for the mean difference.",
+                    "software": "Python",
+                    "model_family": "permutation_test_mean_difference",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with Stata categorical value labels.",
+                      "Record the starting number of rows.",
+                      "Verify that year, smd, and pldist1 exist.",
+                      "Restrict to year >= 1945 and year <= 2003 and record rows removed.",
+                      "Create smd_clean by lowercasing and stripping the smd category labels.",
+                      "Retain rows where smd_clean is smd or pr and record rows removed.",
+                      "Drop rows with missing pldist1 and record rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Compute the SMD-minus-PR mean difference in pldist1.",
+                      "Compute a two-sided fixed-seed permutation p-value using 100000 permutations.",
+                      "Compute a fixed-seed within-group percentile bootstrap 95 percent confidence interval using 20000 bootstrap draws.",
+                      "Classify the result using the prespecified conclusion rule and write result_task2.json and sample_flow_task2.json."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, the Manifesto-method distance of the plurality vote winner from the median voter.",
+                      "main_predictor_measure": "smd_bin, coded 1 for SMD election-rule observations and 0 for PR election-rule observations.",
+                      "control_variables": [],
+                      "sample_restriction": "Years 1945-2003 inclusive, authorized rows with smd coded smd or pr, and nonmissing pldist1.",
+                      "outlier_rule": "No outlier deletion or winsorization.",
+                      "missing_data_rule": "Listwise deletion for year, smd, and pldist1 after applying the required year range and focal election-rule categories.",
+                      "data_processing": "Apply instructed year restriction; no aggregation, no scaling, and no outcome transformation; only label cleaning and binary coding of the focal election-rule contrast.",
+                      "model_choice": "Fixed-seed randomization/permutation test for the SMD-minus-PR mean difference, with a bootstrap confidence interval."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Permutation test for independent-group mean difference",
+                        "formula": "mean(pldist1 | smd_bin=1, 1945<=year<=2003) - mean(pldist1 | smd_bin=0, 1945<=year<=2003)",
+                        "planned_estimation": "SMD-minus-PR mean difference in raw pldist1 during 1945-2003, two-sided permutation p-value, and bootstrap percentile 95 percent confidence interval",
+                        "deviation": "true",
+                        "qualification": "This preserves Task2's required time period and Manifesto-method outcome while changing only the inferential test to a permutation test."
+                      }
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "SMD-minus-PR mean difference in Manifesto-method plurality-winner distance from the median voter during 1945-2003.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units.",
+                      "contrast": "SMD election-rule observations minus PR election-rule observations.",
+                      "target_population": "Authorized Powell country-election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing pldist1.",
+                      "time_scope": "1945-2003 inclusive.",
+                      "claim_mapping": "Task2 requires 1945-2003 Manifesto-method data. If SMD party competition leads plurality winners to be closer to the median voter, the mean pldist1 for SMD observations in that period should be lower than for PR observations, yielding a negative SMD-minus-PR difference."
+                    },
+                    "anchor_alignment": {
+                      "outcome": "aligned",
+                      "contrast": "aligned",
+                      "sample": "aligned",
+                      "model": "justified_deviation",
+                      "inference": "aligned"
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "code_reports_sample_flow": true
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "year",
+                        "smd",
+                        "pldist1"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass"
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path06/task2/Task2_candidate01/analysis_task2.py"
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task2 explicitly requires use of 1945-2003 data and the Manifesto Method. The candidate satisfies those requirements by using the authorized powell_original.dta file, restricting to year 1945-2003 inclusive, using raw pldist1 as the Manifesto-method plurality-winner distance, and comparing SMD versus PR observations. Dataset inspection verified that the authorized file contains 331 country-election observations, year range 1945-2003, smd categories pr=244, smd=85, missing=2, and nonmissing pldist1. The reviewed code reads the authorized Stata file with labels, verifies year/smd/pldist1, applies the year restriction, constructs smd_clean and smd_bin, reports each sample-flow step, computes the SMD-minus-PR raw mean difference, calculates the declared permutation p-value and bootstrap CI, applies the fixed conclusion rule, and writes Task2-specific result and sample-flow JSON. No Task2 low-quality rule is triggered: under 2.1-2.8, the explicit time-window, Manifesto-method outcome, contrast, sample, result mapping, and classification rule are implemented. Under M1-M6 the model deviation is explicit and defensible because it preserves the assigned estimand while changing inference. Guardrails G1, G4, G8, and G14 apply: using a different inference family from the prior OLS path or original-paper model is not by itself low-quality, and the reused structure from Task1 satisfies all Task2-specific requirements. Verification limitation: the PDF was available through a summary extraction rather than full table text, but the task-specific requirements and dataset mapping were independently verified from authorized inputs.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The candidate tests the focal SMD convergence claim using the Task2-required Manifesto-method pldist1 measure."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The plan and code use only the authorized data/powell_original.dta file."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared Memory contains OLS, quantile, Gamma, Mann-Whitney, and low-quality log-outcome paths; this candidate uses a fixed-seed permutation test with bootstrap CI and is not a semantic duplicate of an existing Task2 path."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task2 is fully specified and paired with a Task1 candidate; the Task2 candidate includes path details, code, entry file, run command, and expected outputs."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The estimand is the SMD-minus-PR mean difference in raw pldist1 among authorized 1945-2003 SMD/PR observations, directly matching Task2's time and Manifesto-method requirements."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified year, smd, and pldist1; the pldist1 outcome is supported as the Manifesto-method plurality-winner distance."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code reports starting rows, rows removed by the 1945-2003 year rule, rows removed by smd/pr restriction, missing pldist1 exclusions, final analytic rows, and group counts."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "The year restriction is explicitly required by Task2; smd/pr restriction is necessary for the focal contrast; missing-outcome deletion is necessary; no unsupported outlier rule or transformation is introduced."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used, and none are required by the Task2 anchor for this comparable mean-comparison result."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 is retained as a continuous raw Manifesto distance; smd is coded only into the required binary SMD-versus-PR contrast."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The reviewed Python code matches the declared Task2 path: authorized dataset, 1945-2003 restriction, pldist1 outcome, smd_bin predictor, no controls, permutation p-value, bootstrap CI, conclusion rule, and JSON outputs."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The method is coherently justified as a distribution-light test of the same mean-difference estimand for a binary election-rule contrast and skewed continuous distance outcome."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "The candidate includes identifiable Python source code, a task-specific entry file and run command, package requirements, and traceable expected JSON outputs."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "task_pair_assessment": {
+          "decision": "high-quality",
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "reason": "Both active path06 candidates independently pass all thirteen required checks. They use the authorized dataset, preserve the focal SMD-versus-PR contrast and raw Manifesto-method pldist1 outcome, implement the Task2 time restriction, provide sample-flow reporting, match their declared code, and include identifiable executable specifications. Therefore the combined task-pair assessment is high-quality."
+        }
+      }
+    ]
+  }
+}
+2026-08-13 15:35:23,159 - robustness - INFO - 
+--- Final Answer Found ---
+2026-08-13 15:35:33,990 - robustness - INFO - [prune->execute] both active candidates are high-quality

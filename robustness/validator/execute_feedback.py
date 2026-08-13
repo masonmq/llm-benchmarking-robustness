@@ -27,23 +27,23 @@ def run_evaluate_execute_feedback(study_path, tier: str = "easy", code_mode: str
 You are a researcher specialized in evaluating the quality of research reproduction and validation attempts in the social sciences.
 You will be given the following information:
 1. original_paper.pdf: A published paper in the social and behaviorial sciences domain.
-2. execute_in_schema.json: A proposed analysis, from an independent researcher different from the original authors of original_paper.pdf, to validate a focal claim in the paper. This analysis can have DIFFERENT design choices from those in the original paper, but can still validate the focal claim.
+2. universal_schema.json: A proposed analysis, from an independent researcher different from the original authors of original_paper.pdf, to validate a focal claim in the paper. This analysis can have DIFFERENT design choices from those in the original paper, but can still validate the focal claim.
 
-You are also given an agent attempt that follows the reanalysis plan proposed in execute_in_schema.json: 
+You are also given an agent attempt that follows the reanalysis plan proposed in universal_schema.json:
 3. data/: This folder contains original data file used in original_paper.pdf AND potentially relevant code used by the agent during its execution.
-4. _logs/execute_easy__python.log: This is the log file documenting the agent's attempt in executing the reanalysis proposed in execute_in_schema.json.
+4. _logs/execute_easy__python.log: This is the log file documenting the agent's attempt in executing the reanalysis proposed in universal_schema.json.
 4. execution_results.json: This a structured report of the execution process filled out the by agent itself at the end of execution.
 
 YOUR TASK is to EVALUATE the execution performance of the agent based on the entire process and the reported outcome.
 Specifically, you must classify the agent attempt into one of the following categories:
-(1) Acceptable: The agent successfully executes the proposed analysis faithfully with no major or significant changes from the proposed plan in execute_in_schema.json.
+(1) Acceptable: The agent successfully executes the proposed analysis faithfully with no major or significant changes from the proposed plan in universal_schema.json.
 (2) Unacceptable: The agent could not execute the proposed analysis, or has major deviations from the proposed analysis. For example, some models, variables, or methodologies listed in the plan were dropped during either the execution process, or during filling out the report (Agent only relies on ONE single model result instead of multiple results to make conclusion in exeuction_results). These are just example of potential significant deviations. You should think of other potential significant deviations issues that result in an unfaithful execution of the proposed analysis.
 
 You can use any tools and inspect any documents available to you to help you accomplish the task, if need be. 
 After calling all necessary actions to accomplish the task, use this tempalte for your final response:
 {{
     "execute_feedback":  // one of the following VERBATIM "(1) Acceptable",OR  "(2) Unacceptable" //,
-    "details" // provide detailed feedback for the agent in case your evaluation is "(2) Unacceptable", especially why and how can they improve their execution to become more faithful to the proposed analysis in execute_in_schema.json. //,
+    "details" // provide detailed feedback for the agent in case your evaluation is "(2) Unacceptable", especially why and how can they improve their execution to become more faithful to the proposed analysis in universal_schema.json. //,
 }}
 """.strip()
     tool_definitions = get_tool_definitions()

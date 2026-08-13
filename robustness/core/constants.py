@@ -151,12 +151,10 @@ EVALUATE_INTERPRET_CONSTANTS = {
 ### ROBUSTNESS CONSTANTS
 
 GEN_GOLD_ANALYSIS_CONSTANTS = {
-    "analysis_schema": "templates/execute_in_schema.json",
+    "analysis_schema": "templates/universal_schema.json",
 }
 
 PLAN_ANALYSIS_CONSTANTS = {
-    # The Planning Agent now emits the universal schema. The same document is the
-    # Pruning Agent's input (prune_in), so the two agents share one contract.
     "analysis_schema": "templates/universal_schema.json",
     "task_description_data": "data/_robustness/all_claims.xlsx",
     "example_paper": "data/_robustness/plan_few_shots/Bartels_JournConsRes_2015_mrZ.pdf",
@@ -168,30 +166,53 @@ PLAN_ANALYSIS_CONSTANTS = {
 ROBUSTNESS_EXECUTE_CONSTANTS = {
     "files": {
         "original_paper.pdf": "The pdf file containing the full text of the original paper",
-        "analysis_info.json": "A structured document with plans for proposed analysis of the claim.",
+        "universal_schema.json": "A structured document with plans for proposed analysis of the claim.",
         "data": "The folder containing the data and code that can be used for the replication.",
     },
-    "json_template": "templates/execute_out_schema.json"    
+    "json_template": "templates/universal_schema.json"
 }
 
-# Pruning Agent helper extractor: paper PDF + proposed-analysis (review) PDF + data
-# are extracted into a filled prune_in_schema.json (the Pruning Agent's input).
-GEN_PRUNE_INPUT_CONSTANTS = {
-    "prune_in_template": "templates/prune_in_schema.json",
-}
-
-# Pruning Agent: reviews the filled prune_in_schema.json and routes
-# high-quality/low-quality, emitting prune_out_schema.json.
+# Pruning Agent: reviews active candidates in universal_schema.json.
 ROBUSTNESS_PRUNE_CONSTANTS = {
     "files": {
-        "prune_in_schema.json": "The structured Pruning Agent input: case reference, the single candidate analysis path to review (planning_output), shared memory, and the fixed pruning rules.",
+        "universal_schema.json": "The active Task1 and Task2 candidates produced by Planning.",
     },
     "json_template": "templates/prune_out_schema.json",
 }
 
 # Prompt versions are logged on every run for reproducibility.
-GEN_PRUNE_INPUT_PROMPT_VERSION = "prune_input_extractor.v1"
 PRUNE_PROMPT_VERSION = "pruning_agent.v2"
+
+
+CONCLUSION_CLASSIFICATION_RULES = {
+    "support": (
+        "The focal result is in the direction expected by the focal claim and provides affirmative or borderline "
+        "evidence. For a frequentist result, p less than or equal to 0.05 is affirmative evidence. A result with "
+        "p greater than 0.05 and less than or equal to 0.055 is borderline support only when the estimate is "
+        "substantively meaningful and its uncertainty interval only narrowly crosses the null. Borderline support "
+        "uses conclusion_class support; do not create another conclusion class."
+    ),
+    "opposite": (
+        "The focal result materially contradicts the direction or substantive relationship in the focal claim "
+        "and provides affirmative evidence for that contrary result. An opposite-signed point estimate alone is "
+        "not enough. For a frequentist coefficient-based result, require p less than 0.05, a confidence interval "
+        "excluding the null in the contrary direction, or another case-appropriate criterion demonstrating "
+        "material contrary evidence."
+    ),
+    "inconclusive": (
+        "A valid focal direction cannot be determined, the required focal results are mixed or ambiguous, or an "
+        "aligned result lacks affirmative or borderline evidence. For a frequentist result in the expected direction, "
+        "p greater than 0.055 is inconclusive unless another case-appropriate criterion supplies affirmative evidence. "
+        "An opposite-signed result without affirmative evidence of a material contrary effect is also inconclusive."
+    ),
+    "statistical_strength": (
+        "For a frequentist result in the expected direction, p less than or equal to 0.05 is support. When p is "
+        "greater than 0.05 and less than or equal to 0.055, use conclusion_class support only if the estimate is "
+        "substantively meaningful and the uncertainty interval narrowly crosses the null, and describe it as "
+        "borderline. Clearly weak aligned evidence is inconclusive. Report uncertainty separately. An "
+        "opposite-signed estimate that does not meet the affirmative-evidence requirement is inconclusive, not opposite."
+    ),
+}
 
 
 # ---------------------------------------------------------------------------
@@ -209,14 +230,24 @@ PLANNING_RULES = {
         "Inspect the original dataset metadata.",
         "Inspect original paper source code if available.",
         "Use shared memory to avoid repeated paths.",
-        "Propose exactly one new analysis path.",
+        "Propose one active candidate for each task that requires Planning.",
+        "Reconstruct the paper analysis anchor for each task before proposing a candidate.",
+        "Identify the focal estimand before choosing variables or a model.",
+        "Keep candidates aligned with the paper analysis anchor or document each justified deviation.",
+        "When avoiding a duplicate, change only the minimum analytical dimensions needed.",
+        "Verify proposed variables against the authorized data.",
+        "Document sample exclusions and require the code to report sample flow.",
+        "Justify every restriction, control, transformation, and variable collapse.",
+        "Check that the analysis code implements the declared path.",
     ],
     "not_allowed_actions": [
         "Do not change the focal claim.",
         "Do not change the dataset.",
         "Do not run analysis.",
-        "Do not output multiple candidate paths.",
+        "Do not generate a replacement for a retained high-quality task.",
         "Do not propose a path that repeats shared memory.",
+        "Do not choose a path because it is expected to support the focal claim.",
+        "Do not invent variables, restrictions, or controls without authorized evidence.",
     ],
 }
 
@@ -227,11 +258,13 @@ PRUNING_RULES = {
         "Explore the authorized dataset.",
         "Read the candidate path's analysis code.",
         "Read shared memory.",
-        "Decide whether the candidate path is high-quality or low-quality.",
-        "Write a memory update instruction.",
+        "Decide whether each new active task candidate is high-quality or low-quality.",
+        "Check each candidate against its task-specific paper analysis anchor.",
+        "Verify estimand alignment and evidence for analytical choices.",
+        "Verify sample-flow reporting and plan-code consistency.",
     ],
     "not_allowed_actions": [
-        "Do not modify the proposed path.",
+        "Do not modify a proposed task candidate.",
         "Do not run analysis.",
         "Do not change the focal claim.",
         "Do not change the dataset.",

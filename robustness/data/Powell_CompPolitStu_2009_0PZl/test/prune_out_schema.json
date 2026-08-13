@@ -1,0 +1,674 @@
+{
+  "pruning_output": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_id": "Powell_CompPolitStu_2009_0PZl",
+    "task_pair_records": [
+      {
+        "path_id": "Powell_CompPolitStu_2009_0PZl_path07",
+        "tasks": {
+          "task1": {
+            "candidates": [
+              {
+                "candidate_id": "Task1_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use all authorized SMD/PR observations and estimate the within-country SMD-versus-PR association in raw Manifesto-method plurality-winner distance from the median voter.",
+                  "path_signature": {
+                    "model_family": "country_fixed_effects_linear_regression",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [
+                      "country fixed effects"
+                    ],
+                    "sample_restriction": "Authorized observations with smd coded smd or pr, nonmissing pldist1, nonmissing smd, and nonmissing country.",
+                    "missing_data_rule": "Listwise deletion for pldist1, smd, and country after retaining the focal election-rule categories.",
+                    "variable_construction": "Binary recoding of smd and within-country demeaning of pldist1 and smd_bin; no outcome transformation or aggregation.",
+                    "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing zero; clearly weak aligned evidence is inconclusive. Opposite requires affirmative positive evidence with p < 0.05 and CI above zero.",
+                    "estimand_quantity": "Country fixed-effects SMD-minus-PR coefficient in raw pldist1 units.",
+                    "outcome_scale": "Raw Manifesto-method ideological distance units after within-country demeaning for estimation.",
+                    "contrast": "SMD election-rule observations versus PR election-rule observations, within countries that contribute election-rule variation.",
+                    "target_population": "Authorized Powell country-election observations with smd/pr election-rule coding and nonmissing pldist1 and country.",
+                    "time_scope": "1945-2003, the observed dataset range."
+                  },
+                  "analysis_anchor": {
+                    "task_id": "Task1",
+                    "estimand": {
+                      "outcome": "pldist1, the Manifesto-method ideological distance between the plurality vote-winning party and the median voter.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units; smaller values mean closer to the median voter.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations, coded as SMD minus PR.",
+                      "target_population": "Authorized Powell country-election observations with SMD or PR election-rule coding and nonmissing focal variables.",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset."
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized Powell Stata dataset.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Retain observations with nonmissing pldist1."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations with missing election-rule coding because they cannot enter the SMD-versus-PR contrast."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear comparison or regression of plurality-winner distance on election-rule type; exact focal specification not_stated in the available extracted paper text.",
+                      "variable_construction": "Use the Manifesto-method distance variable pldist1 and a binary election-rule indicator from smd, with smd as 1 and pr as 0.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "Negative SMD-minus-PR difference or coefficient, because the claim expects plurality winners under SMD to be closer to the median voter.",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 is borderline support only when substantively meaningful and narrowly crossing the null.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    },
+                    "evidence": {
+                      "paper": "The paper summary identifies Hypothesis 4a: under SMD, the plurality vote winner should be close to the median voter. It also identifies the Manifesto Method as a party-vote/party-manifesto approach used to estimate party and voter ideological positions and reports analyses over 1946/1945-2003.",
+                      "dataset_mapping": "Verified columns include pldist1 for plurality-winner distance, smd for election rule with categories pr/smd/missing, year with range 1945-2003, and country for country-election grouping."
+                    },
+                    "uncertainties": [
+                      "The exact original regression specification and standard-error method for the focal H4a statement are not fully stated in the extracted PDF summary."
+                    ]
+                  },
+                  "analysis_path": {
+                    "path_name": "country_fe_pldist1_smd",
+                    "path_description": "Use all authorized SMD/PR observations and estimate the within-country SMD-versus-PR association in raw Manifesto-method plurality-winner distance from the median voter.",
+                    "software": "Python",
+                    "original_software": "not_stated",
+                    "model_family": "country_fixed_effects_linear_regression",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta using pandas.read_stata with categorical labels.",
+                      "Report starting rows.",
+                      "Drop observations with missing pldist1 and report rows removed.",
+                      "Clean smd labels by trimming and lowercasing.",
+                      "Drop observations with missing smd and report rows removed.",
+                      "Retain smd values smd and pr and report rows removed.",
+                      "Drop observations with missing country and report rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Coerce pldist1 to numeric and listwise delete any missing constructed model variables.",
+                      "Within-country demean pldist1 and smd_bin.",
+                      "Estimate OLS of demeaned pldist1 on demeaned smd_bin without an intercept, with standard errors clustered by country.",
+                      "Report coefficient, standard error, p-value, 95% confidence interval, sample flow, final analytic rows, country count, and conclusion class."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, interpreted as the Manifesto-method distance from the median voter to the plurality vote winner.",
+                      "main_predictor_measure": "smd_bin constructed from smd: 1 for SMD, 0 for PR.",
+                      "control_variables": [
+                        "country fixed effects"
+                      ],
+                      "sample_restriction": "Authorized observations with smd coded smd or pr, nonmissing pldist1, nonmissing smd, and nonmissing country.",
+                      "outlier_rule": "No outlier removal or winsorization.",
+                      "missing_data_rule": "Listwise deletion for pldist1, smd, and country after retaining the focal election-rule categories.",
+                      "data_processing": "Binary recoding of smd and within-country demeaning of pldist1 and smd_bin; no outcome transformation or aggregation.",
+                      "model_choice": "Country fixed-effects OLS via within-country demeaning with country-clustered standard errors.",
+                      "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing zero; clearly weak aligned evidence is inconclusive. Opposite requires affirmative positive evidence with p < 0.05 and CI above zero."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "country fixed-effects linear regression",
+                        "formula": "(pldist1 - mean_country(pldist1)) ~ 0 + (smd_bin - mean_country(smd_bin))",
+                        "planned_estimation": "Within-country SMD-minus-PR coefficient for pldist1, with country-clustered standard errors.",
+                        "inference_criteria": "Support requires a negative coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing the null. Opposite requires a positive coefficient with p < 0.05 and CI above zero; otherwise inconclusive.",
+                        "deviation": "true",
+                        "qualification": "The focal claim concerns election-rule conditions and country-election observations are repeated within countries. Country fixed effects are a defensible robustness adjustment for stable country-level differences while preserving the Manifesto outcome and SMD-versus-PR contrast."
+                      }
+                    ],
+                    "variables": {
+                      "outcome": {
+                        "name": "pldist1",
+                        "definition": "Manifesto-method distance between the plurality vote-winning party and the median voter; smaller values indicate closer proximity to the median voter.",
+                        "variable_construction": "Used in raw units, then demeaned within country only for fixed-effects estimation.",
+                        "missing_data_handling": "Drop observations with missing pldist1.",
+                        "deviation": "false",
+                        "qualification": "This is the dataset variable directly corresponding to the focal plurality-winner distance claim.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "main_predictor": {
+                        "name": "smd_bin",
+                        "definition": "Binary indicator for election rule: 1 for single-member district, 0 for proportional representation.",
+                        "variable_construction": "Constructed from smd after cleaning labels; observations with smd not equal to smd or pr are excluded from the focal contrast.",
+                        "missing_data_handling": "Drop observations with missing smd or non-focal smd labels.",
+                        "deviation": "false",
+                        "qualification": "The focal claim is explicitly about SMD election rules and the comparison category available in the dataset is PR.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "controls": [
+                        {
+                          "name": "country fixed effects",
+                          "definition": "A full set of country-specific intercepts implemented by demeaning variables within country.",
+                          "variable_construction": "Use the country column to subtract each country's mean from pldist1 and smd_bin.",
+                          "missing_data_handling": "Drop observations with missing country.",
+                          "deviation": "true",
+                          "qualification": "Country fixed effects adjust for stable country-level characteristics in a repeated country-election dataset; this is a robustness deviation from the anchor that changes the model only.",
+                          "models": [
+                            "M1"
+                          ]
+                        }
+                      ]
+                    },
+                    "expected_outputs": [
+                      "Structured JSON printed to stdout and written to results_task1.json.",
+                      "Sample-flow table with starting rows, rows removed by each material rule, and final analytic rows.",
+                      "Country fixed-effects coefficient for smd_bin on pldist1 with clustered standard error, p-value, and 95% confidence interval.",
+                      "Conclusion classification according to the fixed conclusion rules."
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "Country fixed-effects SMD-minus-PR coefficient in raw pldist1 units.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units after within-country demeaning for estimation.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations, within countries that contribute election-rule variation.",
+                      "target_population": "Authorized Powell country-election observations with smd/pr election-rule coding and nonmissing pldist1 and country.",
+                      "time_scope": "1945-2003, the observed dataset range.",
+                      "claim_mapping": "A negative coefficient means plurality vote winners are closer to the median voter under SMD than under PR within countries, matching the focal claim's expected SMD closeness pattern."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "The candidate uses the anchor outcome pldist1 in raw Manifesto-method distance units."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "The candidate preserves the SMD-versus-PR election-rule contrast."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "The candidate uses all authorized observations with focal variables available and excludes only missing/non-focal election-rule rows and missing country needed for fixed effects."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "The candidate adds country fixed effects and country-clustered standard errors, changing only the model adjustment relative to the anchor and prior simple comparison paths."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "The candidate uses the same expected negative direction and fixed conclusion-classification thresholds."
+                      },
+                      "deviations": [
+                        {
+                          "dimension": "model",
+                          "anchor_choice": "No fixed effects or exact original model not_stated; focal comparison of pldist1 by election rule.",
+                          "candidate_choice": "OLS with country fixed effects implemented by within-country demeaning and standard errors clustered by country.",
+                          "justification": "The authorized dataset has repeated country-election observations and a verified country column. Country fixed effects are a defensible robustness analysis for stable country-level heterogeneity while preserving the focal outcome, contrast, and sample logic."
+                        }
+                      ]
+                    },
+                    "evidence_basis": {
+                      "outcome": "The paper summary identifies Hypothesis 4a concerning distance of the plurality vote winner from the median voter; the verified dataset contains pldist1 with no missing values and positive continuous distance units.",
+                      "main_predictor": "The focal claim names SMD election rules; the verified smd column has categories pr, smd, and missing, enabling a binary SMD-versus-PR contrast.",
+                      "controls": [
+                        {
+                          "name": "country fixed effects",
+                          "role": "Fixed effect",
+                          "evidence": "The verified dataset has a country column and repeated country-election observations. Fixed effects adjust for stable country-level differences without adding unsupported substantive covariates."
+                        }
+                      ],
+                      "restrictions": [
+                        {
+                          "rule": "Retain only smd values smd and pr.",
+                          "evidence": "The focal contrast is SMD versus PR and the verified smd variable contains only pr, smd, and missing."
+                        },
+                        {
+                          "rule": "Drop missing pldist1, smd, and country.",
+                          "evidence": "These variables are required to define the focal outcome, predictor, and country fixed-effects model."
+                        },
+                        {
+                          "rule": "No outlier removal.",
+                          "evidence": "The focal outcome is a paper-defined distance; no paper-supported outlier cutoff was identified."
+                        }
+                      ]
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "inclusion_rules": [
+                        "Authorized Stata dataset rows.",
+                        "Nonmissing pldist1.",
+                        "smd label is smd or pr.",
+                        "Nonmissing country."
+                      ],
+                      "exclusion_rules": [
+                        "Missing pldist1.",
+                        "Missing smd.",
+                        "smd labels outside smd/pr, if any.",
+                        "Missing country."
+                      ],
+                      "code_reports_sample_flow": true
+                    },
+                    "focal_variable_structure": {
+                      "source_structure": "pldist1 is continuous; smd is nominal with pr, smd, and missing; country is nominal repeated cluster/fixed-effect identifier.",
+                      "analysis_structure": "pldist1 remains continuous; smd is represented as the binary focal contrast SMD versus PR; country enters as fixed effects through within-country demeaning.",
+                      "information_loss": "No loss for pldist1. The smd variable is collapsed to the focal binary contrast, excluding only missing election-rule observations.",
+                      "justification": "The focal claim is specifically about SMD election rules and proximity to the median voter, so preserving the continuous distance outcome and binary election-rule contrast is appropriate."
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "pldist1",
+                        "smd",
+                        "country"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass",
+                      "preflight_note": "The read-back script loads the authorized Stata file, references only verified columns, constructs smd_bin from smd labels, preserves raw pldist1 before country demeaning, applies the declared sample rules, estimates within-country OLS with country-clustered standard errors, reports sample flow, and applies the declared inference rule."
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task1/Task1_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task1/Task1_candidate01/analysis_task1.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task1/Task1_candidate01/analysis_task1.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task1/Task1_candidate01/analysis_task1.py",
+                    "notes": "Run from the study root directory. The script locates data/powell_original.dta relative to its own path and writes results_task1.json next to the script."
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task1 targets the same observational focal claim: under SMD rules, plurality vote winners should be closer to the median voter than under PR, using the Manifesto-method pldist1 outcome. The original paper describes cross-national country-election data and Manifesto, citizen-expert, and citizen-perception approaches; the focal H4a-type claim concerns the distance from the median voter to the plurality vote winner under SMD. The authorized dataset was verified as 331 country-election rows, 107 columns, with pldist1 continuous and nonmissing, smd coded pr/smd/missing, year 1945-2003, and repeated country observations across 20 countries. The candidate uses the authorized Stata file, pldist1 in raw units, a binary SMD-minus-PR contrast, excludes only missing/non-focal election-rule observations and missing country needed for the declared fixed effects, and reports sample flow. The code reads value-labeled Stata data with convert_categoricals=True, constructs smd_clean and smd_bin, performs within-country demeaning, estimates OLS without an intercept using country-clustered standard errors, and writes/prints the focal coefficient, uncertainty, sample counts, and conclusion. The country fixed effect is an explicit, justified model deviation for repeated country-election observations and does not change the focal outcome, contrast, or dataset. This is distinct from shared-memory paths using decade-adjusted OLS, simple OLS, quantile regression, Gamma GLM, Mann-Whitney/Hodges-Lehmann, log-outcome OLS, and permutation tests. No low-quality rule is triggered under M1-M6 or Task1 rules 1.1-1.9; guardrails G1, G8, and G14 apply because a different defensible model/SE choice from the original or from evaluator preference is not by itself a defect.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The analysis tests whether SMD observations have lower plurality-winner distance from the median voter than PR observations, matching the focal claim."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The code uses only the authorized file data/powell_original.dta; no substitute dataset is referenced."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "The country fixed-effects within-country OLS path is semantically distinct from prior shared-memory paths using decade FE OLS, simple OLS, quantile regression, Gamma GLM, Mann-Whitney, log-outcome OLS, and permutation tests."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task1 is fully specified and Task2 is also present in the proposed paired path."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The outcome is raw pldist1, the contrast is SMD minus PR, the time scope is the full authorized 1945-2003 range, and the country-FE coefficient remains a defensible SMD-versus-PR test of the focal claim."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Verified columns include pldist1, smd, and country. pldist1 maps to Manifesto plurality-winner distance; smd has pr/smd/missing labels enabling the focal binary contrast."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code reports starting rows and each material exclusion: missing pldist1, missing smd, non-smd/pr labels, missing country, constructed-variable missingness, and final analytic rows."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "Restrictions are limited to variables required for the focal contrast and fixed-effects model; no outlier removal, winsorization, transformation, or unsupported cutoff is used."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "Country fixed effects are explicitly justified by the repeated country-election structure and country identifier verified in the dataset."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 remains continuous in raw units; smd is collapsed only to the required SMD-versus-PR binary contrast, excluding missing election-rule rows."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The code implements the declared outcome, predictor, sample rules, within-country demeaning, no-intercept OLS, country-clustered standard errors, sample-flow output, and focal result."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The method coherently tests whether SMD is associated with lower Manifesto-method plurality-winner distance while adjusting for stable country-level heterogeneity."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "A task-specific Python entry file and run command are present and traceably linked to the claimed analysis."
+                  }
+                }
+              }
+            ]
+          },
+          "task2": {
+            "candidates": [
+              {
+                "candidate_id": "Task2_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use the required 1945-2003 Manifesto-method data and estimate the within-country SMD-versus-PR association in raw plurality-winner distance from the median voter.",
+                  "path_signature": {
+                    "model_family": "country_fixed_effects_linear_regression",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [
+                      "country fixed effects"
+                    ],
+                    "sample_restriction": "Years 1945-2003 inclusive, Manifesto-method pldist1, smd coded smd or pr, nonmissing pldist1, nonmissing smd, and nonmissing country.",
+                    "missing_data_rule": "Listwise deletion for year, pldist1, smd, and country after applying the required year range and focal election-rule categories.",
+                    "variable_construction": "Required year restriction; binary recoding of smd; within-country demeaning of pldist1 and smd_bin; no outcome transformation or aggregation.",
+                    "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing zero; clearly weak aligned evidence is inconclusive. Opposite requires affirmative positive evidence with p < 0.05 and CI above zero.",
+                    "estimand_quantity": "Country fixed-effects SMD-minus-PR coefficient in raw pldist1 units for 1945-2003 Manifesto-method data.",
+                    "outcome_scale": "Raw Manifesto-method ideological distance units after within-country demeaning for estimation.",
+                    "contrast": "SMD election-rule observations versus PR election-rule observations, within countries that contribute election-rule variation.",
+                    "target_population": "Authorized Powell country-election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing pldist1 and country.",
+                    "time_scope": "1945-2003 inclusive."
+                  },
+                  "analysis_anchor": {
+                    "task_id": "Task2",
+                    "estimand": {
+                      "outcome": "pldist1, the Manifesto-method ideological distance between the plurality vote-winning party and the median voter.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units; smaller values mean closer to the median voter.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations, coded as SMD minus PR.",
+                      "target_population": "Authorized Powell country-election observations from 1945 through 2003 with SMD or PR election-rule coding and nonmissing focal variables.",
+                      "time_scope": "1945-2003 inclusive."
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized Powell Stata dataset.",
+                        "Apply the Task2 time restriction to years 1945 through 2003 inclusive.",
+                        "Use the Manifesto-method outcome pldist1.",
+                        "Retain observations with smd coded as smd or pr.",
+                        "Retain observations with nonmissing pldist1."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations outside 1945-2003 if any exist.",
+                        "Exclude observations with missing election-rule coding because they cannot enter the SMD-versus-PR contrast."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear comparison or regression of plurality-winner distance on election-rule type; exact focal specification not_stated in the available extracted paper text.",
+                      "variable_construction": "Use the Manifesto-method distance variable pldist1 and a binary election-rule indicator from smd, with smd as 1 and pr as 0.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "Negative SMD-minus-PR difference or coefficient, because the claim expects plurality winners under SMD to be closer to the median voter.",
+                      "statistical_threshold": "For a frequentist result, p <= 0.05 is affirmative evidence; 0.05 < p <= 0.055 is borderline support only when substantively meaningful and narrowly crossing the null.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    },
+                    "evidence": {
+                      "paper": "The paper summary identifies Hypothesis 4a: under SMD, the plurality vote winner should be close to the median voter. It describes the Manifesto Method as a 0-to-100 left-right party manifesto approach and states that the Manifesto analyses cover the historical postwar period through 2003.",
+                      "dataset_mapping": "Verified columns include pldist1 for plurality-winner distance, smd for election rule with categories pr/smd/missing, year with range 1945-2003, and country for country-election grouping."
+                    },
+                    "uncertainties": [
+                      "The exact original regression specification and standard-error method for the focal H4a statement are not fully stated in the extracted PDF summary."
+                    ]
+                  },
+                  "analysis_path": {
+                    "path_name": "country_fe_pldist1_smd_1945_2003_manifesto",
+                    "path_description": "Use the required 1945-2003 Manifesto-method data and estimate the within-country SMD-versus-PR association in raw plurality-winner distance from the median voter.",
+                    "software": "Python",
+                    "original_software": "not_stated",
+                    "model_family": "country_fixed_effects_linear_regression",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta using pandas.read_stata with categorical labels.",
+                      "Report starting rows.",
+                      "Drop observations with missing year and report rows removed.",
+                      "Retain years 1945 through 2003 inclusive and report rows removed.",
+                      "Drop observations with missing pldist1 and report rows removed.",
+                      "Clean smd labels by trimming and lowercasing.",
+                      "Drop observations with missing smd and report rows removed.",
+                      "Retain smd values smd and pr and report rows removed.",
+                      "Drop observations with missing country and report rows removed.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Coerce pldist1 to numeric and listwise delete any missing constructed model variables.",
+                      "Within-country demean pldist1 and smd_bin.",
+                      "Estimate OLS of demeaned pldist1 on demeaned smd_bin without an intercept, with standard errors clustered by country.",
+                      "Report coefficient, standard error, p-value, 95% confidence interval, sample flow, final analytic rows, country count, and conclusion class."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "Raw pldist1, interpreted as the Manifesto-method distance from the median voter to the plurality vote winner.",
+                      "main_predictor_measure": "smd_bin constructed from smd: 1 for SMD, 0 for PR.",
+                      "control_variables": [
+                        "country fixed effects"
+                      ],
+                      "sample_restriction": "Years 1945-2003 inclusive, Manifesto-method pldist1, smd coded smd or pr, nonmissing pldist1, nonmissing smd, and nonmissing country.",
+                      "outlier_rule": "No outlier removal or winsorization.",
+                      "missing_data_rule": "Listwise deletion for year, pldist1, smd, and country after applying the required year range and focal election-rule categories.",
+                      "data_processing": "Required year restriction; binary recoding of smd; within-country demeaning of pldist1 and smd_bin; no outcome transformation or aggregation.",
+                      "model_choice": "Country fixed-effects OLS via within-country demeaning with country-clustered standard errors.",
+                      "inference_rule": "Expected direction is negative. Support requires a negative SMD-minus-PR coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing zero; clearly weak aligned evidence is inconclusive. Opposite requires affirmative positive evidence with p < 0.05 and CI above zero."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "country fixed-effects linear regression",
+                        "formula": "(pldist1 - mean_country(pldist1)) ~ 0 + (smd_bin - mean_country(smd_bin)) for years 1945-2003",
+                        "planned_estimation": "Within-country SMD-minus-PR coefficient for pldist1, with country-clustered standard errors.",
+                        "inference_criteria": "Support requires a negative coefficient with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when substantively meaningful and narrowly crossing the null. Opposite requires a positive coefficient with p < 0.05 and CI above zero; otherwise inconclusive.",
+                        "deviation": "true",
+                        "qualification": "Task2 requires the 1945-2003 Manifesto-method data. Within those constraints, country fixed effects provide a defensible robustness result that adjusts for stable country-level differences while preserving the focal outcome and contrast."
+                      }
+                    ],
+                    "variables": {
+                      "outcome": {
+                        "name": "pldist1",
+                        "definition": "Manifesto-method distance between the plurality vote-winning party and the median voter; smaller values indicate closer proximity to the median voter.",
+                        "variable_construction": "Used in raw units, then demeaned within country only for fixed-effects estimation.",
+                        "missing_data_handling": "Drop observations with missing pldist1.",
+                        "deviation": "false",
+                        "qualification": "This is the instructed Manifesto-method variable directly corresponding to the focal plurality-winner distance claim.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "main_predictor": {
+                        "name": "smd_bin",
+                        "definition": "Binary indicator for election rule: 1 for single-member district, 0 for proportional representation.",
+                        "variable_construction": "Constructed from smd after cleaning labels; observations with smd not equal to smd or pr are excluded from the focal contrast.",
+                        "missing_data_handling": "Drop observations with missing smd or non-focal smd labels.",
+                        "deviation": "false",
+                        "qualification": "The focal claim is explicitly about SMD election rules and the comparison category available in the dataset is PR.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "controls": [
+                        {
+                          "name": "country fixed effects",
+                          "definition": "A full set of country-specific intercepts implemented by demeaning variables within country.",
+                          "variable_construction": "Use the country column to subtract each country's mean from pldist1 and smd_bin.",
+                          "missing_data_handling": "Drop observations with missing country.",
+                          "deviation": "true",
+                          "qualification": "Country fixed effects adjust for stable country-level characteristics in a repeated country-election dataset; this is a robustness deviation from the anchor that changes the model only.",
+                          "models": [
+                            "M1"
+                          ]
+                        }
+                      ]
+                    },
+                    "expected_outputs": [
+                      "Structured JSON printed to stdout and written to results_task2.json.",
+                      "Sample-flow table with starting rows, rows removed by each material rule including the 1945-2003 restriction, and final analytic rows.",
+                      "Country fixed-effects coefficient for smd_bin on pldist1 with clustered standard error, p-value, and 95% confidence interval.",
+                      "Conclusion classification according to the fixed conclusion rules."
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "Country fixed-effects SMD-minus-PR coefficient in raw pldist1 units for 1945-2003 Manifesto-method data.",
+                      "outcome_scale": "Raw Manifesto-method ideological distance units after within-country demeaning for estimation.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations, within countries that contribute election-rule variation.",
+                      "target_population": "Authorized Powell country-election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing pldist1 and country.",
+                      "time_scope": "1945-2003 inclusive.",
+                      "claim_mapping": "A negative coefficient means plurality vote winners are closer to the median voter under SMD than under PR within countries, providing a comparable Manifesto-method test of the focal claim under Task2 constraints."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "The candidate uses the required Manifesto-method outcome pldist1 in raw distance units."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "The candidate preserves the SMD-versus-PR election-rule contrast."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "The candidate applies the required 1945-2003 time range and retains observations with focal variables available."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "The candidate adds country fixed effects and country-clustered standard errors, changing only the model adjustment relative to the anchor and prior simple comparison paths."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "The candidate uses the same expected negative direction and fixed conclusion-classification thresholds."
+                      },
+                      "deviations": [
+                        {
+                          "dimension": "model",
+                          "anchor_choice": "No fixed effects or exact original model not_stated; focal comparison of pldist1 by election rule.",
+                          "candidate_choice": "OLS with country fixed effects implemented by within-country demeaning and standard errors clustered by country.",
+                          "justification": "The authorized dataset has repeated country-election observations and a verified country column. Country fixed effects are a defensible robustness analysis for stable country-level heterogeneity while preserving Task2's required time range, Manifesto Method outcome, focal contrast, and inference rule."
+                        }
+                      ]
+                    },
+                    "evidence_basis": {
+                      "outcome": "Task2 explicitly requires the Manifesto Method. The verified dataset contains pldist1, the plurality-winner distance variable, with no missing values and positive continuous distance units.",
+                      "main_predictor": "The focal claim names SMD election rules; the verified smd column has categories pr, smd, and missing, enabling a binary SMD-versus-PR contrast.",
+                      "controls": [
+                        {
+                          "name": "country fixed effects",
+                          "role": "Fixed effect",
+                          "evidence": "The verified dataset has a country column and repeated country-election observations. Fixed effects adjust for stable country-level differences without adding unsupported substantive covariates."
+                        }
+                      ],
+                      "restrictions": [
+                        {
+                          "rule": "Restrict to years 1945 through 2003 inclusive.",
+                          "evidence": "This is required by the Task2 instruction; the verified year column ranges from 1945 to 2003."
+                        },
+                        {
+                          "rule": "Use pldist1 as the Manifesto-method outcome.",
+                          "evidence": "This is required by the Task2 instruction and supported by the paper summary's description of the Manifesto Method."
+                        },
+                        {
+                          "rule": "Retain only smd values smd and pr.",
+                          "evidence": "The focal contrast is SMD versus PR and the verified smd variable contains only pr, smd, and missing."
+                        },
+                        {
+                          "rule": "Drop missing year, pldist1, smd, and country.",
+                          "evidence": "These variables are required to define the time scope, focal outcome, predictor, and country fixed-effects model."
+                        },
+                        {
+                          "rule": "No outlier removal.",
+                          "evidence": "The focal outcome is a paper-defined distance; no paper-supported outlier cutoff was identified."
+                        }
+                      ]
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "inclusion_rules": [
+                        "Authorized Stata dataset rows.",
+                        "Year 1945-2003 inclusive.",
+                        "Manifesto-method pldist1 available.",
+                        "smd label is smd or pr.",
+                        "Nonmissing country."
+                      ],
+                      "exclusion_rules": [
+                        "Missing year.",
+                        "Year outside 1945-2003.",
+                        "Missing pldist1.",
+                        "Missing smd.",
+                        "smd labels outside smd/pr, if any.",
+                        "Missing country."
+                      ],
+                      "code_reports_sample_flow": true
+                    },
+                    "focal_variable_structure": {
+                      "source_structure": "pldist1 is continuous; smd is nominal with pr, smd, and missing; year is numeric; country is nominal repeated cluster/fixed-effect identifier.",
+                      "analysis_structure": "pldist1 remains continuous; smd is represented as the binary focal contrast SMD versus PR; year is used only for the required 1945-2003 restriction; country enters as fixed effects through within-country demeaning.",
+                      "information_loss": "No loss for pldist1. The smd variable is collapsed to the focal binary contrast, excluding only missing election-rule observations.",
+                      "justification": "The task requires Manifesto-method data from 1945-2003, and the focal claim is specifically about SMD election rules and proximity to the median voter."
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "year",
+                        "pldist1",
+                        "smd",
+                        "country"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass",
+                      "preflight_note": "The read-back script loads the authorized Stata file, references only verified columns, applies the required 1945-2003 restriction, constructs smd_bin from smd labels, preserves raw pldist1 before country demeaning, applies the declared sample rules, estimates within-country OLS with country-clustered standard errors, reports sample flow, and applies the declared inference rule."
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task2/Task2_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task2/Task2_candidate01/analysis_task2.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task2/Task2_candidate01/analysis_task2.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path07/task2/Task2_candidate01/analysis_task2.py",
+                    "notes": "Run from the study root directory. The script locates data/powell_original.dta relative to its own path and writes results_task2.json next to the script."
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task2 requires the 1945-2003 data and Manifesto Method. The candidate satisfies those requirements by using the authorized Powell Stata file, applying the 1945-2003 inclusive year restriction, using pldist1 as the Manifesto-method plurality-winner distance outcome, and comparing SMD versus PR through smd_bin. The original paper summary confirms the paper's observational cross-national election design, Manifesto-method analyses over the postwar period through 2003, and the theoretical claim that SMD party competition should place the plurality winner near the median voter. Dataset inspection verified 331 country-election observations, year range 1945-2003 with no missing years, pldist1 nonmissing and continuous, smd labels pr/smd/missing, and repeated observations within countries. The candidate's country fixed-effects model is an explicit, methodologically justified robustness deviation for repeated country-election observations and still produces a comparable SMD-minus-PR coefficient on the required Manifesto outcome in the required time window. The Task2 code matches the plan: it reads the authorized dataset with categorical labels, applies the year restriction, documents all material exclusions, constructs smd_bin, demeans within country, estimates the no-intercept within OLS with country-clustered standard errors, and reports the focal coefficient, p-value, confidence interval, sample counts, and conclusion. No Task2 instruction-compliance defect is present, and no low-quality rule is triggered under M1-M6 or Task2 rules 2.1-2.8. Guardrails G1, G4, G8, and G14 apply because the use of a defensible adjusted model or reuse of a Task1-like implementation is not low-quality when all Task2 requirements are met.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "The analysis addresses the same focal claim about SMD plurality winners being closer to the median voter than PR plurality winners."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "The code uses only the authorized data/powell_original.dta Stata file."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "The Task2 country fixed-effects within-country OLS result is distinct from prior shared-memory Task2 paths using simple OLS, quantile regression, Gamma GLM, Mann-Whitney, log-outcome OLS, and permutation tests."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task2 is fully specified with code, and Task1 is also present in the paired path."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The quantity is a SMD-minus-PR coefficient on raw pldist1 for 1945-2003 Manifesto data; the country-FE adjustment is explicit and still maps to the requested focal comparison."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Verified columns year, pldist1, smd, and country support the required time range, Manifesto outcome, SMD/PR contrast, and fixed effects."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "The code reports starting rows, missing year removal, 1945-2003 restriction, missing pldist1, missing smd, non-smd/pr rows, missing country, constructed-variable missingness, and final analytic rows."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "The year restriction is explicitly required by Task2; other exclusions are limited to defining the focal outcome, contrast, and fixed-effects model. No unsupported outlier or transformation rule is used."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "Country fixed effects have a stated role: adjustment for stable country-level differences in repeated country-election data."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "The continuous pldist1 distance outcome is preserved in raw units; smd is recoded only into the focal SMD-versus-PR binary comparison."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The script implements the declared Task2 sample, pldist1 outcome, smd_bin predictor, country demeaning, clustered standard errors, inference output, and JSON result."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The method coherently provides a comparable Manifesto-method 1945-2003 SMD-versus-PR test while accounting for country-level dependence."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "A task-specific Python entry file and run command are present and traceably linked to the claimed Task2 analysis."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "task_pair_assessment": {
+          "decision": "high-quality",
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "reason": "Both tasks have a high-quality candidate selected for Execution."
+        }
+      }
+    ]
+  }
+}

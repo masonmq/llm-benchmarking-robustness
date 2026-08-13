@@ -1,0 +1,427 @@
+{
+  "iteration": 1,
+  "case": {
+    "case_id": "Hendricks_QuartJournEco_2018_wNKW",
+    "paper_title": "Human Capital and Development Accounting: New Evidence from Wage Gains at Migration",
+    "paper_file": "data/Hendricks_QuartJournEco_2018_wNKW/test/original_paper.pdf",
+    "focal_claim": "... immigrants who have never been to high school gain ... more on migration to the United States than immigrants with a college degree (p. 682.)",
+    "hypothesis": "Immigrants with fewer than 9 years of education, operationalized as never having been to high school, have larger wage gains on migration to the United States than immigrants with at least 16 years of education, operationalized as having a college degree.",
+    "study_type": "Observational"
+  },
+  "tasks_info": [
+    {
+      "task_id": "Task1",
+      "task_role": "conclusion_oriented_reanalysis",
+      "task_instruction": "In Task 1, the analyst was asked to conduct the analysis without any restrictions.",
+      "task_goal": "Test whether the focal claim is supported."
+    },
+    {
+      "task_id": "Task2",
+      "task_role": "comparable_result_oriented_reanalysis",
+      "task_instruction": "You should use the pooled sample of immigrants from poor countries in the NIS (New Immigrant Survey) and the Migration Projects, including Mexico. You should not control for sector: agriculture/nonagriculture, and region i.e. whether an immigrant grew up in a rural or an urban area.",
+      "task_goal": "Produce one statistical result comparable to the original paper's focal result."
+    }
+  ],
+  "datasets": {
+    "authorized_only": true,
+    "source_type": "survey/archive data on immigrants' pre-migration and post-migration wages",
+    "wave_or_subset": "Pooled immigrant wage-gain table available as wage_gain_table.xlsx; Task2 uses the pooled poor-country immigrant sample represented in this file, including Mexico.",
+    "sample_size": "2854 rows before model-specific complete-case filtering",
+    "unit_of_analysis": "individual immigrant",
+    "notes": "The authorized data folder contains a constructed wage-gain table and prior R Markdown files. The Excel file has no explicit variables for agriculture/nonagriculture sector or rural/urban region, so Task2 will not include these controls. Wage variables are adjusted wage measures; the planned outcome is the log difference between adjusted U.S. wage and adjusted home-country wage.",
+    "files": [
+      {
+        "name": "wage_gain_table",
+        "file_path": "data/wage_gain_table.xlsx",
+        "file_format": "xlsx",
+        "columns": [
+          "edyrs",
+          "yearLastHomeJob",
+          "yearLastUsJob",
+          "sex",
+          "yrborn",
+          "occGroupLastHomeJob",
+          "lastHomeWage",
+          "lastHomeWageAdjusted",
+          "occGroupLastUsJob",
+          "lastUsWage",
+          "lastUsWageAdjusted",
+          "country"
+        ],
+        "summary_statistics": {
+          "info": "2854 rows and 12 columns. Non-null counts are 2854 for all columns. Numeric columns include edyrs, yearLastHomeJob, yearLastUsJob, sex, yrborn, lastHomeWage, lastHomeWageAdjusted, lastUsWage, and lastUsWageAdjusted. String columns include occGroupLastHomeJob, occGroupLastUsJob, and country.",
+          "describe": "edyrs mean 7.64, SD 3.96, min 0, max 20. lastHomeWageAdjusted mean 3430.25, median 4.26, max 9504021, indicating extreme outliers in adjusted home wages. lastUsWageAdjusted mean 14.02, median 12.03, max 1247.90."
+        },
+        "access_details": "Local authorized file under data/Hendricks_QuartJournEco_2018_wNKW/test/data/",
+        "notes": "The dataset includes origin-country codes such as COL, DOM, ECU, GTM, HTI, MEX, NIC, PER, and SLV. The file does not include explicit source-survey, sector, agriculture, or rural/urban variables."
+      },
+      {
+        "name": "Analysis_543X6",
+        "file_path": "data/Hendricks_QuartJournEco_2018_wNKW/test/data/Analysis_543X6.Rmd",
+        "file_format": "other",
+        "columns": [
+          "not_stated"
+        ],
+        "summary_statistics": {
+          "info": null,
+          "describe": null
+        },
+        "access_details": "Local authorized file under data/Hendricks_QuartJournEco_2018_wNKW/test/data/",
+        "notes": "Prior R Markdown analysis using wage_gain_table.xlsx; inspected only for context and original-language code style."
+      },
+      {
+        "name": "Task2_543X6",
+        "file_path": "data/Hendricks_QuartJournEco_2018_wNKW/test/data/Task2_543X6.Rmd",
+        "file_format": "other",
+        "columns": [
+          "not_stated"
+        ],
+        "summary_statistics": {
+          "info": null,
+          "describe": null
+        },
+        "access_details": "Local authorized file under data/Hendricks_QuartJournEco_2018_wNKW/test/data/",
+        "notes": "Prior R Markdown analysis using wage_gain_table.xlsx; inspected only for context and original-language code style."
+      },
+      {
+        "name": "plan_path01_analysis",
+        "file_path": "data/plan_path01_analysis.R",
+        "file_format": "other",
+        "columns": [
+          "not_stated"
+        ],
+        "summary_statistics": {
+          "info": null,
+          "describe": null
+        },
+        "access_details": "Created in the authorized data folder for execution of this planned path.",
+        "notes": "Runnable R script for Task1 and Task2. It reads wage_gain_table.xlsx, constructs log wage gain and education groups, fits the planned regressions, and writes CSV outputs."
+      }
+    ]
+  },
+  "plan": {
+    "planned_id": "Hendricks_QuartJournEco_2018_wNKW_path01",
+    "task_scope": [
+      "Task1",
+      "Task2"
+    ],
+    "path_summary": "Estimate whether log wage gains at migration are larger for immigrants who never attended high school than for immigrants with a college degree, using education-category regressions on the authorized pooled wage-gain table.",
+    "path_signature": {
+      "model_family": "linear_regression",
+      "outcome": "log_wage_gain = log(lastUsWageAdjusted) - log(lastHomeWageAdjusted)",
+      "main_predictor": "education_group, with never_high_school compared against college_degree",
+      "controls": [
+        "country fixed effects for both tasks",
+        "sex, age_last_us_job, yearLastHomeJob, and yearLastUsJob for Task1 only"
+      ],
+      "sample_restriction": "Use rows in wage_gain_table.xlsx with finite positive adjusted home and U.S. wages and nonmissing education, country, sex, and timing variables required by the model.",
+      "missing_data_rule": "Complete-case analysis for variables used in each model after constructing log wage gain and education group.",
+      "variable_construction": "Define never_high_school as edyrs < 9 and college_degree as edyrs >= 16; define intermediate education groups for regression adjustment; define log wage gain as the log adjusted U.S. wage minus the log adjusted home-country wage.",
+      "inference_rule": "The focal claim is supported if the coefficient for education_groupnever_high_school relative to college_degree is positive; strong statistical support if the coefficient is positive with p < 0.05 using HC1 robust standard errors."
+    },
+    "tasks": [
+      {
+        "task_id": "Task1",
+        "candidate_id": "Task1_candidate01",
+        "status": "high-quality",
+        "task_role": "conclusion_oriented_reanalysis",
+        "analysis_path": {
+          "path_name": "log_wage_gain_education_categories_with_controls",
+          "path_description": "Construct log wage gains from adjusted U.S. and home-country wages, classify education into schooling categories, and regress log wage gain on education category with college degree as the reference group, controlling for country fixed effects and available demographic/job-timing covariates.",
+          "software": "R",
+          "original_software": "R",
+          "model_family": "linear_regression",
+          "preprocessing_steps": [
+            "Read data/Hendricks_QuartJournEco_2018_wNKW/test/data/wage_gain_table.xlsx with readxl.",
+            "Construct log_home_wage = log(lastHomeWageAdjusted) and log_us_wage = log(lastUsWageAdjusted).",
+            "Construct log_wage_gain = log_us_wage - log_home_wage.",
+            "Construct wage_gain_ratio = lastUsWageAdjusted / lastHomeWageAdjusted for descriptive reporting.",
+            "Create education_group from edyrs: never_high_school for edyrs < 9, some_high_school for edyrs 9-11, high_school_degree for edyrs = 12, some_college for edyrs 13-15, and college_degree for edyrs >= 16.",
+            "Set college_degree as the reference level for education_group.",
+            "Construct age_last_us_job = yearLastUsJob - yrborn.",
+            "Convert country and sex to factors.",
+            "Drop rows with non-finite log_wage_gain or wage_gain_ratio or missing model variables.",
+            "Fit the planned OLS model with HC1 heteroskedasticity-robust standard errors."
+          ],
+          "key_choices": {
+            "outcome_measure": "Log wage gain at migration, equal to log(lastUsWageAdjusted) - log(lastHomeWageAdjusted).",
+            "main_predictor_measure": "Education category from years of schooling, focusing on never_high_school (edyrs < 9) compared to college_degree (edyrs >= 16).",
+            "control_variables": [
+              "country",
+              "sex",
+              "age_last_us_job",
+              "yearLastHomeJob",
+              "yearLastUsJob"
+            ],
+            "sample_restriction": "Use complete cases with finite positive adjusted wages and nonmissing education, country, sex, birth year, and last-job year variables.",
+            "outlier_rule": null,
+            "missing_data_rule": "Complete-case deletion for variables used in the model.",
+            "data_processing": "Log-transform adjusted wages, take their difference, create education-category factor, and create age at last U.S. job.",
+            "model_choice": "OLS regression with HC1 heteroskedasticity-robust standard errors.",
+            "inference_rule": "Support for the claim if the never_high_school coefficient relative to college_degree is positive; strong support if positive and p < 0.05."
+          },
+          "models": [
+            {
+              "model_id": "M1",
+              "type": "linear regression",
+              "formula": "log_wage_gain ~ education_group + country + sex + age_last_us_job + yearLastHomeJob + yearLastUsJob",
+              "planned_estimation": "Coefficient for education_groupnever_high_school relative to college_degree, with HC1 robust standard error, t statistic, p-value, and 95% confidence interval if computed by the executor.",
+              "inference_criteria": "The focal claim is supported if education_groupnever_high_school is positive; strong evidence if p < 0.05.",
+              "deviation": "false",
+              "qualification": "A log wage-gain regression directly tests whether the proportional wage gain at migration differs by education level. Country fixed effects compare education groups net of origin-country differences; demographic and timing controls are reasonable unrestricted covariates available in the file."
+            }
+          ],
+          "variables": {
+            "outcome": {
+              "name": "log_wage_gain",
+              "definition": "Natural-log proportional wage gain from the last home-country job to the last U.S. job, using adjusted wage variables.",
+              "variable_construction": "log_wage_gain = log(lastUsWageAdjusted) - log(lastHomeWageAdjusted).",
+              "missing_data_handling": "Drop rows where lastUsWageAdjusted or lastHomeWageAdjusted is missing, nonpositive, or yields a non-finite log value.",
+              "deviation": "false",
+              "qualification": "The focal claim concerns wage gains on migration; the log wage difference is the standard proportional wage-gain measure and is less sensitive to wage scale than an absolute difference.",
+              "models": [
+                "M1"
+              ]
+            },
+            "main_predictor": {
+              "name": "education_group",
+              "definition": "Categorical schooling group based on years of education, with college_degree as the reference group and never_high_school as the focal low-education group.",
+              "variable_construction": "never_high_school = edyrs < 9; some_high_school = edyrs 9-11; high_school_degree = edyrs == 12; some_college = edyrs 13-15; college_degree = edyrs >= 16.",
+              "missing_data_handling": "Drop rows with missing or unclassifiable edyrs.",
+              "deviation": "false",
+              "qualification": "The focal claim explicitly compares immigrants who have never been to high school with immigrants who have a college degree.",
+              "models": [
+                "M1"
+              ]
+            },
+            "controls": [
+              {
+                "name": "country",
+                "definition": "Origin-country fixed effects.",
+                "variable_construction": "Convert country code to a factor.",
+                "missing_data_handling": "Drop rows with missing country.",
+                "deviation": "false",
+                "qualification": "Origin-country fixed effects adjust for different home-country wage levels and migration contexts.",
+                "models": [
+                  "M1"
+                ]
+              },
+              {
+                "name": "sex",
+                "definition": "Respondent sex as coded in the data.",
+                "variable_construction": "Convert sex to a factor.",
+                "missing_data_handling": "Drop rows with missing sex.",
+                "deviation": "false",
+                "qualification": "Sex is an available demographic control related to wages and labor-market outcomes.",
+                "models": [
+                  "M1"
+                ]
+              },
+              {
+                "name": "age_last_us_job",
+                "definition": "Approximate age at last U.S. job.",
+                "variable_construction": "age_last_us_job = yearLastUsJob - yrborn.",
+                "missing_data_handling": "Drop rows with missing or non-finite yearLastUsJob or yrborn.",
+                "deviation": "false",
+                "qualification": "Age controls for life-cycle wage differences that may correlate with education and migration timing.",
+                "models": [
+                  "M1"
+                ]
+              },
+              {
+                "name": "yearLastHomeJob",
+                "definition": "Year of last home-country job.",
+                "variable_construction": null,
+                "missing_data_handling": "Drop rows with missing yearLastHomeJob.",
+                "deviation": "false",
+                "qualification": "Controls for timing of the pre-migration wage observation.",
+                "models": [
+                  "M1"
+                ]
+              },
+              {
+                "name": "yearLastUsJob",
+                "definition": "Year of last U.S. job.",
+                "variable_construction": null,
+                "missing_data_handling": "Drop rows with missing yearLastUsJob.",
+                "deviation": "false",
+                "qualification": "Controls for timing of the post-migration wage observation.",
+                "models": [
+                  "M1"
+                ]
+              }
+            ]
+          },
+          "expected_outputs": [
+            "OLS coefficient table with HC1 robust standard errors.",
+            "Focal coefficient for never_high_school versus college_degree.",
+            "Focal-group descriptive table for mean and median wage gains."
+          ]
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/Hendricks_QuartJournEco_2018_wNKW/test/data/plan_path01_analysis.R",
+            "data/Hendricks_QuartJournEco_2018_wNKW/test/data/wage_gain_table.xlsx"
+          ],
+          "entry_file": "data/Hendricks_QuartJournEco_2018_wNKW/test/data/plan_path01_analysis.R",
+          "run_command": "Rscript data/Hendricks_QuartJournEco_2018_wNKW/test/data/plan_path01_analysis.R",
+          "notes": "The script was created during planning and should be run by the execution agent, not during planning. It writes results/task1_path01_results.csv, results/task2_path01_results.csv, and results/focal_group_descriptives_path01.csv."
+        },
+        "notes_for_agent": "Follow this planned path. Do not change the focal claim, dataset, or analysis goal. Use the coefficient for education_groupnever_high_school as the focal Task1 result."
+      },
+      {
+        "task_id": "Task2",
+        "candidate_id": "Task2_candidate01",
+        "status": "high-quality",
+        "task_role": "comparable_result_oriented_reanalysis",
+        "analysis_path": {
+          "path_name": "pooled_poor_country_log_wage_gain_no_sector_region",
+          "path_description": "Use the pooled immigrant sample represented in wage_gain_table.xlsx, including Mexico, construct log wage gains, and estimate the comparable education-gradient result without sector agriculture/nonagriculture or rural/urban region controls.",
+          "software": "R",
+          "original_software": "R",
+          "model_family": "linear_regression",
+          "preprocessing_steps": [
+            "Read data/Hendricks_QuartJournEco_2018_wNKW/test/data/wage_gain_table.xlsx with readxl.",
+            "Use all available rows in the pooled wage-gain table; do not exclude Mexico.",
+            "Construct log_wage_gain = log(lastUsWageAdjusted) - log(lastHomeWageAdjusted).",
+            "Create education_group from edyrs: never_high_school for edyrs < 9, some_high_school for edyrs 9-11, high_school_degree for edyrs = 12, some_college for edyrs 13-15, and college_degree for edyrs >= 16.",
+            "Set college_degree as the reference level.",
+            "Convert country to a factor.",
+            "Drop rows with non-finite log_wage_gain or missing education_group or country.",
+            "Fit OLS regression of log_wage_gain on education_group and country fixed effects only.",
+            "Do not add controls for sector agriculture/nonagriculture or rural/urban region."
+          ],
+          "key_choices": {
+            "outcome_measure": "Log wage gain at migration, equal to log(lastUsWageAdjusted) - log(lastHomeWageAdjusted).",
+            "main_predictor_measure": "Education category from edyrs, focusing on never_high_school (edyrs < 9) relative to college_degree (edyrs >= 16).",
+            "control_variables": [
+              "country"
+            ],
+            "sample_restriction": "Use the pooled available immigrant sample in wage_gain_table.xlsx, including Mexico, with complete data for adjusted wages, education, and country.",
+            "outlier_rule": null,
+            "missing_data_rule": "Complete-case deletion for variables used in the Task2 model.",
+            "data_processing": "Log-transform adjusted wages, difference them to measure log wage gain, and classify education into ordered groups.",
+            "model_choice": "OLS regression with country fixed effects and HC1 heteroskedasticity-robust standard errors; no sector or rural/urban region controls.",
+            "inference_rule": "The comparable focal result is the coefficient for never_high_school relative to college_degree; support if positive and strong support if p < 0.05."
+          },
+          "models": [
+            {
+              "model_id": "M1",
+              "type": "linear regression",
+              "formula": "log_wage_gain ~ education_group + country",
+              "planned_estimation": "Coefficient for education_groupnever_high_school relative to college_degree, with HC1 robust standard error, t statistic, p-value, and 95% confidence interval if computed by the executor.",
+              "inference_criteria": "The focal claim is supported if education_groupnever_high_school is positive; strong evidence if p < 0.05.",
+              "deviation": "false",
+              "qualification": "This model yields a single directly comparable estimate of whether immigrants who never attended high school have higher log wage gains than college graduates in the pooled sample, while respecting the instruction not to control for sector or rural/urban region."
+            }
+          ],
+          "variables": {
+            "outcome": {
+              "name": "log_wage_gain",
+              "definition": "Natural-log proportional wage gain from the last home-country job to the last U.S. job, using adjusted wage variables.",
+              "variable_construction": "log_wage_gain = log(lastUsWageAdjusted) - log(lastHomeWageAdjusted).",
+              "missing_data_handling": "Drop rows where lastUsWageAdjusted or lastHomeWageAdjusted is missing, nonpositive, or yields a non-finite log value.",
+              "deviation": "false",
+              "qualification": "The claim concerns wage gains on migration; log wage gain is the direct proportional measure of the wage increase.",
+              "models": [
+                "M1"
+              ]
+            },
+            "main_predictor": {
+              "name": "education_group",
+              "definition": "Categorical schooling group based on years of education, with college_degree as the reference group and never_high_school as the focal low-education group.",
+              "variable_construction": "never_high_school = edyrs < 9; some_high_school = edyrs 9-11; high_school_degree = edyrs == 12; some_college = edyrs 13-15; college_degree = edyrs >= 16.",
+              "missing_data_handling": "Drop rows with missing or unclassifiable edyrs.",
+              "deviation": "false",
+              "qualification": "The focal claim explicitly compares immigrants who have never been to high school with immigrants who have a college degree.",
+              "models": [
+                "M1"
+              ]
+            },
+            "controls": [
+              {
+                "name": "country",
+                "definition": "Origin-country fixed effects.",
+                "variable_construction": "Convert country code to a factor.",
+                "missing_data_handling": "Drop rows with missing country.",
+                "deviation": "false",
+                "qualification": "Country fixed effects retain comparability across origin countries and are not prohibited by the Task2 instruction; sector and rural/urban controls are excluded.",
+                "models": [
+                  "M1"
+                ]
+              }
+            ]
+          },
+          "expected_outputs": [
+            "OLS coefficient table with HC1 robust standard errors.",
+            "Single comparable focal estimate for never_high_school versus college_degree.",
+            "Descriptive wage-gain table for never_high_school and college_degree groups."
+          ]
+        },
+        "analysis_code": {
+          "available": true,
+          "code_files": [
+            "data/Hendricks_QuartJournEco_2018_wNKW/test/data/plan_path01_analysis.R",
+            "data/Hendricks_QuartJournEco_2018_wNKW/test/data/wage_gain_table.xlsx"
+          ],
+          "entry_file": "data/Hendricks_QuartJournEco_2018_wNKW/test/data/plan_path01_analysis.R",
+          "run_command": "Rscript data/Hendricks_QuartJournEco_2018_wNKW/test/data/plan_path01_analysis.R",
+          "notes": "The same script contains both Task1 and Task2. Task2 output is results/task2_path01_results.csv."
+        },
+        "notes_for_agent": "Use the pooled authorized sample represented by wage_gain_table.xlsx, include Mexico, and do not add agriculture/nonagriculture sector or rural/urban region controls. Use the coefficient for education_groupnever_high_school as the focal Task2 result."
+      }
+    ],
+    "tools_software": "R with readxl, dplyr, broom, sandwich, lmtest, and readr.",
+    "method_justification": {
+      "claim_alignment": "The path directly operationalizes the claim as a comparison of wage gains between immigrants who never attended high school and immigrants with a college degree.",
+      "dataset_alignment": "The path uses only the authorized original data file wage_gain_table.xlsx under the case data folder and the R script created in the same authorized folder.",
+      "method_reason": "A linear regression on log wage gain is appropriate because the claim is about proportional gains in wages after migration. Education categories match the wording of the claim, and country fixed effects account for origin-country differences. Robust standard errors reduce dependence on homoskedasticity.",
+      "novelty_reason": "Shared memory contains no previous candidate paths for this case, so this first path is not a duplicate."
+    },
+    "self_check": {
+      "same_focal_claim": "pass",
+      "same_dataset": "pass",
+      "task1_specified": "pass",
+      "task2_specified": "pass",
+      "method_justification_present": "pass",
+      "not_duplicate_of_shared_memory": "pass",
+      "self_check_note": "The plan keeps the focal claim and authorized dataset fixed, specifies one active candidate for each task with null status, creates runnable R code without executing it, and respects the Task2 prohibition on sector and rural/urban controls."
+    }
+  },
+  "docker_specs": {
+    "base_image": "rocker/r-ver:4.3.2",
+    "packages": {
+      "python": [],
+      "r": [
+        "readxl",
+        "dplyr",
+        "broom",
+        "sandwich",
+        "lmtest",
+        "readr"
+      ],
+      "other": []
+    },
+    "hardware": {
+      "gpu_support": false,
+      "min_gpu_memory_gb": null,
+      "min_ram_gb": "2"
+    },
+    "volumes": [
+      "./data/Hendricks_QuartJournEco_2018_wNKW/test:/app"
+    ]
+  },
+  "execution_directives": {
+    "instructions": "Execute Task1 and Task2 using the original authorized Excel dataset and the planned R script. Report the focal coefficient for never_high_school relative to college_degree, its robust standard error, p-value, and whether it supports the focal claim.",
+    "target_task_ids": [
+      "Task1",
+      "Task2"
+    ],
+    "debugging_rule": {
+      "max_repair_attempts": "3",
+      "repair_scope": "Fix dependency installation, file path, or output extraction issues only; do not redesign the analysis, change the focal claim, substitute data, or add Task2 sector or rural/urban controls."
+    },
+    "comparison_metrics": "Coefficient for education_groupnever_high_school, robust standard error, t statistic, p-value, 95% confidence interval if available, focal-group mean log wage gains, and conclusion text."
+  }
+}

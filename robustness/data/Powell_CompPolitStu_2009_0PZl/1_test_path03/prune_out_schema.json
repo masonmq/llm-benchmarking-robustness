@@ -1,0 +1,609 @@
+{
+  "pruning_output": {
+    "case_id": "Powell_CompPolitStu_2009_0PZl",
+    "paper_id": "Powell_CompPolitStu_2009_0PZl",
+    "task_pair_records": [
+      {
+        "path_id": "Powell_CompPolitStu_2009_0PZl_path03",
+        "tasks": {
+          "task1": {
+            "candidates": [
+              {
+                "candidate_id": "Task1_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use all authorized observations with smd/pr election-rule coding and estimate whether SMD elections have a lower expected Manifesto-method plurality-winner distance from the median voter than PR elections using a Gamma GLM with log link.",
+                  "path_signature": {
+                    "model_family": "gamma_glm_log_link",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Authorized rows with smd coded smd or pr and positive nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for pldist1 and smd_clean; positive pldist1 is required by the Gamma family.",
+                    "variable_construction": "Clean categorical smd labels, create binary SMD indicator, no aggregation, no outcome winsorization, no country or time fixed effects.",
+                    "inference_rule": "Expected direction is negative for smd_bin. Support requires expected direction with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the interval narrowly crosses the null; clearly weak aligned evidence is inconclusive; opposite requires affirmative evidence of a material positive coefficient.",
+                    "estimand_quantity": "SMD-minus-PR coefficient on log expected pldist1 from a Gamma GLM, with exp(coefficient) interpreted as the expected distance ratio.",
+                    "outcome_scale": "Positive raw Manifesto-method ideological distance modeled with log link; the focal coefficient is on the log expected distance scale and the ratio is multiplicative.",
+                    "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                    "target_population": "Authorized Powell election observations with smd/pr election-rule coding and nonmissing positive pldist1.",
+                    "time_scope": "1945-2003, the observed range of the authorized dataset."
+                  },
+                  "analysis_anchor": {
+                    "task_id": "Task1",
+                    "estimand": {
+                      "outcome": "pldist1, the Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "outcome_scale": "Raw positive ideological distance units; smaller values indicate closer plurality winner to the median voter",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell election observations with election rule coded smd or pr",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset powell_original.dta.",
+                        "Use observations with smd coded as smd or pr."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations missing the focal outcome pldist1 or election-rule variable smd."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear_regression_or_mean_comparison",
+                      "variable_construction": "Use Manifesto-method plurality-winner distance pldist1 in raw units; clean smd labels and create a binary SMD indicator.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "SMD observations should show smaller plurality-winner distance from the median voter than PR observations; for a SMD-minus-PR coefficient this is negative.",
+                      "statistical_threshold": "For a frequentist result, expected direction with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    },
+                    "evidence": {
+                      "paper": "The focal claim states that under SMD election rules party competition should lead the plurality vote winner to be close to the median voter. The paper summary describes Manifesto, Cit-Expert, and Cit-Perception methods, discusses SMD and PR election-rule comparisons, and identifies the plurality party/winner distance from the median voter as a key mechanism for ideological congruence.",
+                      "dataset_mapping": "Verified columns include pldist1, pty1d, smd, and year. pldist1 is positive and nonmissing; smd has pr, smd, and missing values. The year range is 1945-2003."
+                    },
+                    "uncertainties": [
+                      "The PDF extraction summarized the paper and did not provide exact table code or standard-error method for the focal statement."
+                    ]
+                  },
+                  "analysis_path": {
+                    "path_name": "gamma_glm_plurality_distance_smd_vs_pr",
+                    "path_description": "Use all authorized observations with smd/pr election-rule coding and estimate whether SMD elections have a lower expected Manifesto-method plurality-winner distance from the median voter than PR elections using a Gamma GLM with log link.",
+                    "software": "Python",
+                    "original_software": "not_stated",
+                    "model_family": "gamma_glm_log_link",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with pandas.",
+                      "Verify that pldist1 and smd exist.",
+                      "Report starting row count.",
+                      "Clean smd to lower-case labels and keep only smd or pr.",
+                      "Drop rows missing pldist1 or cleaned smd.",
+                      "Keep positive pldist1 values because the Gamma GLM requires positive outcomes.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Estimate GLM with Gamma family and log link: pldist1 ~ smd_bin, using HC1 robust covariance.",
+                      "Report coefficient, robust standard error, p-value, 95% confidence interval, exponentiated mean distance ratio, group summaries, sample flow, and conclusion class."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "pldist1, Manifesto-method distance of the plurality vote winner from the median voter.",
+                      "main_predictor_measure": "smd_bin, binary contrast equal to 1 for SMD and 0 for PR.",
+                      "control_variables": [],
+                      "sample_restriction": "Authorized rows with smd coded smd or pr and positive nonmissing pldist1.",
+                      "outlier_rule": "No outlier removal; all positive pldist1 values are retained.",
+                      "missing_data_rule": "Listwise deletion for pldist1 and smd_clean; positive pldist1 is required by the Gamma family.",
+                      "data_processing": "Clean categorical smd labels, create binary SMD indicator, no aggregation, no outcome winsorization, no country or time fixed effects.",
+                      "model_choice": "Gamma GLM with log link and HC1 robust covariance.",
+                      "inference_rule": "Expected direction is negative for smd_bin. Support requires expected direction with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the interval narrowly crosses the null; clearly weak aligned evidence is inconclusive; opposite requires affirmative evidence of a material positive coefficient."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Gamma generalized linear model with log link",
+                        "formula": "pldist1 ~ smd_bin",
+                        "planned_estimation": "Coefficient on smd_bin on the log expected distance scale and exp(coefficient) as SMD-vs-PR expected distance ratio.",
+                        "inference_criteria": "A negative smd_bin coefficient or ratio below 1 is claim-aligned. Support requires p <= 0.05, or 0.05 < p <= 0.055 only as borderline support when the estimate is meaningful and the confidence interval narrowly crosses the null. A positive coefficient is opposite only if p < 0.05 and the confidence interval excludes zero above the null.",
+                        "deviation": "true",
+                        "qualification": "The anchor uses a linear comparison of distance, but the inspected pldist1 distribution is strictly positive and right-skewed. A Gamma GLM with log link is a defensible robustness model for positive continuous distances while preserving the same outcome source, focal contrast, sample, and conclusion rule."
+                      }
+                    ],
+                    "variables": {
+                      "outcome": {
+                        "name": "pldist1",
+                        "definition": "Manifesto-method ideological distance between the plurality vote winner and the median voter; smaller values mean closer to the median voter.",
+                        "variable_construction": "Used in its original positive units as the GLM outcome; no scaling, aggregation, winsorization, or categorization.",
+                        "missing_data_handling": "Drop rows with missing pldist1; require pldist1 > 0 for the Gamma model.",
+                        "deviation": "false",
+                        "qualification": "The focal claim is directly about the plurality vote winner being close to the median voter, which pldist1 operationalizes.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "main_predictor": {
+                        "name": "smd_bin",
+                        "definition": "Binary election-rule contrast: 1 for single-member district systems, 0 for proportional representation systems.",
+                        "variable_construction": "Constructed from smd after lower-case cleaning and retaining smd/pr labels.",
+                        "missing_data_handling": "Drop rows with missing or non-smd/pr smd values.",
+                        "deviation": "false",
+                        "qualification": "The focal claim is explicitly about SMD election rules; PR observations provide the comparison category used in the paper's electoral-system comparisons.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "controls": []
+                    },
+                    "expected_outputs": [
+                      "Sample-flow table from raw rows through final analytic rows.",
+                      "Raw pldist1 group summaries for smd and pr observations.",
+                      "Gamma GLM focal coefficient, robust standard error, p-value, 95% confidence interval, exponentiated distance ratio, and conclusion class."
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "SMD-minus-PR coefficient on log expected pldist1 from a Gamma GLM, with exp(coefficient) interpreted as the expected distance ratio.",
+                      "outcome_scale": "Positive raw Manifesto-method ideological distance modeled with log link; the focal coefficient is on the log expected distance scale and the ratio is multiplicative.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                      "target_population": "Authorized Powell election observations with smd/pr election-rule coding and nonmissing positive pldist1.",
+                      "time_scope": "1945-2003, the observed range of the authorized dataset.",
+                      "claim_mapping": "If SMD party competition leads the plurality winner to be close to the median voter, SMD observations should have lower expected pldist1 than PR observations; this corresponds to a negative smd_bin coefficient or distance ratio below 1."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "Uses pldist1, the Manifesto-method plurality-winner distance from the median voter."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "Preserves the SMD-versus-PR election-rule contrast."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "Uses authorized observations with focal variables and smd/pr coding; positive pldist1 is a model requirement and the inspected minimum is positive."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "Uses Gamma GLM with log link instead of previously used OLS or quantile regression paths."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "Uses the same expected negative direction for SMD-minus-PR distance and the fixed frequentist support/opposite/inconclusive thresholds."
+                      },
+                      "deviations": [
+                        {
+                          "dimension": "model",
+                          "anchor_choice": "Linear regression or mean comparison on raw distance units.",
+                          "candidate_choice": "Gamma GLM with log link for positive pldist1 and HC1 robust covariance.",
+                          "justification": "The focal outcome is a positive continuous distance with right-skewed inspected summaries. The Gamma log-link model changes only the model family while preserving the focal outcome, contrast, sample, and inference direction, and it avoids duplicating the OLS and quantile paths already in Shared Memory."
+                        }
+                      ]
+                    },
+                    "evidence_basis": {
+                      "outcome": "Paper summary describes the Manifesto method and plurality party/winner distance from the median voter as central to the SMD convergence mechanism. Dataset verification shows pldist1 exists, is positive, nonmissing, and matches pty1d summary.",
+                      "main_predictor": "The focal claim explicitly concerns SMD election rules. Dataset verification shows smd has smd and pr categories plus two missing values.",
+                      "controls": [],
+                      "restrictions": [
+                        {
+                          "rule": "Keep only smd/pr election-rule observations.",
+                          "evidence": "The focal contrast is SMD versus PR; the dataset variable smd contains smd, pr, and missing values."
+                        },
+                        {
+                          "rule": "Listwise deletion for pldist1 and smd.",
+                          "evidence": "Required to estimate the focal model; missing focal variables cannot contribute to the contrast."
+                        },
+                        {
+                          "rule": "Require pldist1 > 0.",
+                          "evidence": "Gamma GLM requires positive outcomes; inspected pldist1 minimum is greater than zero, so this preserves the observed focal-variable structure."
+                        }
+                      ]
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "inclusion_rules": [
+                        "Start with all rows in data/powell_original.dta.",
+                        "Keep rows with smd_clean in smd or pr."
+                      ],
+                      "exclusion_rules": [
+                        "Remove rows missing or outside smd/pr election-rule coding.",
+                        "Remove rows missing pldist1 or smd_clean.",
+                        "Remove nonpositive pldist1 values required by Gamma GLM."
+                      ],
+                      "code_reports_sample_flow": "true"
+                    },
+                    "focal_variable_structure": {
+                      "source_structure": "pldist1 is continuous positive; smd is nominal with smd/pr categories and missing values.",
+                      "analysis_structure": "pldist1 enters as a positive continuous Gamma outcome; smd is coded as a binary SMD-versus-PR contrast.",
+                      "information_loss": "No loss for pldist1; smd missing values are excluded and the smd/pr nominal distinction is represented as the focal binary contrast.",
+                      "justification": "The focal claim concerns distance closeness and an SMD election-rule contrast, so the continuous distance is preserved and the election-rule variable is coded to match the claim."
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "pldist1",
+                        "smd"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass",
+                      "preflight_note": "Read-back confirms the Task1 script loads the authorized DTA, verifies pldist1 and smd, constructs smd_clean and smd_bin, applies the declared sample rules, fits Gamma GLM pldist1 ~ smd_bin with HC1 robust covariance, reports sample flow, and classifies the focal coefficient using the declared inference rule."
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task1/Task1_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task1/Task1_candidate01/analysis_task1.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task1/Task1_candidate01/analysis_task1.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task1/Task1_candidate01/analysis_task1.py",
+                    "notes": "Run from the study root directory containing data/powell_original.dta. The script writes task1_results.json in the candidate artifact directory."
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task1 is high-quality. The paper is observational and the focal claim concerns whether SMD election rules make plurality winners closer to the median voter; the authorized dataset is an election-observation archive with repeated observations by country, pldist1 is a positive nonmissing Manifesto-method plurality-winner distance variable, smd contains pr/smd plus two missing values, and year spans 1945-2003. The candidate uses the authorized DTA, pldist1, the SMD-versus-PR contrast, the relevant full sample after excluding only non-smd/pr and focal missing/nonpositive values, and no invented controls. The Gamma log-link model is an explicit model-family deviation from the anchor's linear regression or mean-comparison reference, but it is justified by the positive right-skewed outcome and still directly tests whether expected distance is lower under SMD via a negative log coefficient or ratio below 1; guardrails G1 and G14 apply, and no M1-M6 or Task1 low-quality rule is triggered. The code implements the declared model and sample flow, verifies required columns, reports focal coefficient, HC1 uncertainty, confidence interval, exponentiated ratio, group summaries, final n, and applies the fixed support/opposite/inconclusive rule. Repeated country observations are present, but the anchor does not require clustered inference and there is no clear evidence under Rule 1.6 that HC1 robust covariance makes the focal inference unreliable for this candidate. Prior shared-memory paths used OLS with decade fixed effects and median quantile regression, so this Gamma GLM is not a semantic duplicate.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "Tests the same claim that SMD election rules should be associated with closer plurality vote winners to the median voter."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "Code loads only data/powell_original.dta, the authorized original dataset."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared Memory contains OLS and median quantile-regression paths; this candidate uses a Gamma GLM with log link and is semantically distinct."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task1 candidate is fully specified and paired with a Task2 candidate in the planned path."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The outcome is pldist1, the contrast is SMD versus PR, the population is authorized election observations with smd/pr coding, and the time scope is the dataset range 1945-2003. The log-link coefficient is a justified multiplicative expected-distance contrast that still answers whether SMD observations have smaller plurality-winner distance."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified pldist1, smd, and related pty1d; pldist1 is positive and nonmissing, smd has pr=244, smd=85, and missing=2. The smd_bin construction is supported."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "Code records starting rows, keeps smd/pr observations, drops missing focal variables, applies positive pldist1 for Gamma, and records final analytic rows."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "Keeping smd/pr observations follows the focal contrast; listwise deletion is limited to focal variables; pldist1 > 0 is a Gamma-family requirement and observed pldist1 has a positive minimum."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used; none are required by the Task1 anchor."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 remains continuous and unaggregated; smd is reduced only to the focal binary SMD-versus-PR contrast. No material information loss is introduced."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The Python code uses pldist1 and smd, constructs smd_clean and smd_bin, fits Gamma GLM pldist1 ~ smd_bin with HC1 robust covariance, reports sample flow and focal outputs, and applies the declared classification rule."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The candidate explains why a Gamma log-link model is appropriate for positive right-skewed distances while preserving the outcome, contrast, sample, and inference direction."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "An identifiable Python entry file and run command are provided, with required packages and output path specified."
+                  }
+                }
+              }
+            ]
+          },
+          "task2": {
+            "candidates": [
+              {
+                "candidate_id": "Task2_candidate01",
+                "planning_pruning_iteration": 1,
+                "candidate_snapshot": {
+                  "path_summary": "Use the instructed 1945-2003 Manifesto-method data and estimate whether SMD observations have lower expected plurality-winner distance from the median voter than PR observations using a Gamma GLM with log link.",
+                  "path_signature": {
+                    "model_family": "gamma_glm_log_link",
+                    "outcome": "pldist1",
+                    "main_predictor": "smd_bin",
+                    "controls": [],
+                    "sample_restriction": "Years 1945-2003 inclusive, authorized rows with smd coded smd or pr, and positive nonmissing pldist1.",
+                    "missing_data_rule": "Listwise deletion for pldist1, smd_clean, and year; positive pldist1 is required by the Gamma family.",
+                    "variable_construction": "Restrict to 1945-2003; clean categorical smd labels; create binary SMD indicator; no aggregation, no outcome winsorization, no controls or fixed effects.",
+                    "inference_rule": "Expected direction is negative for smd_bin. Support requires expected direction with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the interval narrowly crosses the null; clearly weak aligned evidence is inconclusive; opposite requires affirmative evidence of a material positive coefficient.",
+                    "estimand_quantity": "SMD-minus-PR coefficient on log expected pldist1 from a Gamma GLM for 1945-2003, with exp(coefficient) interpreted as the expected distance ratio.",
+                    "outcome_scale": "Positive raw Manifesto-method ideological distance modeled with log link; the focal coefficient is on the log expected distance scale and the ratio is multiplicative.",
+                    "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                    "target_population": "Authorized Powell election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing positive pldist1.",
+                    "time_scope": "1945-2003 inclusive."
+                  },
+                  "analysis_anchor": {
+                    "task_id": "Task2",
+                    "estimand": {
+                      "outcome": "pldist1, the Manifesto-method ideological distance between the plurality vote winner and the median voter",
+                      "outcome_scale": "Raw positive ideological distance units; smaller values indicate closer plurality winner to the median voter",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations",
+                      "target_population": "Authorized Powell election observations from 1945 through 2003 with election rule coded smd or pr",
+                      "time_scope": "1945-2003 inclusive"
+                    },
+                    "sample_definition": {
+                      "scope": "full_sample",
+                      "inclusion_rules": [
+                        "Use the authorized original dataset powell_original.dta.",
+                        "Use years 1945 through 2003 inclusive.",
+                        "Use the Manifesto-method outcome pldist1.",
+                        "Use observations with smd coded as smd or pr."
+                      ],
+                      "exclusion_rules": [
+                        "Exclude observations missing pldist1, smd, or year."
+                      ]
+                    },
+                    "reference_specification": {
+                      "model_family": "linear_regression_or_mean_comparison",
+                      "variable_construction": "Use Manifesto-method plurality-winner distance pldist1 in raw units; clean smd labels and create a binary SMD indicator; use year only to enforce the 1945-2003 restriction.",
+                      "controls": [],
+                      "fixed_effects": [],
+                      "uncertainty_method": "not_stated"
+                    },
+                    "conclusion_rule": {
+                      "expected_direction": "SMD observations should show smaller plurality-winner distance from the median voter than PR observations; for a SMD-minus-PR coefficient this is negative.",
+                      "statistical_threshold": "For a frequentist result, expected direction with p <= 0.05 is support; 0.05 < p <= 0.055 is borderline support only when the estimate is substantively meaningful and the uncertainty interval narrowly crosses zero.",
+                      "support_rule": "For a frequentist result, support requires the expected direction with p <= 0.05, or borderline evidence with 0.05 < p <= 0.055 when the estimate is substantively meaningful and the uncertainty interval narrowly crosses the null. Borderline support remains support. Clearly weak aligned evidence is inconclusive. Opposite requires affirmative evidence of a material contrary effect."
+                    },
+                    "evidence": {
+                      "paper": "The focal claim concerns SMD election rules and the plurality vote winner's closeness to the median voter. The paper summary states that the Manifesto method uses party manifestos to establish ideological positions and discusses analyses of plurality party distance and election rules over time.",
+                      "dataset_mapping": "Verified columns include pldist1, smd, and year. year ranges from 1945 to 2003, matching the Task2 instruction. pldist1 is the Manifesto-method plurality-winner distance and is positive and nonmissing."
+                    },
+                    "uncertainties": [
+                      "The exact paper table row corresponding to the focal claim was not available from the summarized PDF extraction."
+                    ]
+                  },
+                  "analysis_path": {
+                    "path_name": "gamma_glm_manifesto_1945_2003_plurality_distance_smd_vs_pr",
+                    "path_description": "Use the instructed 1945-2003 Manifesto-method data and estimate whether SMD observations have lower expected plurality-winner distance from the median voter than PR observations using a Gamma GLM with log link.",
+                    "software": "Python",
+                    "original_software": "not_stated",
+                    "model_family": "gamma_glm_log_link",
+                    "preprocessing_steps": [
+                      "Load data/powell_original.dta with pandas.",
+                      "Verify that pldist1, smd, and year exist.",
+                      "Report starting row count.",
+                      "Restrict to year between 1945 and 2003 inclusive.",
+                      "Clean smd to lower-case labels and keep only smd or pr.",
+                      "Drop rows missing pldist1, smd_clean, or year.",
+                      "Keep positive pldist1 values because the Gamma GLM requires positive outcomes.",
+                      "Create smd_bin equal to 1 for smd and 0 for pr.",
+                      "Estimate GLM with Gamma family and log link: pldist1 ~ smd_bin, using HC1 robust covariance.",
+                      "Report coefficient, robust standard error, p-value, 95% confidence interval, exponentiated mean distance ratio, group summaries, sample flow, and conclusion class."
+                    ],
+                    "key_choices": {
+                      "outcome_measure": "pldist1, Manifesto-method distance of the plurality vote winner from the median voter.",
+                      "main_predictor_measure": "smd_bin, binary contrast equal to 1 for SMD and 0 for PR.",
+                      "control_variables": [],
+                      "sample_restriction": "Years 1945-2003 inclusive, authorized rows with smd coded smd or pr, and positive nonmissing pldist1.",
+                      "outlier_rule": "No outlier removal; all positive pldist1 values are retained.",
+                      "missing_data_rule": "Listwise deletion for pldist1, smd_clean, and year; positive pldist1 is required by the Gamma family.",
+                      "data_processing": "Restrict to 1945-2003; clean categorical smd labels; create binary SMD indicator; no aggregation, no outcome winsorization, no controls or fixed effects.",
+                      "model_choice": "Gamma GLM with log link and HC1 robust covariance.",
+                      "inference_rule": "Expected direction is negative for smd_bin. Support requires expected direction with p <= 0.05, or borderline support for 0.05 < p <= 0.055 when the estimate is substantively meaningful and the interval narrowly crosses the null; clearly weak aligned evidence is inconclusive; opposite requires affirmative evidence of a material positive coefficient."
+                    },
+                    "models": [
+                      {
+                        "model_id": "M1",
+                        "type": "Gamma generalized linear model with log link",
+                        "formula": "pldist1 ~ smd_bin",
+                        "planned_estimation": "Coefficient on smd_bin on the log expected distance scale and exp(coefficient) as SMD-vs-PR expected distance ratio.",
+                        "inference_criteria": "A negative smd_bin coefficient or ratio below 1 is claim-aligned. Support requires p <= 0.05, or 0.05 < p <= 0.055 only as borderline support when the estimate is meaningful and the confidence interval narrowly crosses the null. A positive coefficient is opposite only if p < 0.05 and the confidence interval excludes zero above the null.",
+                        "deviation": "true",
+                        "qualification": "The Task2 anchor requires 1945-2003 and the Manifesto method, both preserved. The Gamma log-link model is a defensible robustness specification for the positive skewed distance outcome and avoids repeating prior OLS and quantile candidates."
+                      }
+                    ],
+                    "variables": {
+                      "outcome": {
+                        "name": "pldist1",
+                        "definition": "Manifesto-method ideological distance between the plurality vote winner and the median voter; smaller values mean closer to the median voter.",
+                        "variable_construction": "Used in its original positive units as the GLM outcome; no scaling, aggregation, winsorization, or categorization.",
+                        "missing_data_handling": "Drop rows with missing pldist1; require pldist1 > 0 for the Gamma model.",
+                        "deviation": "false",
+                        "qualification": "Task2 specifically requires the Manifesto method, and pldist1 is the verified Manifesto-method plurality-winner distance variable.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "main_predictor": {
+                        "name": "smd_bin",
+                        "definition": "Binary election-rule contrast: 1 for single-member district systems, 0 for proportional representation systems.",
+                        "variable_construction": "Constructed from smd after lower-case cleaning and retaining smd/pr labels.",
+                        "missing_data_handling": "Drop rows with missing or non-smd/pr smd values.",
+                        "deviation": "false",
+                        "qualification": "The focal claim is explicitly about SMD election rules; PR observations provide the comparison category used in electoral-system comparisons.",
+                        "models": [
+                          "M1"
+                        ]
+                      },
+                      "controls": []
+                    },
+                    "expected_outputs": [
+                      "Sample-flow table from raw rows through final analytic rows.",
+                      "Raw pldist1 group summaries for smd and pr observations in 1945-2003.",
+                      "Gamma GLM focal coefficient, robust standard error, p-value, 95% confidence interval, exponentiated distance ratio, and conclusion class."
+                    ]
+                  },
+                  "method_quality": {
+                    "estimand": {
+                      "quantity": "SMD-minus-PR coefficient on log expected pldist1 from a Gamma GLM for 1945-2003, with exp(coefficient) interpreted as the expected distance ratio.",
+                      "outcome_scale": "Positive raw Manifesto-method ideological distance modeled with log link; the focal coefficient is on the log expected distance scale and the ratio is multiplicative.",
+                      "contrast": "SMD election-rule observations versus PR election-rule observations.",
+                      "target_population": "Authorized Powell election observations from 1945 through 2003 with smd/pr election-rule coding and nonmissing positive pldist1.",
+                      "time_scope": "1945-2003 inclusive.",
+                      "claim_mapping": "If SMD party competition leads the plurality winner to be close to the median voter, SMD observations should have lower expected Manifesto-method pldist1 than PR observations; this corresponds to a negative smd_bin coefficient or distance ratio below 1."
+                    },
+                    "anchor_alignment": {
+                      "outcome": {
+                        "status": "aligned",
+                        "note": "Uses pldist1, the Manifesto-method plurality-winner distance from the median voter required for Task2."
+                      },
+                      "contrast": {
+                        "status": "aligned",
+                        "note": "Preserves the SMD-versus-PR election-rule contrast."
+                      },
+                      "sample": {
+                        "status": "aligned",
+                        "note": "Uses the instructed 1945-2003 period; the authorized dataset year range is 1945-2003."
+                      },
+                      "model": {
+                        "status": "justified_deviation",
+                        "note": "Uses Gamma GLM with log link instead of previously used OLS or quantile regression paths."
+                      },
+                      "inference": {
+                        "status": "aligned",
+                        "note": "Uses the expected negative direction for SMD-minus-PR distance and the fixed frequentist support/opposite/inconclusive thresholds."
+                      },
+                      "deviations": [
+                        {
+                          "dimension": "model",
+                          "anchor_choice": "Linear regression or mean comparison on raw distance units.",
+                          "candidate_choice": "Gamma GLM with log link for positive pldist1 and HC1 robust covariance.",
+                          "justification": "The instructed Manifesto outcome is a positive continuous distance with right-skewed inspected summaries. The Gamma log-link model changes only the model family while preserving Task2's required time period, Manifesto method, focal contrast, and inference direction."
+                        }
+                      ]
+                    },
+                    "evidence_basis": {
+                      "outcome": "Task2 instructs the Manifesto Method. The paper summary identifies Manifesto as a method using party manifestos to measure ideological positions and median voter distance. Dataset verification shows pldist1 exists, is positive and nonmissing.",
+                      "main_predictor": "The focal claim explicitly concerns SMD election rules. Dataset verification shows smd has smd and pr categories plus two missing values.",
+                      "controls": [],
+                      "restrictions": [
+                        {
+                          "rule": "Restrict to years 1945-2003 inclusive.",
+                          "evidence": "Task2 explicitly instructs use of data from 1945-2003; the verified year range is 1945-2003."
+                        },
+                        {
+                          "rule": "Use the Manifesto-method outcome pldist1.",
+                          "evidence": "Task2 explicitly instructs use of the Manifesto Method; pldist1 is the verified Manifesto-method plurality-winner distance variable."
+                        },
+                        {
+                          "rule": "Keep only smd/pr election-rule observations.",
+                          "evidence": "The focal contrast is SMD versus PR; the dataset variable smd contains smd, pr, and missing values."
+                        },
+                        {
+                          "rule": "Listwise deletion for pldist1, smd, and year.",
+                          "evidence": "Required to estimate the focal model and enforce the instructed period; missing focal variables cannot contribute to the contrast."
+                        },
+                        {
+                          "rule": "Require pldist1 > 0.",
+                          "evidence": "Gamma GLM requires positive outcomes; inspected pldist1 minimum is greater than zero, so this preserves the observed focal-variable structure."
+                        }
+                      ]
+                    },
+                    "sample_audit": {
+                      "starting_sample_size": "331",
+                      "inclusion_rules": [
+                        "Start with all rows in data/powell_original.dta.",
+                        "Keep rows with year between 1945 and 2003 inclusive.",
+                        "Keep rows with smd_clean in smd or pr."
+                      ],
+                      "exclusion_rules": [
+                        "Remove rows outside 1945-2003, if any.",
+                        "Remove rows missing or outside smd/pr election-rule coding.",
+                        "Remove rows missing pldist1, smd_clean, or year.",
+                        "Remove nonpositive pldist1 values required by Gamma GLM."
+                      ],
+                      "code_reports_sample_flow": "true"
+                    },
+                    "focal_variable_structure": {
+                      "source_structure": "pldist1 is continuous positive; smd is nominal with smd/pr categories and missing values; year is numeric.",
+                      "analysis_structure": "pldist1 enters as a positive continuous Gamma outcome; smd is coded as a binary SMD-versus-PR contrast; year is used only for the instructed time restriction.",
+                      "information_loss": "No loss for pldist1; smd missing values are excluded and the smd/pr nominal distinction is represented as the focal binary contrast.",
+                      "justification": "Task2 requires the Manifesto-method distance and 1945-2003 period, and the focal claim requires the SMD election-rule contrast."
+                    },
+                    "code_preflight": {
+                      "referenced_columns": [
+                        "pldist1",
+                        "smd",
+                        "year"
+                      ],
+                      "missing_columns": [],
+                      "plan_code_consistency": "pass",
+                      "preflight_note": "Read-back confirms the Task2 script loads the authorized DTA, verifies pldist1, smd, and year, enforces 1945-2003, constructs smd_clean and smd_bin, applies declared missing/positive-outcome rules, fits Gamma GLM pldist1 ~ smd_bin with HC1 robust covariance, reports sample flow, and classifies the focal coefficient using the declared inference rule."
+                    }
+                  },
+                  "analysis_code": {
+                    "available": "true",
+                    "artifact_dir": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task2/Task2_candidate01",
+                    "code_files": [
+                      "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task2/Task2_candidate01/analysis_task2.py"
+                    ],
+                    "entry_file": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task2/Task2_candidate01/analysis_task2.py",
+                    "run_command": "python candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task2/Task2_candidate01/analysis_task2.py",
+                    "notes": "Run from the study root directory containing data/powell_original.dta. The script writes task2_results.json in the candidate artifact directory."
+                  }
+                },
+                "decision": "high-quality",
+                "decision_summary": "Task2 is high-quality. The task specifically requires use of 1945-2003 data and the Manifesto method. Dataset inspection verified that year spans 1945-2003 with no missing values, pldist1 is the positive nonmissing Manifesto-method plurality-winner distance variable, smd provides the SMD/PR contrast, and the data are repeated election observations by country. The candidate implements the authorized dataset, the required year window, the Manifesto outcome pldist1, and SMD-versus-PR comparison. The Gamma log-link model is an explicit, evidence-based model-family deviation from the linear-regression-or-mean-comparison anchor, justified by the strictly positive right-skewed distance distribution and still produces a clear comparable statistical result for whether SMD expected distance is lower than PR. Guardrails G1 and G14 apply; Task2 rules 2.1-2.6 are not triggered because the required outcome, sample, time window, and contrast are implemented, the result is identifiable, and the conclusion rule matches the fixed classification thresholds. The code is traceable and implements the declared sample flow, model, focal outputs, and inference rule. Repeated country observations are noted, but no task-specific requirement or clear material defect under Rule 2.7 is established because the anchor does not mandate clustered inference and the candidate uses robust covariance.",
+                "check_results": {
+                  "same_focal_claim": {
+                    "status": "pass",
+                    "note": "Tests the same SMD plurality-winner closeness claim using the required Manifesto method."
+                  },
+                  "same_dataset": {
+                    "status": "pass",
+                    "note": "Code loads only data/powell_original.dta, the authorized original dataset."
+                  },
+                  "not_duplicate": {
+                    "status": "pass",
+                    "note": "Shared Memory contains simple OLS and median quantile-regression Task2 paths; this Gamma GLM with log link is not a semantic duplicate."
+                  },
+                  "task_completeness": {
+                    "status": "pass",
+                    "note": "Task2 candidate is present, fully specified, and paired with a Task1 candidate."
+                  },
+                  "estimand_alignment": {
+                    "status": "pass",
+                    "note": "The outcome is the required Manifesto pldist1, the contrast is SMD versus PR, the target population is authorized observations from 1945 through 2003 with smd/pr coding, and the model estimates lower expected distance via a log mean ratio."
+                  },
+                  "variable_support": {
+                    "status": "pass",
+                    "note": "Dataset inspection verified pldist1, smd, and year. pldist1 is positive and nonmissing; smd has the necessary pr and smd labels; year covers 1945-2003."
+                  },
+                  "sample_audit": {
+                    "status": "pass",
+                    "note": "Code reports starting rows, year restriction, smd/pr restriction, focal missing-variable deletion, positive-outcome restriction, and final analytic rows."
+                  },
+                  "restriction_justification": {
+                    "status": "pass",
+                    "note": "The 1945-2003 restriction and Manifesto outcome follow the task instruction; smd/pr restriction follows the focal contrast; positive pldist1 follows the Gamma model and excludes no observed focal outcomes given the verified positive minimum."
+                  },
+                  "control_justification": {
+                    "status": "pass",
+                    "note": "No controls or fixed effects are used; none are required by the Task2 anchor."
+                  },
+                  "focal_variable_structure": {
+                    "status": "pass",
+                    "note": "pldist1 remains continuous and unaggregated; smd is coded as the focal binary SMD-versus-PR contrast; year is used only for the required time restriction."
+                  },
+                  "plan_code_consistency": {
+                    "status": "pass",
+                    "note": "The Python code verifies pldist1, smd, and year; restricts to 1945-2003; constructs smd_clean and smd_bin; fits Gamma GLM pldist1 ~ smd_bin with HC1 robust covariance; reports coefficient, p-value, CI, ratio, group summaries, and conclusion_class."
+                  },
+                  "method_justification": {
+                    "status": "pass",
+                    "note": "The candidate gives a coherent rationale for a Gamma log-link model for positive skewed distances while preserving the required Task2 outcome, period, contrast, and inference direction."
+                  },
+                  "executable_in_principle": {
+                    "status": "pass",
+                    "note": "An identifiable Python entry file and run command are provided, with required packages and output path specified."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "task_pair_assessment": {
+          "decision": "high-quality",
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "reason": "Both tasks have a high-quality candidate selected for Execution."
+        }
+      }
+    ]
+  }
+}

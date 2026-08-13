@@ -1,0 +1,538 @@
+{
+  "case_id": "Hendricks_QuartJournEco_2018_wNKW",
+  "memory_records": [
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path01",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "high-quality",
+              "planned_path": {
+                "path_summary": "Use the authorized wage gain table to estimate whether immigrants with no high school experience have larger log wage gains at migration than immigrants with a college degree, adjusting for available demographic and source-country differences.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "female",
+                    "age_at_us_job",
+                    "I(age_at_us_job^2)",
+                    "factor(country)"
+                  ],
+                  "sample_restriction": "Use observations in the authorized wage_gain_table file with positive adjusted wages and education in the never-high-school or college-degree categories.",
+                  "missing_data_rule": "Listwise deletion for missing/non-finite outcome, predictor, or controls.",
+                  "variable_construction": "Log-transform adjusted wages, difference logs to form log wage gain, classify education groups, create demographic controls, and use country fixed effects.",
+                  "inference_rule": "The claim is supported if the never_high_school coefficient is positive, with p < 0.05 treated as clear statistical support."
+                },
+                "anchor_alignment": {
+                  "outcome": null,
+                  "contrast": null,
+                  "sample": null,
+                  "model": null,
+                  "inference": null,
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "entry_file": "data/Hendricks_QuartJournEco_2018_wNKW/test/analysis_plan_task1_task2.R"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": null
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "high-quality",
+              "planned_path": {
+                "path_summary": "Use the pooled poor-country sample in the supplied wage gain table, including Mexico, and estimate a no-sector/no-region comparison of log wage gains for never-high-school versus college-degree immigrants.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [],
+                  "sample_restriction": "Use the pooled poor-country sample in the provided file, including Mexico; restrict to never-high-school and college-degree groups with positive adjusted wages.",
+                  "missing_data_rule": "Listwise deletion for missing/non-finite outcome or education group.",
+                  "variable_construction": "Log-transform adjusted wages, difference logs to form log wage gain, classify education groups, and keep only the two focal groups.",
+                  "inference_rule": "The comparable focal result supports the claim if the never_high_school coefficient is positive, with p < 0.05 treated as clear statistical support."
+                },
+                "anchor_alignment": {
+                  "outcome": null,
+                  "contrast": null,
+                  "sample": null,
+                  "model": null,
+                  "inference": null,
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "entry_file": "data/Hendricks_QuartJournEco_2018_wNKW/test/analysis_plan_task1_task2.R"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": null
+            }
+          ]
+        }
+      },
+      "execution_runs": []
+    },
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path02",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Estimate whether never-high-school immigrants have larger log wage gains than college-degree immigrants, controlling for demographics, sector (agriculture), rural/urban upbringing, and country fixed effects; use cluster-robust standard errors at the country level.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "female",
+                    "age_at_us_job",
+                    "I(age_at_us_job^2)",
+                    "sector_agriculture",
+                    "grew_up_rural",
+                    "factor(country)"
+                  ],
+                  "sample_restriction": "Observations with positive adjusted wages; edu_group in {never_high_school, college_degree}.",
+                  "missing_data_rule": "Listwise deletion for missing/non-finite values in outcome, predictor, or controls.",
+                  "variable_construction": "Construct variables as above; exclude rows lacking required fields.",
+                  "inference_rule": "Positive coefficient on never_high_school relative to college_degree with p < 0.05 supports the claim; also report 100*(exp(coef)-1) as percent difference."
+                },
+                "anchor_alignment": {
+                  "outcome": null,
+                  "contrast": null,
+                  "sample": null,
+                  "model": null,
+                  "inference": null,
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "entry_file": "analysis_task1.R"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": {
+                "path_summary": "Followed the planned Task1 path exactly; only minimal code repairs to enable execution.",
+                "changes": [
+                  "Adjusted Task1 missingness check to use underlying columns instead of formula pseudo-terms (replaced I(age_at_us_job^2) and factor(country) with age_at_us_job and country).",
+                  "Fixed a formatting error where the Task1 function declaration merged with a preceding comment during edit, causing a parse error."
+                ],
+                "executed_analysis": {
+                  "path_name": "controlled_log_wage_gain_with_sector_region_countryFE_clusteredSE",
+                  "model_family": "linear_regression",
+                  "software": "R",
+                  "code_source": "modified_analysis_code"
+                }
+              },
+              "execution_result": {
+                "status_reason": "Task1 completed successfully; the negative non-significant coefficient is inconclusive under the revised rule.",
+                "result": {
+                  "metric": "regression_coefficient",
+                  "value": -0.064322,
+                  "direction": "negative",
+                  "p_value": 0.806542,
+                  "confidence_interval": "[-0.579052, 0.450407]",
+                  "sample_size": 1746,
+                  "conclusion": "inconclusive"
+                },
+                "repair_attempts_used": 2
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the pooled poor-country sample (including Mexico) and estimate an OLS of log wage gain on education group with country fixed effects only. Do not include sector (agriculture) or rural/urban controls.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "factor(country)"
+                  ],
+                  "sample_restriction": "Positive adjusted wages; focal education groups only; pooled poor-country sample including Mexico.",
+                  "missing_data_rule": "Listwise deletion for missing/non-finite outcome or predictor; retain rows with non-missing country.",
+                  "variable_construction": "Construct variables as above; exclude sector and rural/urban variables entirely.",
+                  "inference_rule": "Positive coefficient on never_high_school with p < 0.05 supports the claim; report 100*(exp(coef)-1)."
+                },
+                "anchor_alignment": {
+                  "outcome": null,
+                  "contrast": null,
+                  "sample": null,
+                  "model": null,
+                  "inference": null,
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "entry_file": "analysis_task2.R"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": {
+                "path_summary": "Planned Task2 path followed precisely (country FE only, no sector/rural controls). Only a minor shared helper formatting fix was applied.",
+                "changes": [
+                  "Shared helper script formatting repaired (separate from Task2 logic) to resolve a parse error after the first repair."
+                ],
+                "executed_analysis": {
+                  "path_name": "pooled_poor_country_countryFE_no_sector_region",
+                  "model_family": "linear_regression",
+                  "software": "R",
+                  "code_source": "modified_analysis_code"
+                }
+              },
+              "execution_result": {
+                "status_reason": "Task2 completed successfully; the coefficient was positive, so the task supports the focal claim, with weak/directional strength because it was not statistically significant.",
+                "result": {
+                  "metric": "regression_coefficient",
+                  "value": 0.012349,
+                  "direction": "positive",
+                  "p_value": 0.929565,
+                  "confidence_interval": "[-0.261439, 0.286137]",
+                  "sample_size": 1746,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 2
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    },
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path03",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Estimate OLS of log wage gain on education group with controls for female, age and age^2, country fixed effects, and birth-cohort (decade) fixed effects; use HC3 robust SEs.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "female",
+                    "age_at_us_job",
+                    "I(age_at_us_job^2)",
+                    "factor(country)",
+                    "factor(cohort_decade)"
+                  ],
+                  "sample_restriction": "Positive adjusted wages; focal education groups only.",
+                  "missing_data_rule": "Listwise deletion for material variables.",
+                  "variable_construction": "Variable construction as above; no weighting.",
+                  "inference_rule": "Coefficient on never_high_school > 0 with p < 0.05 indicates support.",
+                  "estimand_quantity": "Coefficient difference in mean log wage gain between never-high-school and college-degree immigrants, conditional on controls.",
+                  "outcome_scale": "log units (interpretable as percentage difference via exp(coef)-1).",
+                  "contrast": "never_high_school (edyrs < 9) vs college_degree (edyrs ≥ 16).",
+                  "target_population": "Immigrants in the pooled poor-country sample (including Mexico) meeting positivity and focal-group criteria.",
+                  "time_scope": "Last home-country job versus last U.S. job (cross-sectional difference at migration)."
+                },
+                "anchor_alignment": {
+                  "outcome": null,
+                  "contrast": null,
+                  "sample": null,
+                  "model": null,
+                  "inference": null,
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task1/Task1_candidate01/analysis_task1.R"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": {
+                "path_summary": "Followed the planned R analysis path; only the container build was repaired.",
+                "changes": [
+                  "Repaired Dockerfile by removing failing apt-get steps (Debian testing repo GPG key errors) and relying on rocker/r-base plus install.packages for readxl, sandwich, and lmtest."
+                ],
+                "executed_analysis": {
+                  "path_name": "ols_log_gain_country_and_cohort_fe_hc3",
+                  "model_family": "linear_regression",
+                  "software": "R",
+                  "code_source": "provided_analysis_code"
+                }
+              },
+              "execution_result": {
+                "status_reason": "Task1 completed successfully; the negative non-significant focal contrast is inconclusive under the revised rule.",
+                "result": {
+                  "metric": "regression_coefficient",
+                  "value": -0.051173,
+                  "direction": "negative",
+                  "p_value": 0.810616,
+                  "confidence_interval": "[-0.469666, 0.367320]",
+                  "sample_size": 1746,
+                  "conclusion": "inconclusive"
+                },
+                "repair_attempts_used": 1
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Estimate OLS of log wage gain on education group with demographic controls only (female, age, age^2). Exclude sector and rural/urban region controls; no country fixed effects.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "female",
+                    "age_at_us_job",
+                    "I(age_at_us_job^2)"
+                  ],
+                  "sample_restriction": "Positive adjusted wages; focal education groups only.",
+                  "missing_data_rule": "Listwise deletion for material variables.",
+                  "variable_construction": "Variable construction as above; no sector/region controls; no country FE.",
+                  "inference_rule": "Coefficient on never_high_school > 0 with p < 0.05 indicates support.",
+                  "estimand_quantity": "Coefficient difference in mean log wage gain between never-high-school and college-degree immigrants, conditional on demographics only.",
+                  "outcome_scale": "log units (interpretable as percentage difference via exp(coef)-1).",
+                  "contrast": "never_high_school (edyrs < 9) vs college_degree (edyrs ≥ 16).",
+                  "target_population": "Immigrants in the pooled poor-country sample (including Mexico) meeting positivity and focal-group criteria.",
+                  "time_scope": "Last home-country job versus last U.S. job (cross-sectional difference at migration)."
+                },
+                "anchor_alignment": {
+                  "outcome": null,
+                  "contrast": null,
+                  "sample": null,
+                  "model": null,
+                  "inference": null,
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path03/task2/Task2_candidate01/analysis_task2.R"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": {
+                "path_summary": "Followed the planned demographic-only OLS path; only container build was repaired.",
+                "changes": [
+                  "Repaired Dockerfile by removing failing apt-get steps (Debian testing repo GPG key errors) and relying on rocker/r-base plus install.packages."
+                ],
+                "executed_analysis": {
+                  "path_name": "ols_log_gain_demographics_only_no_sector_region",
+                  "model_family": "linear_regression",
+                  "software": "R",
+                  "code_source": "provided_analysis_code"
+                }
+              },
+              "execution_result": {
+                "status_reason": "Task2 completed successfully; the positive focal contrast supports the claim, with weak/directional strength because it was not statistically significant.",
+                "result": {
+                  "metric": "regression_coefficient",
+                  "value": 0.011383,
+                  "direction": "positive",
+                  "p_value": 0.926356,
+                  "confidence_interval": "[-0.229959, 0.252725]",
+                  "sample_size": 1746,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 1
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    },
+    {
+      "path_id": "Hendricks_QuartJournEco_2018_wNKW_path04",
+      "planning_pruning_iteration": 1,
+      "tasks": {
+        "Task1": {
+          "active_candidate_id": "Task1_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task1_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use all education groups in the authorized data and estimate log wage gain on education category with country fixed effects, extracting the never-high-school versus college-degree coefficient.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [
+                    "country fixed effects"
+                  ],
+                  "sample_restriction": "Rows in authorized wage_gain_table.xlsx with positive adjusted home and U.S. wages, non-missing education group, and non-missing country.",
+                  "missing_data_rule": "Listwise deletion for non-finite/non-positive wages and missing model variables, with sample flow reported.",
+                  "variable_construction": "Log-transform adjusted wages; difference logs; categorize education; convert country to categorical fixed effects.",
+                  "inference_rule": "Clear support if focal coefficient is positive and two-sided p < 0.05; inconclusive if same direction but p >= 0.05; opposite if negative with p < 0.05.",
+                  "estimand_quantity": "OLS coefficient difference in mean log wage gain for never_high_school relative to college_degree, conditional on country fixed effects.",
+                  "outcome_scale": "log units and exponentiated percent difference",
+                  "contrast": "never_high_school (edyrs < 9) versus college_degree (edyrs >= 16)",
+                  "target_population": "Immigrants in the authorized wage_gain_table.xlsx with valid positive adjusted wages, education group, and country.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "aligned",
+                  "inference": "aligned",
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task1/Task1_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task1/Task1_candidate01/analysis_task1.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "Task1 completed successfully; the coefficient was positive, so the task supports the focal claim, with weak/directional strength because it was not statistically significant.",
+                "result": {
+                  "metric": "OLS coefficient: log wage gain difference, never_high_school versus college_degree",
+                  "value": 0.18757087068656808,
+                  "direction": "positive",
+                  "p_value": 0.25393395517533746,
+                  "confidence_interval": "[-0.13467429239688866, 0.5098160337700248]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        },
+        "Task2": {
+          "active_candidate_id": "Task2_candidate01",
+          "candidates": [
+            {
+              "candidate_id": "Task2_candidate01",
+              "status": "executed_success",
+              "planned_path": {
+                "path_summary": "Use the pooled authorized sample including Mexico and estimate log wage gain on education category only, with no sector/agriculture and no rural/urban region controls, extracting the never-high-school versus college-degree coefficient.",
+                "path_signature": {
+                  "model_family": "linear_regression",
+                  "outcome": "log_wage_gain",
+                  "main_predictor": "edu_group",
+                  "controls": [],
+                  "sample_restriction": "Rows in the authorized pooled wage_gain_table.xlsx with positive adjusted home and U.S. wages and non-missing education group; Mexico is retained as part of the authorized pooled file.",
+                  "missing_data_rule": "Listwise deletion for non-finite/non-positive wages and missing model variables, with sample flow reported.",
+                  "variable_construction": "Log-transform adjusted wages; difference logs; categorize education. Country is used only for descriptive counts, not as a model control.",
+                  "inference_rule": "Clear support if focal coefficient is positive and two-sided p < 0.05; inconclusive if same direction but p >= 0.05; opposite if negative with p < 0.05.",
+                  "estimand_quantity": "OLS coefficient difference in mean log wage gain for never_high_school relative to college_degree in the pooled sample, with no sector or region controls.",
+                  "outcome_scale": "log units and exponentiated percent difference",
+                  "contrast": "never_high_school (edyrs < 9) versus college_degree (edyrs >= 16)",
+                  "target_population": "Pooled poor-country immigrant sample in the authorized wage_gain_table.xlsx, including Mexico.",
+                  "time_scope": "Last home-country job to last U.S. job."
+                },
+                "anchor_alignment": {
+                  "outcome": "aligned",
+                  "contrast": "aligned",
+                  "sample": "aligned",
+                  "model": "aligned",
+                  "inference": "aligned",
+                  "deviations": []
+                },
+                "analysis_code": {
+                  "artifact_dir": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task2/Task2_candidate01",
+                  "entry_file": "candidate_artifacts/Hendricks_QuartJournEco_2018_wNKW_path04/task2/Task2_candidate01/analysis_task2.py"
+                }
+              },
+              "pruning_review": {
+                "decision": "high-quality",
+                "issues": [],
+                "planning_pruning_iteration": 1
+              },
+              "executor_fixed_path": null,
+              "execution_result": {
+                "status_reason": "Task2 completed successfully; the coefficient was positive and statistically significant.",
+                "result": {
+                  "metric": "OLS coefficient: log wage gain difference, never_high_school versus college_degree",
+                  "value": 0.26034768591091784,
+                  "direction": "positive",
+                  "p_value": 0.0313538661531665,
+                  "confidence_interval": "[0.023293262749378263, 0.4974021090724574]",
+                  "sample_size": 2854,
+                  "conclusion": "support"
+                },
+                "repair_attempts_used": 0
+              }
+            }
+          ]
+        }
+      },
+      "execution_runs": [
+        {
+          "task1_candidate_id": "Task1_candidate01",
+          "task2_candidate_id": "Task2_candidate01",
+          "status": "executed_success"
+        }
+      ]
+    }
+  ]
+}

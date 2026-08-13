@@ -1,0 +1,40 @@
+{
+  "plan_id": "Hendricks_QuartJournEco_2018_wNKW_path02",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "Task1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Running Task1: controlled_log_wage_gain_with_sector_region_countryFE_clusteredSE\n\nData file: data/wage_gain_table.xlsx \n\nControls used in Task1 model (RHS terms):\n[1] \"edu_group\"          \"female\"             \"age_at_us_job\"     \n[4] \"I(age_at_us_job^2)\" \"sector_agriculture\" \"factor(country)\"   \n\nAnalytic sample counts by education group:\n# A tibble: 2 \u00d7 2\n  edu_group             n\n  <fct>             <int>\n1 college_degree      152\n2 never_high_school  1594\n\nOLS coefficients with cluster-robust (country) SEs:\n\nt test of coefficients:\n\n                              Estimate  Std. Error  t value  Pr(>|t|)    \n(Intercept)                 0.64667053  0.48109227   1.3442 0.1790690    \nedu_groupnever_high_school -0.06432214  0.26261714  -0.2449 0.8065416    \nfemale                     -0.51999117  0.21844998  -2.3804 0.0174030 *  \nage_at_us_job               0.02317907  0.02802038   0.8272 0.4082253    \nI(age_at_us_job^2)         -0.00083595  0.00040467  -2.0657 0.0390016 *  \nfactor(country)DOM          0.80492137  0.18981153   4.2406 2.347e-05 ***\nfactor(country)ECU          0.54814223  0.34642780   1.5823 0.1137706    \nfactor(country)GTM          0.40984303  0.28230805   1.4518 0.1467499    \nfactor(country)HTI         -0.76705209  0.22754663  -3.3710 0.0007655 ***\nfactor(country)MEX          0.55448064  0.32132598   1.7256 0.0845975 .  \nfactor(country)NIC          1.00424313  0.08540148  11.7591 < 2.2e-16 ***\nfactor(country)PER         -3.03010353  0.10137274 -29.8907 < 2.2e-16 ***\nfactor(country)PRI          0.69564858  0.15421718   4.5108 6.891e-06 ***\nfactor(country)SLV          0.82905793  0.28477281   2.9113 0.0036454 ** \n---\nSignif. codes:  0 \u2018***\u2019 0.001 \u2018**\u2019 0.01 \u2018*\u2019 0.05 \u2018.\u2019 0.1 \u2018 \u2019 1\n\n\nFocal coefficient (never_high_school vs college_degree):\n  Estimate (log pts): -0.064322\n  Std. Error: 0.262617\n  p-value: 0.806542\n  95% CI: [-0.579052, 0.450407]\n  Percent difference: -6.23%%\n\nTask1 completed.\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "analysis_task1.R",
+      "resolved_path": "/workspace/analysis_task1.R"
+    },
+    {
+      "name": "Task2",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "Running Task2: pooled_poor_country_countryFE_no_sector_region\n\nData file: data/wage_gain_table.xlsx \n\nControls used in Task2 model (RHS terms):\n[1] \"edu_group\"       \"factor(country)\"\n\nAnalytic sample counts by education group:\n# A tibble: 2 \u00d7 2\n  edu_group             n\n  <fct>             <int>\n1 college_degree      152\n2 never_high_school  1594\n\nOLS coefficients (conventional SEs):\n                              Estimate Std. Error     t value     Pr(>|t|)\n(Intercept)                -0.41489096  0.4021717 -1.03162634 3.023910e-01\nedu_groupnever_high_school  0.01234913  0.1396879  0.08840517 9.295649e-01\nfactor(country)DOM          1.08313876  0.4883148  2.21811584 2.667600e-02\nfactor(country)ECU          1.20996983  0.9373553  1.29083369 1.969333e-01\nfactor(country)GTM          0.88695111  0.5621516  1.57777916 1.147986e-01\nfactor(country)HTI         -0.15148837  0.7201418 -0.21035909 8.334121e-01\nfactor(country)MEX          1.27314414  0.4216429  3.01948459 2.568990e-03\nfactor(country)NIC          1.37230957  0.5279857  2.59914131 9.424950e-03\nfactor(country)PER         -3.20343450  0.7629885 -4.19853556 2.822595e-05\nfactor(country)PRI          1.17505334  0.4431448  2.65162385 8.083508e-03\nfactor(country)SLV          1.46261918  0.5275485  2.77248272 5.622511e-03\n\nFocal coefficient (never_high_school vs college_degree):\n  Estimate (log pts): 0.012349\n  Std. Error: 0.139688\n  p-value: 0.929565\n  95% CI: [-0.261439, 0.286137]\n  Percent difference: 1.24%%\n\nTask2 completed.\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "analysis_task2.R",
+      "resolved_path": "/workspace/analysis_task2.R"
+    },
+    {
+      "name": "Task2",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "helpers_loader.R",
+      "resolved_path": "/workspace/helpers_loader.R"
+    }
+  ],
+  "ok": true
+}

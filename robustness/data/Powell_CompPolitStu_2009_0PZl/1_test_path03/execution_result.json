@@ -1,0 +1,30 @@
+{
+  "plan_id": "Powell_CompPolitStu_2009_0PZl_path03",
+  "steps": [
+    {
+      "name": "prepare-env",
+      "ok": true
+    },
+    {
+      "name": "Task1",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"analysis\": \"Task1 Gamma GLM with log link: pldist1 ~ smd_bin\",\n  \"data_file\": \"data/powell_original.dta\",\n  \"required_columns\": [\n    \"pldist1\",\n    \"smd\"\n  ],\n  \"sample_flow\": [\n    {\n      \"step\": \"starting_rows_authorized_dataset\",\n      \"rows\": 331,\n      \"removed\": 0\n    },\n    {\n      \"step\": \"keep_election_rule_smd_or_pr\",\n      \"rows\": 329,\n      \"removed\": 2\n    },\n    {\n      \"step\": \"drop_missing_pldist1_or_smd\",\n      \"rows\": 329,\n      \"removed\": 0\n    },\n    {\n      \"step\": \"keep_positive_pldist1_required_for_gamma\",\n      \"rows\": 329,\n      \"removed\": 0\n    }\n  ],\n  \"final_n\": 329,\n  \"model\": {\n    \"family\": \"Gamma\",\n    \"link\": \"log\",\n    \"formula\": \"pldist1 ~ smd_bin\",\n    \"covariance\": \"HC1 robust\"\n  },\n  \"focal_result\": {\n    \"metric\": \"coefficient_on_smd_bin_log_mean_distance\",\n    \"estimate\": 0.029451378561951888,\n    \"std_error\": 0.10422325978869428,\n    \"p_value\": 0.7774990354741841,\n    \"confidence_interval_95\": [\n      -0.17482245697525056,\n      0.2337252140991543\n    ],\n    \"mean_distance_ratio_smd_vs_pr\": 1.029889359552828,\n    \"mean_distance_ratio_ci_95\": [\n      0.8396060737390879,\n      1.2632973082204548\n    ],\n    \"expected_direction\": \"negative coefficient / ratio below 1\",\n    \"conclusion_class\": \"inconclusive\"\n  },\n  \"group_summary_raw_pldist1\": [\n    {\n      \"smd_clean\": \"pr\",\n      \"count\": 244,\n      \"mean\": 11.073031425476074,\n      \"median\": 8.225909233093262,\n      \"std\": 10.930319786071777,\n      \"min\": 3.800000058618025e-06,\n      \"max\": 59.00920867919922\n    },\n    {\n      \"smd_clean\": \"smd\",\n      \"count\": 85,\n      \"mean\": 11.403997421264648,\n      \"median\": 9.967596054077148,\n      \"std\": 8.776122093200684,\n      \"min\": 0.20136409997940063,\n      \"max\": 33.745323181152344\n    }\n  ]\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task1/Task1_candidate01/analysis_task1.py",
+      "resolved_path": "/workspace/candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task1/Task1_candidate01/analysis_task1.py"
+    },
+    {
+      "name": "Task2",
+      "ok": true,
+      "exit_code": 0,
+      "stdout": "{\n  \"analysis\": \"Task2 Gamma GLM with log link: pldist1 ~ smd_bin, years 1945-2003\",\n  \"data_file\": \"data/powell_original.dta\",\n  \"required_columns\": [\n    \"pldist1\",\n    \"smd\",\n    \"year\"\n  ],\n  \"sample_flow\": [\n    {\n      \"step\": \"starting_rows_authorized_dataset\",\n      \"rows\": 331,\n      \"removed\": 0\n    },\n    {\n      \"step\": \"keep_year_1945_to_2003_inclusive\",\n      \"rows\": 331,\n      \"removed\": 0\n    },\n    {\n      \"step\": \"keep_election_rule_smd_or_pr\",\n      \"rows\": 329,\n      \"removed\": 2\n    },\n    {\n      \"step\": \"drop_missing_pldist1_smd_or_year\",\n      \"rows\": 329,\n      \"removed\": 0\n    },\n    {\n      \"step\": \"keep_positive_pldist1_required_for_gamma\",\n      \"rows\": 329,\n      \"removed\": 0\n    }\n  ],\n  \"final_n\": 329,\n  \"model\": {\n    \"family\": \"Gamma\",\n    \"link\": \"log\",\n    \"formula\": \"pldist1 ~ smd_bin\",\n    \"covariance\": \"HC1 robust\"\n  },\n  \"focal_result\": {\n    \"metric\": \"coefficient_on_smd_bin_log_mean_distance\",\n    \"estimate\": 0.029451378561951888,\n    \"std_error\": 0.10422325978869428,\n    \"p_value\": 0.7774990354741841,\n    \"confidence_interval_95\": [\n      -0.17482245697525056,\n      0.2337252140991543\n    ],\n    \"mean_distance_ratio_smd_vs_pr\": 1.029889359552828,\n    \"mean_distance_ratio_ci_95\": [\n      0.8396060737390879,\n      1.2632973082204548\n    ],\n    \"expected_direction\": \"negative coefficient / ratio below 1\",\n    \"conclusion_class\": \"inconclusive\"\n  },\n  \"group_summary_raw_pldist1\": [\n    {\n      \"smd_clean\": \"pr\",\n      \"count\": 244,\n      \"mean\": 11.073031425476074,\n      \"median\": 8.225909233093262,\n      \"std\": 10.930319786071777,\n      \"min\": 3.800000058618025e-06,\n      \"max\": 59.00920867919922\n    },\n    {\n      \"smd_clean\": \"smd\",\n      \"count\": 85,\n      \"mean\": 11.403997421264648,\n      \"median\": 9.967596054077148,\n      \"std\": 8.776122093200684,\n      \"min\": 0.20136409997940063,\n      \"max\": 33.745323181152344\n    }\n  ]\n}\n",
+      "stderr": "",
+      "artifacts": [],
+      "entry": "candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task2/Task2_candidate01/analysis_task2.py",
+      "resolved_path": "/workspace/candidate_artifacts/Powell_CompPolitStu_2009_0PZl_path03/task2/Task2_candidate01/analysis_task2.py"
+    }
+  ],
+  "ok": true
+}

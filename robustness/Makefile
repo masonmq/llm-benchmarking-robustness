@@ -10,8 +10,9 @@ CODE_MODE ?= python
 MODEL ?= gpt-5
 EVAL_MODEL ?= gpt-5
 TIER ?= easy
+MAX_PLANNING_PRUNING_LOOPS ?= 5
 
-.PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy robustness-plan robustness-pipeline robustness-pruning-helper robustness-pruning robustness-pruning-execute test-pruning
+.PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy robustness-plan robustness-pipeline robustness-pruning robustness-pruning-execute test-pruning
 
 check-deps:
 	$(PYTHON) core/check_deps.py $(REQ)
@@ -27,17 +28,13 @@ check-docker:
 
 # Generate structured analysis from human documentation
 robustness-plan: check-deps
-	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID)
+	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID) --max-planning-pruning-loops $(MAX_PLANNING_PRUNING_LOOPS)
 
 # Opt-in continuous pipeline: plan -> prune -> execute (execution only after high-quality).
 robustness-pipeline: check-deps
-	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID) --run-execution
+	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID) --run-execution --max-planning-pruning-loops $(MAX_PLANNING_PRUNING_LOOPS)
 
-paraphase-analysis: check-deps
-	python -m robustness.memory --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage paraphrase-analysis --code-mode $(CODE_MODE)
-
-
-# Generate structured analysis from human documentation
+# Generate a universal execution input from human documentation
 robustness-execute-gen_gold_analysis: check-deps
 	python -m robustness.executor --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage execute-gen_gold_analysis --code-mode $(CODE_MODE)
 
@@ -46,11 +43,7 @@ robustness-execute: check-deps
 	python -m robustness.executor --stage execute --tier easy --study-path $(STUDY) --code-mode $(CODE_MODE) --model-name $(MODEL)
 
 
-# Helper extractor: paper PDF + proposed-analysis (review) PDF + data -> prune_in_schema.json
-robustness-pruning-helper: check-deps
-	python -m robustness.pruning --stage prune-gen_input --tier easy --study-path $(STUDY) --model-name $(MODEL) --code-mode $(CODE_MODE)
-
-# Pruning Agent: prune_in_schema.json -> prune_out_schema.json (accept/reject + routing)
+# Pruning Agent: universal_schema.json -> prune_out_schema.json + universal_schema.json
 robustness-pruning: check-deps
 	python -m robustness.pruning --stage prune --tier easy --study-path $(STUDY) --code-mode $(CODE_MODE) --model-name $(MODEL)
 
