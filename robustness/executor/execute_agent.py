@@ -9,6 +9,7 @@ from core.constants import (
     EXECUTION_RULES,
     ROBUSTNESS_EXECUTE_CONSTANTS,
 )
+from core.human_intervention import agent_intervention_instruction, human_intervention_enabled
 from core.prompts import (
     EXAMPLE_ROBUSTNESS,
     EXECUTE,
@@ -41,7 +42,12 @@ from robustness.memory.shared_memory import (
 
 
 logger, formatter = get_logger(name="robustness")
-system_prompt = "\n\n".join([PREAMBLE_ROBUSTNESS, EXECUTE, EXAMPLE_ROBUSTNESS])
+system_prompt = "\n\n".join([
+    PREAMBLE_ROBUSTNESS,
+    EXECUTE,
+    EXAMPLE_ROBUSTNESS,
+    agent_intervention_instruction(),
+])
 
 known_actions = {
     **base_known_actions(),
@@ -65,6 +71,7 @@ CHECKPOINT_MAP = {
     "ask_human_input": "5. Human Approval",
     "orchestrator_execute_entry": "6. Execute Code",
     "orchestrator_stop_container": "7. Stop Container",
+    "run_shell_command": "8. Finalize Results",
 }
 
 
@@ -106,6 +113,11 @@ def run_execute(
             task["task_id"]: task["candidate_id"]
             for task in execute_spec["plan"]["tasks"]
         }
+        execution_approval_step = (
+            "Ask the human to approve the exact execution command before running it."
+            if human_intervention_enabled()
+            else "Run the approved active candidates without requesting human approval."
+        )
         instruction = f"""
 Execute the two approved active candidates together inside a Docker container.
 
@@ -133,7 +145,7 @@ Process:
 1. Generate the Dockerfile from {execute_spec_path.name}.
 2. Build the image and start the container.
 3. Plan and preview both task entries.
-4. Ask the human to approve the exact execution command before running it.
+4. {execution_approval_step}
 5. Execute Task1 and Task2 as one run. Inspect execution_result.json after each attempt.
 6. Apply only allowed implementation repairs, up to the limit, and retry as needed.
 7. Stop the container.

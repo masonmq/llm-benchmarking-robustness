@@ -9,9 +9,14 @@ import io # Add this import at the top of your file
 import shlex
 import subprocess
 
+from core.human_intervention import request_approval
+
+SHELL_COMMAND_TIMEOUT_SECONDS = 120
+
+
 def run_shell_command(command: str) -> str:
     """
-    Executes a shell command in the local terminal after receiving human confirmation.
+    Executes a shell command in the local terminal after any configured confirmation.
 
     Args:
         command (str): The complete shell command to execute (e.g., "python3 my_script.py --arg value").
@@ -19,40 +24,40 @@ def run_shell_command(command: str) -> str:
     Returns:
         str: The combined standard output and standard error from the command, or a rejection message.
     """
-    # 1. Ask for human confirmation, showing the exact command
-    print(f"\n🤔 [HUMAN CONFIRMATION REQUIRED] 🤔")
     print(f"Agent wants to execute the command: `{command}`")
-    user_response = input("Do you approve? (yes/no): ")
 
-    # 2. Check the user's response
-    if user_response.lower().strip() != 'yes':
+    if not request_approval("Do you approve? (yes/no): "):
         print("❌ User denied execution.")
         return "Command execution denied by the user."
 
     print(f"✅ User approved. Executing command...")
     try:
-        # 3. Execute the command securely
-        # shlex.split handles arguments with spaces correctly
-        args = shlex.split(command)
         result = subprocess.run(
-            args,
+            ["/bin/bash", "-lc", command],
             capture_output=True,
             text=True,
-            check=False # Don't raise an exception on errors
+            check=False,
+            stdin=subprocess.DEVNULL,
+            timeout=SHELL_COMMAND_TIMEOUT_SECONDS,
         )
     
         # 4. Return the full output to the agent
         output = f"Exit Code: {result.returncode}\n---STDOUT---\n{result.stdout}\n---STDERR---\n{result.stderr}"
         return output.strip()
 
+    except subprocess.TimeoutExpired:
+        return (
+            f"Error: Command timed out after {SHELL_COMMAND_TIMEOUT_SECONDS} seconds "
+            "and was stopped."
+        )
     except FileNotFoundError:
-        return f"Error: The command '{args[0]}' was not found. Make sure it's installed and in your system's PATH."
+        return "Error: /bin/bash was not found."
     except Exception as e:
         return f"An error occurred while executing the command: {e}"
 
 def run_stata_do_file(file_path: str) -> str:
     """
-    Executes a Stata .do file in batch mode after human confirmation,
+    Executes a Stata .do file in batch mode after any configured confirmation,
     captures the output from the corresponding .log file, and returns it as a string.
 
     Args:
@@ -68,12 +73,9 @@ def run_stata_do_file(file_path: str) -> str:
     # NOTE: The Stata executable might have a different name on your system (e.g., 'stata-se', 'stata')
     command = f"stata-mp -b do {file_path}"
 
-    # 2. Get human confirmation before executing
-    print(f"\n🤔 [HUMAN CONFIRMATION REQUIRED] 🤔")
     print(f"Agent wants to execute the Stata script: `{file_path}`")
-    user_response = input(f"This will run the command: `{command}`\nDo you approve? (yes/no): ")
 
-    if user_response.lower().strip() != 'yes':
+    if not request_approval(f"This will run the command: `{command}`\nDo you approve? (yes/no): "):
         return "Command execution denied by the user."
     
     try:

@@ -30,7 +30,7 @@ check-docker:
 robustness-plan: check-deps
 	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID) --max-planning-pruning-loops $(MAX_PLANNING_PRUNING_LOOPS)
 
-# Opt-in continuous pipeline: plan -> prune -> execute (execution only after high-quality).
+# Full pipeline: share memory -> plan -> prune -> execute -> share memory.
 robustness-pipeline: check-deps
 	python -m robustness.planner --tier easy --study-path $(STUDY) --model-name $(MODEL) --stage plan-analysis --code-mode $(CODE_MODE) --paper-id $(PAPER_ID) --run-execution --max-planning-pruning-loops $(MAX_PLANNING_PRUNING_LOOPS)
 

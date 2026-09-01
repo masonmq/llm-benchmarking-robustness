@@ -6,6 +6,13 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+from core.method_families import (
+    changed_analysis_decisions,
+    covered_analysis_decisions,
+    covered_method_families,
+    infer_structural_method_family,
+    normalize_family_novelty,
+)
 from robustness.memory.shared_memory import (
     accumulate_prune_output,
     apply_pruning_decisions,
@@ -83,6 +90,9 @@ def make_task(task_id, description):
         "analysis_path": {
             "path_name": description,
             "path_description": description,
+            "structural_method_family": "single_equation_regression",
+            "family_novelty": "untried",
+            "family_selection_reason": "No completed structural family exists for this test task.",
             "model_family": "linear_regression",
             "key_choices": {
                 "outcome_measure": "outcome",
@@ -222,6 +232,119 @@ def initial_schema():
 
 
 class SequentialPipelineTests(unittest.TestCase):
+    def test_link_functions_share_one_structural_method_family(self):
+        for model_family in (
+            "probit",
+            "logistic_regression",
+            "linear_probability_model",
+            "binomial_GLM_complementary_log_log",
+        ):
+            family = infer_structural_method_family({
+                "path_signature": {"model_family": model_family}
+            })
+            self.assertEqual(family, "single_equation_regression")
+
+    def test_covered_method_families_infers_old_memory_signatures(self):
+        memory = {
+            "memory_records": [{
+                "tasks": {
+                    "Task1": {
+                        "candidates": [
+                            {
+                                "status": "executed_success",
+                                "planned_path": {
+                                    "path_signature": {"model_family": "probit"}
+                                },
+                            },
+                            {
+                                "status": "executed_success",
+                                "planned_path": {
+                                    "path_signature": {"model_family": "logistic_regression"}
+                                },
+                            },
+                        ]
+                    }
+                }
+            }]
+        }
+
+        coverage = covered_method_families(memory)
+
+        self.assertEqual(coverage["Task1"], ["single_equation_regression"])
+        self.assertEqual(coverage["Task2"], [])
+
+    def test_family_novelty_is_corrected_for_a_reused_family(self):
+        plan = make_plan()
+        task1_path = plan["plan"]["tasks"][0]["analysis_path"]
+        task1_path["structural_method_family"] = "logistic single equation regression"
+        task1_path["family_novelty"] = "untried"
+
+        corrections = normalize_family_novelty(
+            plan,
+            {"Task1": ["single_equation_regression"], "Task2": []},
+            ["Task1"],
+        )
+
+        self.assertEqual(
+            task1_path["family_novelty"],
+            "reused_no_defensible_alternative",
+        )
+        self.assertEqual(
+            corrections,
+            [("Task1", "untried", "reused_no_defensible_alternative")],
+        )
+
+    def test_analysis_decision_coverage_includes_low_quality_candidates(self):
+        memory = {
+            "memory_records": [{
+                "tasks": {
+                    "Task1": {
+                        "candidates": [{
+                            "status": "low-quality",
+                            "planned_path": {
+                                "path_signature": {
+                                    "outcome": "ProperName",
+                                    "sample_restriction": "Respondents only",
+                                    "missing_data_rule": "Drop missing outcomes",
+                                    "controls": ["gender"],
+                                }
+                            },
+                        }]
+                    }
+                }
+            }]
+        }
+
+        coverage = covered_analysis_decisions(memory)
+
+        self.assertEqual(
+            coverage["Task1"]["sample_restriction"],
+            ["respondents only"],
+        )
+        self.assertEqual(
+            coverage["Task1"]["missing_data_rule"],
+            ["drop missing outcomes"],
+        )
+
+    def test_changed_analysis_decisions_detects_a_new_sample_choice(self):
+        task = make_task("Task1", "alternative sample")
+        task["analysis_path"]["key_choices"]["sample_restriction"] = "all randomized rows"
+        prior = {
+            "estimand_quantity": ["coefficient"],
+            "outcome": ["outcome"],
+            "outcome_scale": ["raw outcome units"],
+            "contrast": ["one-unit predictor contrast"],
+            "target_population": ["authorized sample"],
+            "sample_restriction": ["respondents only"],
+            "missing_data_rule": ["complete cases"],
+            "variable_construction": ["alternative sample"],
+            "controls": [[]],
+        }
+
+        changed = changed_analysis_decisions(task, prior)
+
+        self.assertIn("sample_restriction", changed)
+
     def test_conclusion_classification_supports_only_affirmative_or_borderline_evidence(self):
         constants_path = Path(__file__).parents[1] / "core" / "constants.py"
         module = ast.parse(constants_path.read_text(encoding="utf-8"))
@@ -675,6 +798,77 @@ class SequentialPipelineTests(unittest.TestCase):
             task1["method_quality"]["anchor_alignment"]["sample"]["status"],
             "justified_deviation",
         )
+
+    def test_planning_normalizes_outcome_scale_deviation(self):
+        plan = make_plan()
+        alignment = plan["plan"]["tasks"][0]["method_quality"]["anchor_alignment"]
+        alignment["deviations"].append({
+            "dimension": "outcome_scale",
+            "anchor_choice": "probit latent-index scale",
+            "candidate_choice": "logistic log-odds scale",
+            "justification": "The alternative model preserves the binary focal outcome.",
+        })
+
+        schema = normalize_planning_output(
+            plan,
+            case_id=CASE_ID,
+            memory_data={"case_id": CASE_ID, "memory_records": []},
+            iteration=1,
+        )
+
+        task1 = next(task for task in schema["plan"]["tasks"] if task["task_id"] == "Task1")
+        alignment = task1["method_quality"]["anchor_alignment"]
+        self.assertEqual(alignment["deviations"][-1]["dimension"], "outcome")
+        self.assertEqual(alignment["outcome"]["status"], "justified_deviation")
+
+    def test_planning_normalizes_other_fine_grained_deviation_dimensions(self):
+        plan = make_plan()
+        alignment = plan["plan"]["tasks"][0]["method_quality"]["anchor_alignment"]
+        for dimension in ("target_population", "missing-data handling"):
+            alignment["deviations"].append({
+                "dimension": dimension,
+                "anchor_choice": "anchor choice",
+                "candidate_choice": "candidate choice",
+                "justification": "A defensible robustness choice.",
+            })
+        alignment["deviations"].append({
+            "dimension": "controls",
+            "anchor_choice": "anchor controls",
+            "candidate_choice": "alternative controls",
+            "justification": "A defensible robustness choice.",
+        })
+
+        schema = normalize_planning_output(
+            plan,
+            case_id=CASE_ID,
+            memory_data={"case_id": CASE_ID, "memory_records": []},
+            iteration=1,
+        )
+
+        task1 = next(task for task in schema["plan"]["tasks"] if task["task_id"] == "Task1")
+        alignment = task1["method_quality"]["anchor_alignment"]
+        dimensions = [deviation["dimension"] for deviation in alignment["deviations"]]
+        self.assertEqual(dimensions[-3:], ["sample", "sample", "model"])
+        self.assertEqual(alignment["sample"]["status"], "justified_deviation")
+        self.assertEqual(alignment["model"]["status"], "justified_deviation")
+
+    def test_planning_rejects_unknown_deviation_dimension(self):
+        plan = make_plan()
+        alignment = plan["plan"]["tasks"][0]["method_quality"]["anchor_alignment"]
+        alignment["deviations"].append({
+            "dimension": "unsupported_choice",
+            "anchor_choice": "anchor choice",
+            "candidate_choice": "candidate choice",
+            "justification": "Unrecognized dimensions must not bypass validation.",
+        })
+
+        with self.assertRaisesRegex(ValueError, "unsupported dimension 'unsupported_choice'"):
+            normalize_planning_output(
+                plan,
+                case_id=CASE_ID,
+                memory_data={"case_id": CASE_ID, "memory_records": []},
+                iteration=1,
+            )
 
     def test_execution_rejects_wrong_candidate_id(self):
         schema = initial_schema()

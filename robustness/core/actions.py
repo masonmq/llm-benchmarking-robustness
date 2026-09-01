@@ -2,6 +2,7 @@
 import os
 
 from replicatorbench.info_extractor.file_utils import read_txt, read_csv, read_json, read_pdf, read_docx
+from core.human_intervention import human_intervention_enabled
 from core.tools import (
     list_files_in_folder,
     ask_human_input,
@@ -17,6 +18,8 @@ from core.tools import (
     get_dataset_columns,
     get_dataset_variable_summary,
     read_and_summarize_pdf,
+    search_pdf,
+    read_pdf_pages,
     read_html
 )
 
@@ -25,13 +28,15 @@ def base_known_actions() -> dict:
     Generic actions available to ALL agents.
     Stage-specific agents can extend this with their own entries.
     """
-    return {
+    actions = {
         "list_files_in_folder": list_files_in_folder,
 
         "read_txt": read_txt,
         "read_csv": read_csv,
         #"read_pdf": read_pdf,
         "read_pdf": read_and_summarize_pdf,
+        "search_pdf": search_pdf,
+        "read_pdf_pages": read_pdf_pages,
         "read_json": read_json,
         "read_docx": read_docx,
 
@@ -45,20 +50,21 @@ def base_known_actions() -> dict:
         "get_dataset_columns": get_dataset_columns,
          "get_dataset_variable_summary": get_dataset_variable_summary,
 
-        "ask_human_input": ask_human_input,
-        
         # file manipulating 
         "read_file": read_file,
         "edit_file": edit_file,
         "write_file": write_file,
         "read_html": read_html
     }
+    if human_intervention_enabled():
+        actions["ask_human_input"] = ask_human_input
+    return actions
 
 def get_tool_definitions() -> list:
     """
     Returns the OpenAI tool definitions as JSON schemas for the base actions.
     """
-    return [
+    tools = [
         {
             "type": "function",
             "function": {
@@ -91,13 +97,51 @@ def get_tool_definitions() -> list:
             "type": "function",
             "function": {
                 "name": "read_pdf",
-                "description": "Extracts text from a PDF. Automatically summarizes if the PDF is long (>15 pages).",
+                "description": "Returns exact text for a short PDF or a bounded opening-page overview for a long PDF. Use search_pdf and read_pdf_pages for exact evidence from long PDFs.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "file_path": {"type": "string", "description": "Path to the PDF file."}
                     },
                     "required": ["file_path"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "search_pdf",
+                "description": "Searches a PDF locally and returns ranked page numbers with bounded text snippets. Use focused queries for methods, variables, models, restrictions, or result tables.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "file_path": {"type": "string", "description": "Path to the PDF file."},
+                        "query": {"type": "string", "description": "Focused words or phrase to locate in the PDF."},
+                        "max_results": {"type": "integer", "minimum": 1, "maximum": 8, "default": 5}
+                    },
+                    "required": ["file_path", "query"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "read_pdf_pages",
+                "description": "Reads exact text from selected 1-based PDF pages. At most 8 pages and 30000 characters are returned per call.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "file_path": {"type": "string", "description": "Path to the PDF file."},
+                        "page_numbers": {
+                            "type": "array",
+                            "items": {"type": "integer", "minimum": 1},
+                            "minItems": 1,
+                            "maxItems": 8,
+                            "description": "One-based page numbers to read."
+                        },
+                        "max_chars": {"type": "integer", "minimum": 1, "maximum": 30000, "default": 30000}
+                    },
+                    "required": ["file_path", "page_numbers"]
                 }
             }
         },
@@ -325,6 +369,12 @@ def get_tool_definitions() -> list:
             }
         }
     ]
+    if not human_intervention_enabled():
+        tools = [
+            tool for tool in tools
+            if tool.get("function", {}).get("name") != "ask_human_input"
+        ]
+    return tools
 
 def get_execute_tool_definitions() -> list:
     """
@@ -338,7 +388,10 @@ def get_execute_tool_definitions() -> list:
             "type": "function",
             "function": {
                 "name": "run_shell_command",
-                "description": "Executes a shell command in the local terminal. REQUIRES human confirmation.",
+                "description": (
+                    "Executes a shell command in the local terminal."
+                    + (" Requires human confirmation." if human_intervention_enabled() else "")
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -468,6 +521,8 @@ def get_execute_tool_definitions() -> list:
 PRUNE_ALLOWED_ACTIONS = [
     "read_json",
     "read_pdf",
+    "search_pdf",
+    "read_pdf_pages",
     "read_txt",
     "read_file",
     "list_files_in_folder",
@@ -483,7 +538,13 @@ PRUNE_ALLOWED_ACTIONS = [
 
 # Readers the Pruning Agent may use only on non-leakage files: the original paper,
 # the candidate path's analysis code, and plain config/readme files.
-PRUNE_GUARDED_READERS = ("read_pdf", "read_txt", "read_file")
+PRUNE_GUARDED_READERS = (
+    "read_pdf",
+    "search_pdf",
+    "read_pdf_pages",
+    "read_txt",
+    "read_file",
+)
 
 # File-name tokens that identify leakage sources for the Pruning Agent
 PRUNE_BLOCKED_NAME_TOKENS = (

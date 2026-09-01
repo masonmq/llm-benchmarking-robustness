@@ -76,6 +76,19 @@ def _extract_action(text: str):
             return m.group(1), m.group(2).strip()
     return None
 
+
+def _parse_json_answer(text: str):
+    json_start = text.find("{")
+    if json_start == -1:
+        raise json.JSONDecodeError("No JSON object found", text, 0)
+
+    candidate = text[json_start:]
+    parsed, end = json.JSONDecoder().raw_decode(candidate)
+    trailing = candidate[end:].strip()
+    if trailing.strip("}"):
+        raise json.JSONDecodeError("Unexpected content after JSON object", candidate, end)
+    return parsed, len(trailing)
+
 def update_metadata(study_path: str, stage: str, data: dict, logger=logger):
     """
     Updates metadata.json in the study_path with metrics for a specific stage.
@@ -497,12 +510,12 @@ def run_react_loop(system_prompt: str, known_actions: dict, tool_definitions: li
             checkpoint_stats[current_checkpoint] = stats
             
             try:
-                json_start = json_answer_str.find('{')
-                json_end = json_answer_str.rfind('}')
-                if json_start != -1 and json_end != -1:
-                    json_answer_str = json_answer_str[json_start : json_end + 1]
-
-                final_answer = json.loads(json_answer_str)
+                final_answer, ignored_braces = _parse_json_answer(json_answer_str)
+                if ignored_braces:
+                    logger.warning(
+                        "Ignored %s extra closing brace(s) after the final JSON object.",
+                        ignored_braces,
+                    )
                 logger.info("\n--- Final Answer Found ---")
                 
                 if on_final: on_final(final_answer)

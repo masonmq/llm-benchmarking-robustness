@@ -11,8 +11,12 @@ from pathlib import Path
 import difflib
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
-
-from pypdf import PdfReader
+from core.human_intervention import human_intervention_enabled, request_approval
+from core.pdf_retrieval import (
+    read_pdf_overview,
+    read_pdf_pages as read_selected_pdf_pages,
+    search_pdf as search_pdf_pages,
+)
 
 client = OpenAI(api_key=API_KEY)
 
@@ -256,6 +260,12 @@ def ask_human_input(question: str) -> str:
     Returns:
         str: The human's response from the terminal.
     """
+    if not human_intervention_enabled():
+        return (
+            "Human intervention is disabled. Continue with the authorized evidence, "
+            "or return a clear failure if the missing information is required."
+        )
+
     # Print a clear message to the user indicating the agent needs help
     print("\n🤔 [AGENT NEEDS HUMAN INPUT] 🤔")
     print(f"Agent's Question: {question}")
@@ -354,10 +364,9 @@ def write_file(file_path: str, file_content: str, overwrite: bool = False) -> st
         print(msg)
         return msg
 
-    user_response = input("Do you approve? (yes/no): ")
-    if user_response.lower().strip() != "yes":
+    if not request_approval("Do you approve? (yes/no): "):
         print("❌ User denied execution.")
-        return f"Command execution denied by the user:\n{user_response}"
+        return "Command execution denied by the user."
 
     try:
         full_path.parent.mkdir(parents=True, exist_ok=True)
@@ -408,7 +417,7 @@ def edit_file(
 ) -> str:
     """
     Targeted edits WITHOUT overwriting the whole file.
-    Shows a unified diff and requires approval.
+    Shows a unified diff and requests approval when human intervention is enabled.
 
     edit_type:
       - "replace"
@@ -493,10 +502,9 @@ def edit_file(
     print(f"FULL PATH: {full_path}")
     print(f"DIFF:\n---\n{diff}\n---")
 
-    user_response = input("Do you approve this edit? (yes/no): ")
-    if user_response.lower().strip() != "yes":
+    if not request_approval("Do you approve this edit? (yes/no): "):
         print("❌ User denied edit.")
-        return f"Edit denied by the user:\n{user_response}"
+        return "Edit denied by the user."
 
     try:
         full_path.write_text(edited, encoding="utf-8")
@@ -506,84 +514,17 @@ def edit_file(
     except Exception as e:
         return f"❌ Error writing edited file to {full_path}: {e}"
 
-data_summarizer_prompt = (
-"You are a careful technical paper summarizer. "
-"Summarize this chunk while preserving dataset names, code/data availability clues, "
-"repository/archive mentions, DOIs, accession numbers, and any described download procedures."
-)
-
-normal_summarization_prompt = (
-"You are a helpful research assistant."
-"Summarize the following text from a technical paper/document. Capture key methodologies, specific metrics, results, and conclusions. Do not lose specific data points."
-)
-
-
 def read_and_summarize_pdf(file_path: str, summarizer_model: str="gpt-4o", for_data: bool=False) -> str:
-    """
-    Reads a PDF file. If the PDF is short (<= 15 pages), it returns the full text.
-    If the PDF is long (> 15 pages), it splits the text into chunks and uses the
-    LLM to summarize each chunk, returning a consolidated summary to save context window.
+    del summarizer_model, for_data
+    return read_pdf_overview(file_path)
 
-    Args:
-        file_path (str): Path to the PDF file.
 
-    Returns:
-        str: Full text or a consolidated summary of the PDF.
-    """
-    if not os.path.exists(file_path):
-        return f"Error: File '{file_path}' not found."
+def search_pdf(file_path: str, query: str, max_results: int = 5) -> str:
+    return search_pdf_pages(file_path, query, max_results)
 
-    try:
-        reader = PdfReader(file_path)
-        number_of_pages = len(reader.pages)
-        
-        # Extract all text first
-        full_text = ""
-        for page in reader.pages:
-            text = page.extract_text()
-            if text:
-                full_text += text + "\n"
-        
-        # THRESHOLD: If 15 pages or less, just return the text as is.
-        if number_of_pages <= 15:
-            print(f"PDF is short ({number_of_pages} pages). Returning full text.")
-            return f"--- START OF PDF CONTENT ({number_of_pages} pages) ---\n{full_text}\n--- END OF PDF CONTENT ---"
 
-        # LOGIC FOR LONG PDFS
-        print(f"PDF is long ({number_of_pages} pages). Summarizing content to prevent overflow...")
-        
-        # Split text into chunks of roughly 12,000 characters (approx 3-4k tokens)
-        chunk_size = 12000
-        chunks = [full_text[i:i+chunk_size] for i in range(0, len(full_text), chunk_size)]
-        
-        summaries = []
-        total_chunks = len(chunks)
-        prompt = data_summarizer_prompt if for_data else normal_summarization_prompt
-        for i, chunk in enumerate(chunks):
-            print(f"Summarizing chunk {i+1}/{total_chunks}...")
-            try: 
-                completion = client.chat.completions.create(
-                    model=summarizer_model,
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": prompt,
-                        },
-                        {"role": "user", "content": chunk}
-                    ]
-                )
-                summaries.append(completion.choices[0].message.content)
-            except Exception as e:
-                print(f"Chunk {i+1} failed: {e}")
-                summaries.append(f"Chunk {i+1} fauled: {e}")
-        consolidated_summary = "\n\n".join(summaries)
-        
-        return (f"--- PDF SUMMARY (Document was {number_of_pages} pages long) ---\n"
-                f"The document was too long to read directly, so here is a detailed summary of all sections:\n\n"
-                f"{consolidated_summary}")
-
-    except Exception as e:
-        return f"Error reading or summarizing PDF: {e}"
+def read_pdf_pages(file_path: str, page_numbers: list[int], max_chars: int = 30_000) -> str:
+    return read_selected_pdf_pages(file_path, page_numbers, max_chars)
     
     
 

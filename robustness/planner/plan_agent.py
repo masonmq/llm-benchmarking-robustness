@@ -10,6 +10,13 @@ from core.constants import (
     PLAN_ANALYSIS_CONSTANTS,
     PLANNING_RULES,
 )
+from core.human_intervention import agent_intervention_instruction
+from core.method_families import (
+    changed_analysis_decisions,
+    covered_analysis_decisions,
+    covered_method_families,
+    normalize_family_novelty,
+)
 from core.prompts import (
     PREAMBLE_PLAN,
     ROBUSTNESS_DESIGN_CODE_MODE_POLICY,
@@ -34,7 +41,7 @@ known_actions = base_known_actions()
 
 
 def build_system_prompt(_code_mode: str) -> str:
-    return PREAMBLE_PLAN
+    return "\n\n".join([PREAMBLE_PLAN, agent_intervention_instruction()])
 
 
 def run_plan_analysis(
@@ -82,6 +89,8 @@ def run_plan_analysis(
 
     for planning_pruning_loop in range(1, max_planning_pruning_loops + 1):
         shared_memory, memory_path = load_case_memory(paper_id, study_path)
+        method_family_coverage = covered_method_families(shared_memory)
+        analysis_decision_coverage = covered_analysis_decisions(shared_memory)
         logger.info(
             "[memory] loaded shared memory for planning loop %s: %s",
             planning_pruning_loop,
@@ -101,6 +110,8 @@ def run_plan_analysis(
             example_good_analysis=example_good_analysis,
             example_bad_analysis=example_bad_analysis,
             shared_memory=shared_memory,
+            method_family_coverage=method_family_coverage,
+            analysis_decision_coverage=analysis_decision_coverage,
             current_schema=current_schema,
             planning_pruning_loop=planning_pruning_loop,
             expected_path_id=expected_path_id,
@@ -143,6 +154,39 @@ def run_plan_analysis(
             previous_schema=current_schema,
             study_path=study_path,
         )
+        novelty_corrections = normalize_family_novelty(
+            plan_output,
+            method_family_coverage,
+            tasks_to_generate,
+        )
+        for task_id, previous_value, corrected_value in novelty_corrections:
+            logger.warning(
+                "[plan] corrected %s family_novelty from %r to %r using Shared Memory",
+                task_id,
+                previous_value,
+                corrected_value,
+            )
+        planned_tasks = {
+            task["task_id"]: task
+            for task in plan_output["plan"]["tasks"]
+        }
+        for task_id in tasks_to_generate:
+            changed_decisions = changed_analysis_decisions(
+                planned_tasks[task_id],
+                analysis_decision_coverage.get(task_id, {}),
+            )
+            if changed_decisions:
+                logger.info(
+                    "[plan] %s uses previously untried analytical decisions: %s",
+                    task_id,
+                    ", ".join(changed_decisions),
+                )
+            elif any(analysis_decision_coverage.get(task_id, {}).values()):
+                logger.warning(
+                    "[plan] %s changes the method but reuses prior high-impact decisions; "
+                    "confirm that no defensible untried decision was available",
+                    task_id,
+                )
         missing_code_files = missing_analysis_code_files(plan_output, study_path)
         planning_attempt = 1
         while missing_code_files and planning_attempt < max_planning_pruning_loops:
@@ -333,7 +377,7 @@ Regenerate only the tasks listed in tasks_to_generate. Copy every high-quality t
     return f"""
 You are the Planning Agent for an analytical robustness study. Plan Task1 and Task2 for the focal claim without running the analysis.
 
-Before proposing a method, read the relevant parts of original_paper.pdf and inspect every authorized dataset's shape, columns, and focal-variable summaries. Use that evidence to identify the estimand and available variables. After writing each task's code, read it back and complete the plan-code preflight. Do not return the universal schema before these steps are complete.
+Before proposing a method, read original_paper.pdf and inspect every authorized dataset's shape, columns, and focal-variable summaries. For a long paper, call read_pdf for its bounded overview, use focused search_pdf queries for the focal claim, method/model/variables, and relevant result tables, then use read_pdf_pages for the exact supporting pages. Use one bounded exact-page read and at most one follow-up search/read if a required anchor field remains unresolved. Do not infer that a detail is unavailable from the overview alone. Use this evidence to identify the estimand and available variables. After writing each task's code, read it back and complete the plan-code preflight. Do not return the universal schema before these steps are complete.
 
 Here is an example paper:
 {context['example_paper']}
@@ -368,6 +412,16 @@ Absolute candidate artifact directories for write_file: {json.dumps(artifact_wri
 
 Shared Memory is read-only. It contains every earlier planned candidate and any executor-fixed path for this case. Compare each new proposal against all candidates for the same task and do not repeat an earlier analytical path.
 
+Prior completed structural method families by task:
+{json.dumps(context['method_family_coverage'], indent=2)}
+
+For each generated task, identify the defensible structural method families supported by the paper, task, and available data. If an executable family is not listed above, select an untried family before making another variation within a covered family. Probit, Logit, complementary log-log, and linear-probability regressions with the same single-equation structure are one family, not four. A simultaneous-equation, instrumental-variable, two-stage, panel, multilevel, matching/weighting, or other design is a different family only when its assumptions and required variables are supported. Set analysis_path.structural_method_family, family_novelty, and family_selection_reason accordingly. Use family_novelty "untried" for a new family, or "reused_no_defensible_alternative" only when no untried executable family is defensible. Do not choose a family because its result is expected to support the claim.
+
+High-impact analytical choices already used, grouped by task and decision dimension:
+{json.dumps(context['analysis_decision_coverage'], indent=2)}
+
+Also compare estimand scale, target population and sample, missing-data handling, focal-variable construction, and controls. Prefer an untried, defensible high-impact choice over a cosmetic model variation. In anchor_alignment.deviations, use only the five schema dimensions: map estimand scale to outcome, focal-variable construction to contrast, target population or missing-data handling to sample, and controls to model. Keep the focal outcome and contrast aligned with the claim; vary an outcome definition, sample, or target population only when it is a justified way to answer the same task. Do not force a change that is unsupported by the paper, task, or data; when no defensible alternative exists, retain the supported choice and explain that limitation in method_justification.novelty_reason.
+
 === SHARED MEMORY (READ ONLY) ===
 {json.dumps(context['shared_memory'], indent=2)}
 === END SHARED MEMORY ===
@@ -375,7 +429,7 @@ Shared Memory is read-only. It contains every earlier planned candidate and any 
 Current study directory: {Path(context['study_path']).resolve()}
 Use original_paper.pdf and only the authorized files under data/. For each task in tasks_to_generate, pass an absolute target path under its required directory to write_file. In universal_schema.json, use the matching study-relative paths in analysis_code.artifact_dir, code_files, entry_file, and run_command. Do not inspect or reuse code from other candidate artifact directories or loose analysis scripts from earlier runs; Shared Memory is the source for prior-path comparison. Do not change the focal claim, task instructions, or dataset. Do not write or request a Shared Memory update.
 
-For each generated task, use its analysis anchor as the starting specification and complete every anchor_alignment dimension. If Shared Memory already contains that path, change the fewest dimensions needed to produce a substantively distinct robustness analysis and preserve all other anchor choices. Record every changed dimension under deviations. Also identify the exact estimand and its claim mapping; cite authorized evidence for every focal variable, control, restriction, transformation, and cutoff; preserve the focal variable structure unless a collapse is justified; require the code to report sample attrition; set code_reports_sample_flow to the JSON Boolean true only when the code reports the starting rows, rows removed by each material rule, and final analytic rows; and verify that every referenced column exists and the code matches the declared analysis. Do not use expected results or anticipated support when choosing a method.
+For each generated task, use its analysis anchor as the starting specification and complete every anchor_alignment dimension. Preserve the estimand while applying the method-family coverage rule above. Within the selected structural family, change the fewest dimensions needed to produce a substantively distinct robustness analysis and preserve all other anchor choices. Record every changed dimension under deviations. Also identify the exact estimand and its claim mapping; cite authorized evidence for every focal variable, control, restriction, transformation, and cutoff; preserve the focal variable structure unless a collapse is justified; require the code to report sample attrition; set code_reports_sample_flow to the JSON Boolean true only when the code reports the starting rows, rows removed by each material rule, and final analytic rows; and verify that every referenced column exists and the code matches the declared analysis. Do not use expected results or anticipated support when choosing a method.
 
 Code policy:
 {context['code_policy']}

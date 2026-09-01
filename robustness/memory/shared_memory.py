@@ -7,6 +7,9 @@ import shlex
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from core.human_intervention import request_approval
+from core.method_families import canonical_structural_method_family
+
 
 TEMPLATE_PATH = Path(__file__).resolve().parents[1] / "templates" / "shared_memory.json"
 TASK_IDS = ("Task1", "Task2")
@@ -34,6 +37,16 @@ METHOD_QUALITY_SECTIONS = (
     "code_preflight",
 )
 ANCHOR_DIMENSIONS = ("outcome", "contrast", "sample", "model", "inference")
+ANCHOR_DIMENSION_ALIASES = {
+    "estimand_scale": "outcome",
+    "outcome_scale": "outcome",
+    "target_population": "sample",
+    "sample_restriction": "sample",
+    "missing_data": "sample",
+    "missing_data_handling": "sample",
+    "focal_variable_construction": "contrast",
+    "controls": "model",
+}
 ANCHOR_ALIGNMENT_STATUSES = {"aligned", "justified_deviation"}
 PRUNE_STATUSES = {"high-quality", "low-quality"}
 EXECUTION_STATUSES = {"executed_success", "execution_failed"}
@@ -217,6 +230,12 @@ def normalize_planning_output(
     plan["planned_id"] = path_id
     plan["task_scope"] = list(TASK_IDS)
     plan["tasks"] = normalized_tasks
+    for task in normalized_tasks:
+        analysis_path = task.get("analysis_path", {})
+        analysis_path["structural_method_family"] = canonical_structural_method_family(
+            analysis_path.get("structural_method_family")
+        )
+        _normalize_anchor_deviation_dimensions(task)
     if study_path is not None:
         _normalize_task_code_paths(
             normalized_tasks,
@@ -692,8 +711,7 @@ def write_memory_update_with_confirmation(
     proposed = update_memory_record(current_memory, new_record)
     print("\nShared memory update proposal:")
     print(json.dumps(new_record, indent=2))
-    response = input(f"Write this update to {memory_path.name}? (yes/no): ").strip().lower()
-    if response != "yes":
+    if not request_approval(f"Write this update to {memory_path.name}? (yes/no): "):
         print("Shared memory update skipped.")
         return False
     save_case_memory(memory_path, proposed)
@@ -714,6 +732,22 @@ def _validate_universal_schema(payload: Dict[str, Any]) -> None:
             raise ValueError(f"Universal schema {task_id} is missing candidate_id.")
         if task.get("status") not in TASK_STATUSES:
             raise ValueError(f"Universal schema {task_id} has unsupported status {task.get('status')!r}.")
+        analysis_path = task.get("analysis_path")
+        if not isinstance(analysis_path, dict) or not analysis_path.get("structural_method_family"):
+            raise ValueError(
+                f"Universal schema {task_id} is missing analysis_path.structural_method_family."
+            )
+        if analysis_path.get("family_novelty") not in {
+            "untried",
+            "reused_no_defensible_alternative",
+        }:
+            raise ValueError(
+                f"Universal schema {task_id} has unsupported analysis_path.family_novelty."
+            )
+        if not analysis_path.get("family_selection_reason"):
+            raise ValueError(
+                f"Universal schema {task_id} is missing analysis_path.family_selection_reason."
+            )
         _validate_method_quality(task, task_id)
 
 
@@ -928,6 +962,30 @@ def _validate_anchor_alignment(alignment: Dict[str, Any], task_id: str) -> None:
             )
 
 
+def _normalize_anchor_deviation_dimensions(task: Dict[str, Any]) -> None:
+    alignment = task.get("method_quality", {}).get("anchor_alignment")
+    if not isinstance(alignment, dict):
+        return
+
+    deviations = alignment.get("deviations")
+    if not isinstance(deviations, list):
+        return
+
+    for deviation in deviations:
+        if not isinstance(deviation, dict):
+            continue
+        dimension = deviation.get("dimension")
+        if not isinstance(dimension, str):
+            continue
+        normalized_name = re.sub(r"[^a-z0-9]+", "_", dimension.strip().lower()).strip("_")
+        canonical_dimension = ANCHOR_DIMENSION_ALIASES.get(normalized_name, normalized_name)
+        deviation["dimension"] = canonical_dimension
+
+        assessment = alignment.get(canonical_dimension)
+        if canonical_dimension in ANCHOR_DIMENSIONS and isinstance(assessment, dict):
+            assessment["status"] = "justified_deviation"
+
+
 def _method_quality_gate_failures(task: Dict[str, Any]) -> List[str]:
     method_quality = task["method_quality"]
     sample_flow = method_quality["sample_audit"].get("code_reports_sample_flow")
@@ -1113,6 +1171,11 @@ def _task_signature(task: Dict[str, Any]) -> Dict[str, Any]:
             for item in variables.get("controls", [])
         ]
     return {
+        "structural_method_family": canonical_structural_method_family(
+            analysis_path.get("structural_method_family")
+        ),
+        "family_novelty": analysis_path.get("family_novelty", "not_stated"),
+        "family_selection_reason": analysis_path.get("family_selection_reason", ""),
         "model_family": analysis_path.get("model_family", "not_stated"),
         "outcome": variables.get("outcome", {}).get("name", key_choices.get("outcome_measure")),
         "main_predictor": variables.get("main_predictor", {}).get(

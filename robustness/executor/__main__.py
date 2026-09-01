@@ -22,7 +22,7 @@ def main():
         )
 
     elif args.stage == "execute":
-        # Agent-driven, step-by-step with human confirmation before executing
+        # Agent-driven execution using the configured intervention setting.
         from robustness.executor.execute_agent import run_execute
         run_execute(
             study_path=args.study_path,

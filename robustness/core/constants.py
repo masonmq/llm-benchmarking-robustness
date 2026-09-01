@@ -235,6 +235,7 @@ PLANNING_RULES = {
         "Identify the focal estimand before choosing variables or a model.",
         "Keep candidates aligned with the paper analysis anchor or document each justified deviation.",
         "When avoiding a duplicate, change only the minimum analytical dimensions needed.",
+        "Compare prior high-impact analytical decisions and prefer an untried defensible choice.",
         "Verify proposed variables against the authorized data.",
         "Document sample exclusions and require the code to report sample flow.",
         "Justify every restriction, control, transformation, and variable collapse.",
@@ -247,6 +248,7 @@ PLANNING_RULES = {
         "Do not generate a replacement for a retained high-quality task.",
         "Do not propose a path that repeats shared memory.",
         "Do not choose a path because it is expected to support the focal claim.",
+        "Do not force an analytical variation without support from the paper, task, or data.",
         "Do not invent variables, restrictions, or controls without authorized evidence.",
     ],
 }

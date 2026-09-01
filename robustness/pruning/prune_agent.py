@@ -8,6 +8,7 @@ from core.constants import (
     PRUNE_PROMPT_VERSION,
     PRUNING_RULES,
 )
+from core.human_intervention import agent_intervention_instruction
 from core.prompts import EXAMPLE_PRUNE, PREAMBLE_PRUNE, PRUNE_CHECKS_POLICY
 from core.utils import configure_file_logging, get_logger
 from robustness.memory.shared_memory import (
@@ -26,7 +27,7 @@ from robustness.memory.shared_memory import (
 
 
 logger, formatter = get_logger(name="robustness")
-system_prompt = "\n\n".join([PREAMBLE_PRUNE, EXAMPLE_PRUNE])
+system_prompt = "\n\n".join([PREAMBLE_PRUNE, EXAMPLE_PRUNE, agent_intervention_instruction()])
 known_actions = prune_known_actions()
 
 CHECKPOINT_MAP = {
@@ -109,6 +110,7 @@ Your authorized inputs are:
 
 Never read a human analysis/review PDF or expected or ground-truth results. Do not run, modify, or create an analytical path.
 Verify each reviewed candidate against its task-specific analysis anchor. A method is not high-quality merely because it is statistically conventional; its outcome, contrast, sample, model, and inference choices must align with the anchor or have a documented, evidence-based deviation that still answers the task.
+For a long original paper, use search_pdf and read_pdf_pages to verify the exact paper evidence. Do not approve or reject a candidate from the opening-page overview alone.
 
 === START OF PRUNING INPUT ===
 {json.dumps(prune_in, indent=2)}
@@ -160,7 +162,12 @@ Answer: [final JSON object]
         logger=logger,
         code_mode=code_mode,
     )
-    if not isinstance(final_answer, dict):
+    if not isinstance(final_answer, dict) or not isinstance(
+        final_answer.get("pruning_output"), dict
+    ):
+        error = final_answer.get("error") if isinstance(final_answer, dict) else None
+        if error:
+            logger.error("[prune] agent output could not be parsed: %s", error)
         return {
             "prune_output": final_answer,
             "universal_output": universal_input,

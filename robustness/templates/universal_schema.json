@@ -115,6 +115,9 @@
           "path_description": "Concise description of what should be run for this task.",
           "software": "Software or language used. Example: R, Stata, Matlab, Python, or not_stated.",
           "original_software": "Language of the original analysis code, if it differs from software.",
+          "structural_method_family": "High-level family based on identifying structure, not only link function. Example: single_equation_regression or endogeneity_corrected_two_stage.",
+          "family_novelty": "untried, or reused_no_defensible_alternative.",
+          "family_selection_reason": "Evidence-based reason this family is defensible and appropriate given the prior method-family coverage.",
           "model_family": "Main model or test family for this task.",
           "preprocessing_steps": [
             "Ordered preprocessing and preparation steps. Another analyst should be able to reconstruct the code from this list."
@@ -283,6 +286,7 @@
       "task2_specified": "pass | fail",
       "method_justification_present": "pass | fail",
       "not_duplicate_of_shared_memory": "pass | fail",
+      "method_family_coverage": "pass | fail",
       "self_check_note": "Short explanation of the self check."
     }
   },
