@@ -14,7 +14,7 @@ def main():
     args = p.parse_args()
 
     if args.stage == "evaluate-execute-capability":
-        from robustness.validator.evaluate_execute_capability import run_evaluate_execute_capability
+        from validator.evaluate_execute_capability import run_evaluate_execute_capability
         # run helper agent to generate input analysis for executor
         run_evaluate_execute_capability(args.study_path,
         	tier=args.tier,
@@ -22,7 +22,7 @@ def main():
         	model_name=args.model_name
         )
     elif args.stage == "evaluate-execute-feedback":
-        from robustness.validator.execute_feedback import run_evaluate_execute_feedback
+        from validator.execute_feedback import run_evaluate_execute_feedback
         # run helper agent to generate input analysis for executor
         run_evaluate_execute_feedback(args.study_path,
         	tier=args.tier,

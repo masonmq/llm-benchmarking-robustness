@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
-
+from core.pdf_retrieval import read_pdf_overview
 import pandas as pd
 
-from core.actions import base_known_actions, get_tool_definitions, read_file, read_pdf
+from core.actions import base_known_actions, get_tool_definitions, read_file
 from core.agent import run_react_loop, save_output
 from core.constants import (
     CONCLUSION_CLASSIFICATION_RULES,
@@ -23,7 +23,7 @@ from core.prompts import (
     ROBUSTNESS_PLAN_POLICY,
 )
 from core.utils import configure_file_logging, get_logger
-from robustness.memory.shared_memory import (
+from memory.shared_memory import (
     candidate_artifact_dir,
     get_path_id,
     get_task_statuses,
@@ -65,9 +65,9 @@ def run_plan_analysis(
     logger.info(f"Starting analysis planning for study path: {study_path}")
     analysis_schema = read_file(PLAN_ANALYSIS_CONSTANTS["analysis_schema"])
     task_description_data = pd.read_excel(PLAN_ANALYSIS_CONSTANTS["task_description_data"])
-    example_paper = read_pdf(PLAN_ANALYSIS_CONSTANTS["example_paper"])
-    example_good_analysis = read_pdf(PLAN_ANALYSIS_CONSTANTS["example_good_analysis"])
-    example_bad_analysis = read_pdf(PLAN_ANALYSIS_CONSTANTS["example_bad_analysis"])
+    example_paper = read_pdf_overview(PLAN_ANALYSIS_CONSTANTS["example_paper"])
+    example_good_analysis = read_pdf_overview(PLAN_ANALYSIS_CONSTANTS["example_good_analysis"])
+    example_bad_analysis = read_pdf_overview(PLAN_ANALYSIS_CONSTANTS["example_bad_analysis"])
 
     matching_rows = task_description_data[
         task_description_data["paper_id"].str.lower() == paper_id.lower()
@@ -244,7 +244,7 @@ def run_plan_analysis(
 
         logger.info("[plan->prune] handing active candidates to the Pruning Agent")
         print("\nplanning complete; starting pruning review\n")
-        from robustness.pruning.prune_agent import run_prune
+        from pruning.prune_agent import run_prune
 
         prune_result = run_prune(
             study_path=study_path,
@@ -301,7 +301,7 @@ def run_plan_analysis(
 
         logger.info("[prune->execute] both active candidates are high-quality")
         print("\nboth active candidates passed pruning; starting execution\n")
-        from robustness.executor.execute_agent import run_execute
+        from executor.execute_agent import run_execute
 
         execution_output = run_execute(
             study_path=study_path,
@@ -377,7 +377,7 @@ Regenerate only the tasks listed in tasks_to_generate. Copy every high-quality t
     return f"""
 You are the Planning Agent for an analytical robustness study. Plan Task1 and Task2 for the focal claim without running the analysis.
 
-Before proposing a method, read original_paper.pdf and inspect every authorized dataset's shape, columns, and focal-variable summaries. For a long paper, call read_pdf for its bounded overview, use focused search_pdf queries for the focal claim, method/model/variables, and relevant result tables, then use read_pdf_pages for the exact supporting pages. Use one bounded exact-page read and at most one follow-up search/read if a required anchor field remains unresolved. Do not infer that a detail is unavailable from the overview alone. Use this evidence to identify the estimand and available variables. After writing each task's code, read it back and complete the plan-code preflight. Do not return the universal schema before these steps are complete.
+Before proposing a method, read original_paper.pdf and inspect every authorized analytic dataset's shape, columns, and focal-variable summaries. Use load_dataset for actual tabular datasets; do not inspect binary datasets with read_file. When an authorized plain-text codebook or documentation file is large, use focused search_txt queries for the focal variables, controls, restrictions, IDs/cluster variables, and coding definitions, and use read_txt only for a short file or bounded preview. Do not ingest an entire large codebook when targeted retrieval can resolve the required evidence. For a long paper, call read_pdf for its bounded overview, use focused search_pdf queries for the focal claim, method/model/variables, and relevant result tables, then use read_pdf_pages for the exact supporting pages. Use one bounded exact-page read and at most one follow-up search/read if a required anchor field remains unresolved. Do not infer that a detail is unavailable from the overview alone. Use this evidence to identify the estimand and available variables. After writing each task's code, read it back and complete the plan-code preflight. Do not return the universal schema before these steps are complete.
 
 Here is an example paper:
 {context['example_paper']}
@@ -474,7 +474,7 @@ def _build_code_completion_question(
 
     return f"""
 The analytical plan below is complete, but its declared code files were not created.
-Use write_file to create every missing file at the exact target paths listed below. Implement the existing Task1 and Task2 analytical paths without changing the methods or filenames. You may inspect original_paper.pdf and the authorized files under data/ when writing the code. After all files exist, return the same JSON plan.
+Use write_file to create every missing file at the exact target paths listed below. Implement the existing Task1 and Task2 analytical paths without changing the methods or filenames. You may inspect original_paper.pdf and the authorized files under data/ when writing the code. Use load_dataset and dataset inspection tools for binary datasets, and use search_txt instead of ingesting an entire large text codebook or documentation file. After all files exist, return the same JSON plan.
 
 Planning attempt: {planning_attempt} of {max_planning_attempts}
 

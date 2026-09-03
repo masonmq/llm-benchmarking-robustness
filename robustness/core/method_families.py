@@ -23,6 +23,7 @@ _DIVERSITY_FIELDS = (
     "variable_construction",
     "controls",
 )
+
 _FAMILY_PATTERNS = (
     ("simultaneous_equation", ("simultaneous", "cdsimeq", "joint equation")),
     (
@@ -35,17 +36,42 @@ _FAMILY_PATTERNS = (
     ("regression_discontinuity", ("regression discontinuity",)),
     ("matching_or_weighting", ("matching", "propensity score", "inverse probability weight")),
     ("survival_or_event_history", ("survival", "event history", "cox proportional")),
+
+    (
+        "structural_equation_model",
+        (
+            "structural equation model",
+            "structural equation modeling",
+            "structural equation modelling",
+            "path analysis",
+        ),
+    ),
+    (
+        "time_series_model",
+        (
+            "time series model",
+            "time-series model",
+            "time series regression",
+            "time-series regression",
+            "autoregressive model",
+            "arima",
+            "vector autoregression",
+            "error correction model",
+            "ardl",
+        ),
+    ),
+    (
+        "spatial_model",
+        (
+            "spatial regression",
+            "spatial lag model",
+            "spatial error model",
+            "spatial autoregressive model",
+            "spatial durbin model",
+        ),
+    ),
 )
-# Other potential families that could be added in the future:
-# factor_analysis_or_scale_model
-# latent_variable_model
-# bayesian_model
-# nonparametric_or_permutation_test
-# machine_learning_prediction
-# structural_equation_model
-# time_series_model
-# spatial_model
-# survey_weighted_design
+
 
 _SINGLE_EQUATION_TERMS = (
     "single_equation",
@@ -63,10 +89,24 @@ _SINGLE_EQUATION_TERMS = (
     "negative_binomial",
 )
 
+_UNKNOWN_FAMILY_LABELS = {
+    "",
+    "na",
+    "n_a",
+    "none",
+    "null",
+    "unknown",
+    "not_stated",
+}
+
 
 def _normalize_family(value: Any) -> str:
     text = re.sub(r"[^a-z0-9]+", "_", str(value or "").lower()).strip("_")
     return text or "not_stated"
+
+
+def _is_unknown_family(value: Any) -> bool:
+    return _normalize_family(value) in _UNKNOWN_FAMILY_LABELS
 
 
 def canonical_structural_method_family(value: Any) -> str:
@@ -81,15 +121,23 @@ def canonical_structural_method_family(value: Any) -> str:
 
 
 def infer_structural_method_family(path: dict[str, Any]) -> str:
+    """Infer a canonical structural family for a planned path.
+
+    Prefer an explicitly supplied structural_method_family. If that field is
+    absent or effectively unknown, fall back to the detailed model_family and
+    existing path descriptors. This keeps coverage accounting robust without
+    changing how the Planning Agent chooses a method.
+    """
     signature = path.get("path_signature", path)
     explicit = signature.get("structural_method_family") or path.get("structural_method_family")
-    if explicit:
+    if explicit and not _is_unknown_family(explicit):
         return canonical_structural_method_family(explicit)
 
     text = " ".join(
         str(value or "")
         for value in (
             signature.get("model_family"),
+            path.get("model_family"),
             signature.get("variable_construction"),
             path.get("path_summary"),
         )
@@ -99,7 +147,9 @@ def infer_structural_method_family(path: dict[str, Any]) -> str:
             return family
     if any(term in text for term in _SINGLE_EQUATION_TERMS):
         return "single_equation_regression"
-    return _normalize_family(signature.get("model_family"))
+
+    model_family = signature.get("model_family") or path.get("model_family")
+    return _normalize_family(model_family)
 
 
 def covered_method_families(memory_data: dict[str, Any]) -> dict[str, list[str]]:
@@ -113,10 +163,14 @@ def covered_method_families(memory_data: dict[str, Any]) -> dict[str, list[str]]
                     continue
                 planned_path = candidate.get("planned_path")
                 if isinstance(planned_path, dict):
-                    coverage[task_id].add(infer_structural_method_family(planned_path))
+                    family = infer_structural_method_family(planned_path)
+                    if family not in _UNKNOWN_FAMILY_LABELS:
+                        coverage[task_id].add(family)
                 fixed_path = candidate.get("executor_fixed_path")
                 if isinstance(fixed_path, dict):
-                    coverage[task_id].add(infer_structural_method_family(fixed_path))
+                    family = infer_structural_method_family(fixed_path)
+                    if family not in _UNKNOWN_FAMILY_LABELS:
+                        coverage[task_id].add(family)
     return {task_id: sorted(families) for task_id, families in coverage.items()}
 
 
@@ -222,9 +276,11 @@ def normalize_family_novelty(
     tasks = {task["task_id"]: task for task in plan_output["plan"]["tasks"]}
     for task_id in generated_task_ids:
         analysis_path = tasks[task_id]["analysis_path"]
-        family = canonical_structural_method_family(
-            analysis_path.get("structural_method_family")
-        )
+
+
+        family = infer_structural_method_family(analysis_path)
+        analysis_path["structural_method_family"] = family
+
         expected = (
             "reused_no_defensible_alternative"
             if family in prior_coverage.get(task_id, [])

@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional, Tuple
 import io # Add this import at the top of your file
 from pathlib import Path
 import difflib
+import re
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 from core.human_intervention import human_intervention_enabled, request_approval
@@ -342,11 +343,64 @@ def list_files_in_folder(study_path, folder_path: str = None, strs2avoid = []) -
 
 from pathlib import Path
 
-def write_file(file_path: str, file_content: str, overwrite: bool = False) -> str:
+def _resolve_write_path(file_path: str, study_path: str = None) -> Path:
+    """
+    Resolve an agent write target.
+
+    When study_path is supplied by the agent runner, relative paths are anchored
+    to that study directory and all writes are restricted to stay inside it.
+    Without study_path, preserve the legacy Path.cwd() behavior for direct callers.
+    """
+    raw_path = Path(str(file_path))
+
+    if study_path is None:
+        return Path.cwd() / raw_path
+
+    study_dir = Path(study_path).resolve()
+
+    if raw_path.is_absolute():
+        full_path = raw_path.resolve()
+    else:
+        # Some callers already provide a cwd-relative path that includes the
+        # study directory (for example, data/original/1/...). Preserve it when
+        # it already resolves inside the study; otherwise treat the path as
+        # study-relative (for example, candidate_artifacts/...).
+        cwd_candidate = (Path.cwd() / raw_path).resolve()
+        try:
+            cwd_candidate.relative_to(study_dir)
+            full_path = cwd_candidate
+        except ValueError:
+            full_path = (study_dir / raw_path).resolve()
+
+    try:
+        full_path.relative_to(study_dir)
+    except ValueError as exc:
+        raise ValueError(
+            f"Write path '{file_path}' is outside the study directory '{study_dir}'."
+        ) from exc
+
+    return full_path
+
+
+def write_file(
+    file_path: str,
+    file_content: str,
+    overwrite: bool = False,
+    study_path: str = None,
+) -> str:
     """
     Create a NEW file (default) or overwrite an existing file only if overwrite=True.
+
+    Agent calls may supply study_path internally so relative paths are anchored
+    to the current study and cannot create files elsewhere in the repository.
+    Direct callers that omit study_path retain the previous cwd-relative behavior.
     """
-    full_path = Path.cwd() / file_path
+    try:
+        full_path = _resolve_write_path(file_path, study_path=study_path)
+    except ValueError as e:
+        error_message = f"❌ Error resolving write path: {e}"
+        print(error_message)
+        return error_message
 
     file_exists = full_path.exists()
 
@@ -381,9 +435,29 @@ def write_file(file_path: str, file_content: str, overwrite: bool = False) -> st
         return error_message
 
 
-def read_file(file_path: str, max_chars: int = 20000) -> str:
+BINARY_DATASET_EXTENSIONS = {".xls", ".xlsx", ".dta", ".sav", ".rds"}
+
+
+def _read_text_content(full_path: Path) -> str:
+    try:
+        return full_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return full_path.read_text(encoding="latin-1")
+
+
+def search_txt(
+    file_path: str,
+    query: str,
+    max_results: int = 5,
+    context_lines: int = 3,
+    max_chars: int = 12_000,
+) -> str:
     """
-    Read a text file (truncated) so the agent can make targeted edits.
+    Search a text file locally and return bounded matching line windows.
+
+    This is deterministic and makes no LLM/API calls. It is intended for large
+    codebooks, documentation, and other text files where reading the whole file
+    would waste context/tokens.
     """
     full_path = Path.cwd() / file_path
 
@@ -391,11 +465,95 @@ def read_file(file_path: str, max_chars: int = 20000) -> str:
         return f"Error: File not found: {full_path}"
     if full_path.is_dir():
         return f"Error: Path is a directory: {full_path}"
+    if full_path.suffix.lower() in BINARY_DATASET_EXTENSIONS:
+        return (
+            f"Error: '{file_path}' is a binary dataset file. Use load_dataset and "
+            "the dataset inspection tools instead of search_txt."
+        )
+
+    query = str(query or "").strip()
+    if not query:
+        return "Error: search_txt requires a non-empty query."
 
     try:
-        content = full_path.read_text(encoding="utf-8")
-    except UnicodeDecodeError:
-        content = full_path.read_text(encoding="latin-1")
+        max_results = max(1, min(int(max_results), 8))
+        context_lines = max(0, min(int(context_lines), 8))
+        max_chars = max(1_000, min(int(max_chars), 15_000))
+    except (TypeError, ValueError):
+        return "Error: max_results, context_lines, and max_chars must be integers."
+
+    try:
+        content = _read_text_content(full_path)
+    except Exception as e:
+        return f"Error reading text file '{file_path}': {e}"
+
+    lines = content.splitlines()
+    query_lower = query.lower()
+    terms = [
+        term
+        for term in re.findall(r"[A-Za-z0-9_$.-]+", query_lower)
+        if len(term) >= 2
+    ]
+
+    scored = []
+    for idx, line in enumerate(lines):
+        line_lower = line.lower()
+        phrase_match = query_lower in line_lower
+        matched_terms = sum(1 for term in terms if term in line_lower)
+        if phrase_match or matched_terms:
+            score = (10 if phrase_match else 0) + matched_terms
+            scored.append((score, idx))
+
+    if not scored:
+        return f"No matches for '{query}' in '{file_path}'."
+
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    windows = []
+    for _, idx in scored:
+        start = max(0, idx - context_lines)
+        end = min(len(lines), idx + context_lines + 1)
+        if any(not (end <= existing_start or start >= existing_end) for existing_start, existing_end in windows):
+            continue
+        windows.append((start, end))
+        if len(windows) >= max_results:
+            break
+
+    output = [
+        f"Search results for '{query}' in '{file_path}' "
+        f"({len(lines)} lines; showing {len(windows)} bounded match window(s))."
+    ]
+    for match_no, (start, end) in enumerate(windows, 1):
+        output.append(f"\n--- Match {match_no}: lines {start + 1}-{end} ---")
+        for line_no in range(start, end):
+            output.append(f"{line_no + 1}: {lines[line_no]}")
+
+    result = "\n".join(output)
+    if len(result) > max_chars:
+        result = result[:max_chars] + f"\n... [TRUNCATED TO {max_chars} CHARACTERS] ..."
+    return result
+
+
+def read_file(file_path: str, max_chars: int = 20000) -> str:
+    """
+    Read a text file (truncated) so the agent can make targeted edits.
+    Binary dataset formats are rejected to prevent accidental binary dumps.
+    """
+    full_path = Path.cwd() / file_path
+
+    if not full_path.exists():
+        return f"Error: File not found: {full_path}"
+    if full_path.is_dir():
+        return f"Error: Path is a directory: {full_path}"
+    if full_path.suffix.lower() in BINARY_DATASET_EXTENSIONS:
+        return (
+            f"Error: '{file_path}' is a binary dataset file. Use load_dataset and "
+            "the dataset inspection tools instead of read_file."
+        )
+
+    try:
+        content = _read_text_content(full_path)
+    except Exception as e:
+        return f"Error reading file '{file_path}': {e}"
 
     if len(content) > max_chars:
         return content[:max_chars] + f"\n\n... [TRUNCATED {len(content)-max_chars} chars] ..."

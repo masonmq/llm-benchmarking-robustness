@@ -13,7 +13,7 @@ def main():
     args = p.parse_args()
 
     if args.stage == "execute-gen_gold_analysis":
-        from robustness.executor.produce_structure_analysis import run_gen_gold_analysis
+        from executor.produce_structure_analysis import run_gen_gold_analysis
         # run helper agent to generate input analysis for executor
         run_gen_gold_analysis(args.study_path,
         	tier=args.tier,
@@ -23,7 +23,7 @@ def main():
 
     elif args.stage == "execute":
         # Agent-driven execution using the configured intervention setting.
-        from robustness.executor.execute_agent import run_execute
+        from executor.execute_agent import run_execute
         run_execute(
             study_path=args.study_path,
             show_prompt=args.show_prompt,

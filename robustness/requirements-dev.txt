@@ -11,3 +11,4 @@ python-docx>=1.1.0
 json_repair>=0.52.4
 pypdf>=4.0.0
 tiktoken>=0.7.0
+xlrd>=2.0.1

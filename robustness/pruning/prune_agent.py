@@ -11,7 +11,7 @@ from core.constants import (
 from core.human_intervention import agent_intervention_instruction
 from core.prompts import EXAMPLE_PRUNE, PREAMBLE_PRUNE, PRUNE_CHECKS_POLICY
 from core.utils import configure_file_logging, get_logger
-from robustness.memory.shared_memory import (
+from memory.shared_memory import (
     accumulate_prune_output,
     apply_pruning_decisions,
     build_memory_record_from_prune_output,
@@ -41,6 +41,7 @@ CHECKPOINT_MAP = {
     "get_dataset_head": "3. Explore Dataset",
     "get_dataset_description": "3. Explore Dataset",
     "get_dataset_variable_summary": "3. Explore Dataset",
+    "search_txt": "3. Explore Dataset",
     "read_txt": "4. Review Analysis Code",
     "read_file": "4. Review Analysis Code",
     "ask_human_input": "5. Human Input",
@@ -110,6 +111,7 @@ Your authorized inputs are:
 
 Never read a human analysis/review PDF or expected or ground-truth results. Do not run, modify, or create an analytical path.
 Verify each reviewed candidate against its task-specific analysis anchor. A method is not high-quality merely because it is statistically conventional; its outcome, contrast, sample, model, and inference choices must align with the anchor or have a documented, evidence-based deviation that still answers the task.
+Independently verify data support with the actual authorized dataset tools. Inspect the dataset columns and the focal variables, controls, restrictions, IDs/cluster variables, and transformations materially used by the active candidate(s); do not summarize unrelated variables. If a large authorized plain-text codebook or documentation file is needed, use focused search_txt queries and retrieve only the relevant snippets instead of ingesting the whole file. Do not use read_file on binary datasets. If load_dataset fails, do not claim that dataset verification succeeded based only on documentation.
 For a long original paper, use search_pdf and read_pdf_pages to verify the exact paper evidence. Do not approve or reject a candidate from the opening-page overview alone.
 
 === START OF PRUNING INPUT ===
@@ -218,7 +220,7 @@ Answer: [final JSON object]
     if run_execution and both_high_quality:
         logger.info("[prune->execute] both active candidates are high-quality; starting execution")
         print("\nboth active candidates passed pruning; starting execution\n")
-        from robustness.executor.execute_agent import run_execute
+        from executor.execute_agent import run_execute
 
         execution_output = run_execute(
             study_path=study_path,

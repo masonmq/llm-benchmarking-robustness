@@ -17,9 +17,9 @@ from core.prompts import (
     ROBUSTNESS_EXECUTE_CODE_MODE_POLICY,
 )
 from core.utils import configure_file_logging, get_logger
-from replicatorbench.info_extractor.file_utils import read_json
-from robustness.executor.execute_tools import run_shell_command, run_stata_do_file
-from robustness.executor.orchestrator_tool import (
+from core.file_utils import read_json
+from executor.execute_tools import run_shell_command, run_stata_do_file
+from executor.orchestrator_tool import (
     orchestrator_build_image,
     orchestrator_execute_entry,
     orchestrator_generate_dockerfile,
@@ -28,7 +28,7 @@ from robustness.executor.orchestrator_tool import (
     orchestrator_run_container,
     orchestrator_stop_container,
 )
-from robustness.memory.shared_memory import (
+from memory.shared_memory import (
     build_memory_record_from_execution_results,
     get_case_id,
     get_path_id,
@@ -38,7 +38,7 @@ from robustness.memory.shared_memory import (
     update_memory_record,
     validate_execution_ready,
 )
-# from robustness.validator.execute_feedback import run_evaluate_execute_feedback
+# from validator.execute_feedback import run_evaluate_execute_feedback
 
 
 logger, formatter = get_logger(name="robustness")

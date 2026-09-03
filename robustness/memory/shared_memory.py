@@ -1057,7 +1057,7 @@ def _normalize_task_code_paths(
             continue
 
         artifact_dir = candidate_artifact_dir(path_id, task_id, task["candidate_id"])
-        (study_dir / artifact_dir).mkdir(parents=True, exist_ok=True)
+        #(study_dir / artifact_dir).mkdir(parents=True, exist_ok=True)
         analysis_code["artifact_dir"] = artifact_dir
 
         entry_file = _normalize_code_path(

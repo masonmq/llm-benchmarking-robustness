@@ -13,7 +13,7 @@ from core.method_families import (
     infer_structural_method_family,
     normalize_family_novelty,
 )
-from robustness.memory.shared_memory import (
+from memory.shared_memory import (
     accumulate_prune_output,
     apply_pruning_decisions,
     build_memory_record_from_execution_results,
@@ -618,7 +618,7 @@ class SequentialPipelineTests(unittest.TestCase):
         self.assertEqual(record["execution_runs"][0]["status"], "execution_failed")
 
     def test_run_execute_writes_final_results_to_case_memory(self):
-        from robustness.executor import execute_agent
+        from executor import execute_agent
 
         schema = initial_schema()
         prune_output = make_prune_output(schema, {"Task1": "high-quality", "Task2": "high-quality"})

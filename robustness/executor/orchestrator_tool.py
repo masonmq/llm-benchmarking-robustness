@@ -8,9 +8,9 @@ import tarfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
-from replicatorbench.info_extractor.file_utils import check_long_logs
+from core.file_utils import check_long_logs
 import tiktoken
-from robustness.memory.shared_memory import load_execute_spec
+from memory.shared_memory import load_execute_spec
 
 try:
     from docker.errors import BuildError, APIError

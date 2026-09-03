@@ -1,4 +1,4 @@
-from robustness.memory.shared_memory import (
+from memory.shared_memory import (
     accumulate_prune_output,
     apply_pruning_decisions,
     build_memory_record_from_execution_results,

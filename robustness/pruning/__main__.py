@@ -27,7 +27,7 @@ def main():
 
     if args.stage == "prune":
         # Pruning Agent: review the candidate path and route accept/reject.
-        from robustness.pruning.prune_agent import run_prune
+        from pruning.prune_agent import run_prune
         run_prune(
             study_path=args.study_path,
             show_prompt=args.show_prompt,

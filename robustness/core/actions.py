@@ -1,7 +1,7 @@
 # core/actions.py
 import os
 
-from replicatorbench.info_extractor.file_utils import read_txt, read_csv, read_json, read_pdf, read_docx
+from core.file_utils import read_txt, read_txt_bounded, read_csv, read_json, read_docx
 from core.human_intervention import human_intervention_enabled
 from core.tools import (
     list_files_in_folder,
@@ -20,6 +20,7 @@ from core.tools import (
     read_and_summarize_pdf,
     search_pdf,
     read_pdf_pages,
+    search_txt,
     read_html
 )
 
@@ -31,7 +32,8 @@ def base_known_actions() -> dict:
     actions = {
         "list_files_in_folder": list_files_in_folder,
 
-        "read_txt": read_txt,
+        "read_txt": read_txt_bounded,
+        "search_txt": search_txt,
         "read_csv": read_csv,
         #"read_pdf": read_pdf,
         "read_pdf": read_and_summarize_pdf,
@@ -83,13 +85,30 @@ def get_tool_definitions() -> list:
             "type": "function",
             "function": {
                 "name": "read_txt",
-                "description": "Reads the plain text content of a file (e.g., .txt, .do).",
+                "description": "Reads a short .txt file in full or returns a bounded deterministic preview for a long .txt file. For large codebooks or documentation, prefer search_txt.",
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "file_path": {"type": "string", "description": "Path to the text file."}
+                        "file_path": {"type": "string", "description": "Path to the .txt file."}
                     },
                     "required": ["file_path"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "search_txt",
+                "description": "Searches a text file locally and returns bounded matching lines with nearby context. Prefer this over reading an entire large codebook or documentation file.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "file_path": {"type": "string", "description": "Path to the text file."},
+                        "query": {"type": "string", "description": "Focused variable name, phrase, or keywords to locate."},
+                        "max_results": {"type": "integer", "minimum": 1, "maximum": 8, "default": 5},
+                        "context_lines": {"type": "integer", "minimum": 0, "maximum": 8, "default": 3}
+                    },
+                    "required": ["file_path", "query"]
                 }
             }
         },
@@ -524,6 +543,7 @@ PRUNE_ALLOWED_ACTIONS = [
     "search_pdf",
     "read_pdf_pages",
     "read_txt",
+    "search_txt",
     "read_file",
     "list_files_in_folder",
     "load_dataset",
@@ -543,6 +563,7 @@ PRUNE_GUARDED_READERS = (
     "search_pdf",
     "read_pdf_pages",
     "read_txt",
+    "search_txt",
     "read_file",
 )
 

@@ -433,6 +433,13 @@ def run_react_loop(system_prompt: str, known_actions: dict, tool_definitions: li
                         # Handle session_state injection
                         if func_name.startswith("get_dataset") or func_name == "load_dataset":
                              observation = func(bot.session_state, **func_args)
+                        # Anchor agent-created files to the active study directory.
+                        # study_path is injected internally and is intentionally not
+                        # exposed as a model-supplied tool argument.
+                        elif func_name == "write_file":
+                            if study_path is not None:
+                                func_args["study_path"] = study_path
+                            observation = func(**func_args)
                         # inject study_path to restrict access to outside folders
                         elif func_name in ["list_files_in_folder", "read_html"]:
                             func_args["study_path"] = study_path 
