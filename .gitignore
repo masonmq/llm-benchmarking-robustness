@@ -2,18 +2,14 @@
 .spyproject/
 
 # ReplicatorBench gitignores
-
 replicatorbench/data/*
 replicatorbench/data/original/
 replicatorbench/data/original/**
-
-# we still want to ignore datafiles and code inside original and anywhere esle
 **/replication_data/** 
 **/_logs/**
 **/_runtime/**
 **/_artifacts/**
 **/.DS_Store
-
 
 replicatorbench/.env
 **/__pycache__/**
@@ -24,7 +20,8 @@ test_data/
 
 # Ignore Virtual Environment
 env/
-=======
+
+# ReplicatorBench additional ignores
 replicatorbench/info_extractor/__pycache__/
 replicatorbench/test_data/
 replicatorbench/.coverage
@@ -33,3 +30,5 @@ replicatorbench/.coverage
 robustness/.env
 robustness/**/__pycache__/**
 robustness/.coverage
+robustness/data/
+robustness/eval/

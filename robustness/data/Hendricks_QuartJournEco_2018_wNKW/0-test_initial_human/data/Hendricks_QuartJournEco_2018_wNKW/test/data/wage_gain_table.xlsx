@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# No-op compatibility entry. The real authorized dataset is data/wage_gain_table.xlsx and is read by the R script.
-exit 0
