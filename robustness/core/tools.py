@@ -56,7 +56,19 @@ class DataFrameAnalyzer:
                 # You might need to install openpyxl: pip install openpyxl
                 return pd.read_excel(self.file_path)
             elif file_extension == '.dta':
-                return pd.read_stata(self.file_path)
+                try:
+                    return pd.read_stata(self.file_path)
+                except ValueError as e:
+                    if "Value labels" in str(e) and "not unique" in str(e):
+                        print(
+                            "Stata value labels are not unique; "
+                            "retrying with convert_categoricals=False..."
+                        )
+                        return pd.read_stata(
+                            self.file_path,
+                            convert_categoricals=False
+                        )
+                    raise
             elif file_extension.lower() == '.rds':
                 return pyreadr.read_r(self.file_path)[None]
             elif file_extension.lower() == ".sav":

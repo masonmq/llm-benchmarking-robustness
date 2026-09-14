@@ -20,7 +20,7 @@ def main():
     p.add_argument(
         "--max-planning-pruning-loops",
         type=int,
-        default=5,
+        default=2,
         help="Maximum Planning-Pruning rounds, including the initial round.",
     )
     p.add_argument("--code-mode",choices=CODE_MODE_CHOICES,default=DEFAULT_CODE_MODE,help="Code execution mode: 'native' (run original language) or 'python' (translate all to Python and run Python).",)

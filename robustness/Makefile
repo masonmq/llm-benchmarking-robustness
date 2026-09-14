@@ -3,14 +3,14 @@ export PYTHONPATH := $(abspath ..):$(abspath .)
 PYTHON ?= python3
 
 # libs we need before running anything
-REQ := pytest pytest_cov openai dotenv pymupdf pyreadr pandas numpy docker docx
+REQ := pytest pytest_cov openai dotenv pymupdf pyreadr pyreadstat pandas numpy docker docx
 
 STUDY ?= ./data/original/1
 CODE_MODE ?= python
 MODEL ?= gpt-5
 EVAL_MODEL ?= gpt-5
 TIER ?= easy
-MAX_PLANNING_PRUNING_LOOPS ?= 5
+MAX_PLANNING_PRUNING_LOOPS ?= 2
 
 .PHONY: check-deps install-dev test test-extractor test-generator test-all design-easy execute-easy robustness-plan robustness-pipeline robustness-pruning robustness-pruning-execute test-pruning
 
