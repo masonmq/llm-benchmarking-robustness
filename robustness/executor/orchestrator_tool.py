@@ -39,7 +39,7 @@ class ExecutionPlan:
 DEFAULT_IMAGE_NAME = "analysis-exec"
 DEFAULT_CONTAINER_NAME = "analysis-runner"
 COPIED_OUTPUTS_DIRNAME = "_copied_outputs"
-EXECUTION_TIMEOUT_SECONDS = 180
+EXECUTION_TIMEOUT_SECONDS = 600
 
 def _detect_lang_from_ext(filename: str) -> str:
     f = filename.lower()
