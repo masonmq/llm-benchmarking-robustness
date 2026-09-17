@@ -39,6 +39,7 @@ class ExecutionPlan:
 DEFAULT_IMAGE_NAME = "analysis-exec"
 DEFAULT_CONTAINER_NAME = "analysis-runner"
 COPIED_OUTPUTS_DIRNAME = "_copied_outputs"
+EXECUTION_TIMEOUT_SECONDS = 180
 
 def _detect_lang_from_ext(filename: str) -> str:
     f = filename.lower()
@@ -424,13 +425,27 @@ def _exec_file(container_name: str, study_path: str, container_path: str, lang: 
     else:
         return {"ok": False, "exit_code": 2, "stdout": "", "stderr": f"Unsupported lang: {lang}", "artifacts": []}
 
+    cmd = [
+        "timeout",
+        "-k",
+        "10s",
+        f"{EXECUTION_TIMEOUT_SECONDS}s",
+        *cmd,
+    ]
+
     exec_id = cli.api.exec_create(c.id, cmd, workdir="/workspace")
     output = cli.api.exec_start(exec_id, stream=False, demux=True, tty=False)
     exit_code = cli.api.exec_inspect(exec_id)["ExitCode"]
+    timed_out = exit_code == 124
 
     stdout, stderr = output
     stdout = (stdout or b"").decode(errors="replace")
     stderr = (stderr or b"").decode(errors="replace")
+    if timed_out:
+        timeout_message = (
+            f"Execution exceeded {EXECUTION_TIMEOUT_SECONDS} seconds and was terminated."
+        )
+        stderr = f"{stderr}\n{timeout_message}".strip()
 
     _copy_container_outputs(study_path, container_name)
     arts = _list_local_output_files(study_path)
@@ -438,6 +453,7 @@ def _exec_file(container_name: str, study_path: str, container_path: str, lang: 
     return {
         "ok": exit_code == 0,
         "exit_code": exit_code,
+        "timed_out": timed_out,
         "stdout": stdout,
         "stderr": stderr,
         "artifacts": arts,
@@ -540,6 +556,7 @@ def orchestrator_execute_entry(study_path: str, code_mode: str) -> str:
                 "name": step.name,
                 "ok": ran.get("ok", False),
                 "exit_code": ran.get("exit_code"),
+                "timed_out": ran.get("timed_out", False),
                 "stdout": _check_long_std(ran.get("stdout")),
                 "stderr": _check_long_std(ran.get("stderr")),
                 "artifacts": ran.get("artifacts", []),

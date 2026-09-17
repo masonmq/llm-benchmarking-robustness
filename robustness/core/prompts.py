@@ -427,6 +427,7 @@ EXTRACT RULES (DESIGN)
 - Preserve the focal variable's meaningful structure unless collapsing or categorizing it is required or substantively justified. State any information loss.
 - Justify every sample restriction, outlier rule, control, fixed effect, transformation, and missing-data rule. Do not treat additional controls as automatically better.
 - Include sample-flow reporting in each task's code: starting rows, rows removed by each material rule, and final analytic rows. Planning must not use those counts to choose a favorable path.
+- Keep generated analyses computationally practical. Avoid unnecessarily expensive nested resampling, simulation, cross-validation, or repeated model fitting when a substantially cheaper implementation preserves the planned method and inference.
 - Before returning the schema, compare the plan with the generated code and verify referenced dataset columns, outcome construction, predictor construction, sample rules, model, and reported focal statistic.
 - Do not restrict the sample to focal categories, add controls or fixed effects, or impose a significance threshold merely because those choices are conventional. Follow the task anchor or give an evidence-based justification.
 - Generate defensible paths without using human reanalysis code, expected results, or whether a path is likely to support the claim.
