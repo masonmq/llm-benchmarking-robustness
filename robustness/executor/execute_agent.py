@@ -139,14 +139,14 @@ Input files:
 
 Execute only the two active candidates marked high-quality. Do not change the analytical method, focal claim, task instructions, or dataset. You may make at most {max_repair_attempts} implementation repairs involving dependencies, file paths, code defects, or result extraction. Record every repair in the affected task's method_fidelity.deviations. Do not create a new candidate ID.
 
-For each conclusion, apply the fixed conclusion classification rules together with the focal direction or pattern in the matching analysis anchor. The fixed rules control conclusion_class if a planned inference rule conflicts with them. For a frequentist result, expected direction with p <= 0.05 is support. A result with 0.05 < p <= 0.055 remains support only when the estimate is substantively meaningful and its uncertainty interval narrowly crosses the null; describe it as borderline. Clearly weak aligned evidence is inconclusive. Report uncertainty separately and record the rule actually applied in the output.
+For each conclusion, apply the fixed conclusion classification rules together with the focal direction or pattern in the matching analysis anchor. The fixed rules control conclusion_class if a planned inference rule conflicts with them. For a frequentist result, an expected-direction result with p <= 0.05 is support. An expected-direction result with p > 0.05 is inconclusive unless another case-appropriate inferential criterion supplies affirmative evidence. An opposite-direction result requires affirmative evidence for the contrary effect; an opposite-signed point estimate alone is not enough. Report uncertainty separately and record the rule actually applied in the output.
 
 Process:
 1. Generate the Dockerfile from {execute_spec_path.name}.
 2. Build the image and start the container.
 3. Plan and preview both task entries.
 4. {execution_approval_step}
-5. Execute Task1 and Task2 as one run. Inspect execution_result.json after each attempt.
+5. Execute Task1 and Task2 as one run. Inspect execution_result.json after each attempt. After execution, inspect stdout and stderr for estimation diagnostics. A zero exit code or converged=True is not sufficient for a usable statistical result. If serious diagnostics make the focal standard error, p-value, or confidence interval unreliable, such as a non-positive-definite Hessian, unidentified parameters, or non-finite uncertainty estimates, do not classify the focal result. Mark the task execution_failed unless a bounded same-method implementation repair resolves the issue. Do not change the analytical method or specification to obtain a successful result. A singular random-effects covariance alone is not automatically fatal; assess whether it also makes the focal inference unreliable.
 6. Apply only allowed implementation repairs, up to the limit, and retry as needed.
 7. Stop the container.
 8. Return execution_results.json using the required schema below.

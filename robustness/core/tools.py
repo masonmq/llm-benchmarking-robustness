@@ -52,9 +52,40 @@ class DataFrameAnalyzer:
             # Choose the correct pandas function based on the extension
             if file_extension == '.csv':
                 return pd.read_csv(self.file_path)
-            elif file_extension in ['.xlsx', '.xls']:
-                # You might need to install openpyxl: pip install openpyxl
-                return pd.read_excel(self.file_path)
+            elif file_extension.lower() in ['.xlsx', '.xls']:
+                df = pd.read_excel(self.file_path)
+
+                if not df.empty:
+                    unnamed_ratio = sum(
+                        str(col).startswith("Unnamed:")
+                        for col in df.columns
+                    ) / len(df.columns)
+
+                    first_row = df.iloc[0]
+                    non_null = first_row.dropna()
+
+                    string_ratio = (
+                        non_null.map(lambda x: isinstance(x, str)).mean()
+                        if len(non_null) > 0 else 0
+                    )
+
+                    unique_ratio = (
+                        non_null.astype(str).nunique() / len(non_null)
+                        if len(non_null) > 0 else 0
+                    )
+
+                    if (
+                        unnamed_ratio >= 0.5
+                        and string_ratio >= 0.5
+                        and unique_ratio >= 0.8
+                    ):
+                        print(
+                            "Detected an Excel sheet with an extra descriptive header row; "
+                            "reloading with header=1."
+                        )
+                        df = pd.read_excel(self.file_path, header=1)
+
+                return df
             elif file_extension == '.dta':
                 try:
                     return pd.read_stata(self.file_path)

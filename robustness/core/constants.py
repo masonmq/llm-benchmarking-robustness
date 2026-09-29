@@ -186,31 +186,27 @@ PRUNE_PROMPT_VERSION = "pruning_agent.v2"
 
 CONCLUSION_CLASSIFICATION_RULES = {
     "support": (
-        "The focal result is in the direction expected by the focal claim and provides affirmative or borderline "
-        "evidence. For a frequentist result, p less than or equal to 0.05 is affirmative evidence. A result with "
-        "p greater than 0.05 and less than or equal to 0.055 is borderline support only when the estimate is "
-        "substantively meaningful and its uncertainty interval only narrowly crosses the null. Borderline support "
-        "uses conclusion_class support; do not create another conclusion class."
+        "The focal result is in the direction expected by the focal claim and provides affirmative evidence. "
+        "For a frequentist result, p less than or equal to 0.05 is affirmative evidence."
     ),
     "opposite": (
         "The focal result materially contradicts the direction or substantive relationship in the focal claim "
         "and provides affirmative evidence for that contrary result. An opposite-signed point estimate alone is "
-        "not enough. For a frequentist coefficient-based result, require p less than 0.05, a confidence interval "
-        "excluding the null in the contrary direction, or another case-appropriate criterion demonstrating "
+        "not enough. For a frequentist coefficient-based result, require p less than or equal to 0.05, a confidence "
+        "interval excluding the null in the contrary direction, or another case-appropriate criterion demonstrating "
         "material contrary evidence."
     ),
     "inconclusive": (
-        "A valid focal direction cannot be determined, the required focal results are mixed or ambiguous, or an "
-        "aligned result lacks affirmative or borderline evidence. For a frequentist result in the expected direction, "
-        "p greater than 0.055 is inconclusive unless another case-appropriate criterion supplies affirmative evidence. "
+        "A valid focal direction cannot be determined, the required focal results are mixed or ambiguous, or the "
+        "result lacks affirmative evidence. For a frequentist result, an expected-direction result with p greater "
+        "than 0.05 is inconclusive unless another case-appropriate criterion supplies affirmative evidence. "
         "An opposite-signed result without affirmative evidence of a material contrary effect is also inconclusive."
     ),
     "statistical_strength": (
-        "For a frequentist result in the expected direction, p less than or equal to 0.05 is support. When p is "
-        "greater than 0.05 and less than or equal to 0.055, use conclusion_class support only if the estimate is "
-        "substantively meaningful and the uncertainty interval narrowly crosses the null, and describe it as "
-        "borderline. Clearly weak aligned evidence is inconclusive. Report uncertainty separately. An "
-        "opposite-signed estimate that does not meet the affirmative-evidence requirement is inconclusive, not opposite."
+        "For a frequentist result in the expected direction, p less than or equal to 0.05 is support. "
+        "If p is greater than 0.05, the result is inconclusive unless another case-appropriate inferential criterion "
+        "supplies affirmative evidence. Report uncertainty separately. An opposite-signed estimate that does not "
+        "meet the affirmative-evidence requirement is inconclusive, not opposite."
     ),
 }
 

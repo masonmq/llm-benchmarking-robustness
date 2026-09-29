@@ -393,7 +393,7 @@ CODE POLICY (PLANNING)
 - Do not execute the code during Planning.
 - Use container-compatible data paths and list the exact Python entry file and run command for each task.
  """.strip(),
- }
+}
 
 ROBUSTNESS_EXTRACT_POLICY = {
     "input": """
@@ -947,7 +947,7 @@ Step 2 - Explore the dataset in depth. Do not stop after loading it. For every a
 Step 3 - Review the analysis code efficiently. Read only genuine text-based source-code files listed in the analysis_code section, using the reader appropriate to the extension. Source-code extensions include .py, .R, .r, .do, .m, .jl, .sas, .sql, .sh, .ipynb, .txt, .md, .yaml, .yml, .json, and similar plain-text scripts/configuration files. Do NOT open binary or data files with read_file/read_txt, including .xlsx, .xls, .dta, .sav, .rds, .RData, .mat, .pkl, .parquet, .pdf, .docx, images, archives, or executables. Inspect datasets with dataset tools, PDFs with read_pdf, and skip unrelated artifacts. If the analysis_code field mixes code and data, review only the code needed to implement Task1 and Task2. Verify that the reviewed code implements the claimed model and produces the focal statistical results.
 Step 4 - Verify the task anchor, estimand, and structural method family. Check the task-specific analysis anchor against the paper, task instruction, and dataset. Then compare the candidate with the anchor across outcome, contrast, sample, model, and inference. Confirm that structural_method_family describes the implemented identifying structure rather than only its link function. For a new path, verify that an untried executable family supported by the authorized evidence was preferred over another variation within a completed family. Treat a deviation as acceptable only when it is explicit, evidence-based, and still answers the assigned task.
 Step 5 - Audit analytical choices. Verify evidence for focal variables, transformations, controls, restrictions, cutoffs, outlier handling, missing-data handling, and any collapse of the focal variable's structure. Confirm that referenced columns exist.
-Step 6 - Audit sample flow and code. Verify that the code reports starting rows, exclusions at each material step, and final analytic rows. Cross-check the declared plan against the code's outcome, predictor, sample, transformations, controls, model, inference rule, and focal output.
+Step 6 - Audit sample flow and code. Verify that the code reports starting rows, exclusions at each material step, and final analytic rows. Cross-check the declared plan against the code's outcome, predictor, sample, transformations, controls, model, inference rule, and focal output. For panel/time-series code, verify that declared one-period and multi-period lags/differences correspond to the intended time intervals. Row-based shift operations on an irregular panel must verify time continuity; otherwise treat the implementation as materially inconsistent with the planned temporal construction.
 Step 7 - Decide. Apply the rules below without using expected results, the original conclusion, or whether the method is likely to support the claim.
 
 CORE DECISION STANDARD:

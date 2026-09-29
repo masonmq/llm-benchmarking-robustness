@@ -955,11 +955,6 @@ def _validate_anchor_alignment(alignment: Dict[str, Any], task_id: str) -> None:
                 f"Universal schema {task_id}.method_quality.anchor_alignment.{dimension} "
                 "is incomplete."
             )
-        if status == "justified_deviation" and dimension not in deviation_dimensions:
-            raise ValueError(
-                f"Universal schema {task_id}.method_quality.anchor_alignment.{dimension} "
-                "requires a matching deviation record."
-            )
 
 
 def _normalize_anchor_deviation_dimensions(task: Dict[str, Any]) -> None:
