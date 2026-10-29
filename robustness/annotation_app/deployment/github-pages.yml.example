@@ -1,0 +1,23 @@
+name: Build annotation site
+on: { workflow_dispatch: {} }
+permissions: { contents: read, pages: write, id-token: write }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.pages.outputs.page_url }}" }
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: { python-version: "3.12" }
+      - run: pip install -r robustness/annotation_app/requirements.txt
+      - run: python robustness/annotation_app/build_pages.py "${{ vars.PAPER_FOLDER }}" --api-base "${{ vars.ANNOTATION_API_URL }}"
+      - run: npm install --global wrangler
+      - run: python robustness/annotation_app/upload_private.py robustness/annotation_app/dist/private --bucket robustness-annotation-files --config robustness/annotation_app/deployment/cloudflare/wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          CLOUDFLARE_ACCOUNT_ID: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with: { path: robustness/annotation_app/dist/site }
+      - id: pages
+        uses: actions/deploy-pages@v4

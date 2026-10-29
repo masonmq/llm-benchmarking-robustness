@@ -30,5 +30,19 @@ replicatorbench/.coverage
 robustness/.env
 robustness/**/__pycache__/**
 robustness/.coverage
-robustness/data/
+# Study data stays out of git; only the analysis/report scripts under data/annotators are tracked.
+robustness/data/*
+!robustness/data/annotators/
+robustness/data/annotators/*
+!robustness/data/annotators/*.py
+!robustness/data/annotators/code_pilot/
+robustness/data/annotators/code_pilot/*
+!robustness/data/annotators/code_pilot/*.py
+!robustness/data/annotators/code_pilot/pilot_instructions.md
 robustness/eval/
+
+# Secrets and personal data
+/.env
+**/*Screening*.csv
+robustness/annotation_app/deployment/cloudflare/wrangler.toml
+robustness/annotation_app/TEST_ANNOTATOR_INSTRUCTIONS.md

@@ -1,0 +1,33 @@
+.completion-screen {
+  max-width: 620px;
+  margin: 90px auto;
+  padding: 35px 20px;
+  text-align: center;
+}
+
+.completion-screen h2 {
+  margin: 8px 0 16px;
+  color: #203d55;
+}
+
+.completion-screen p {
+  color: #526273;
+  font-size: 16px;
+}
+
+.completion-screen button {
+  margin-top: 18px;
+}
+
+.completion-check {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #eaf6ef;
+  color: #18794e;
+  font-size: 38px;
+  font-weight: 800;
+}

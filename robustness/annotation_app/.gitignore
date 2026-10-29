@@ -1,0 +1,4 @@
+annotations.sqlite3
+dist/
+.venv/
+exports/

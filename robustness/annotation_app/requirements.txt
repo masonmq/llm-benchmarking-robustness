@@ -1,0 +1,7 @@
+pandas>=2.2
+openpyxl>=3.1
+xlrd>=2.0
+pyreadstat>=1.2
+pyreadr>=0.5
+mammoth>=1.8
+markdown>=3.5
