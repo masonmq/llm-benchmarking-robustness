@@ -1,0 +1,19 @@
+name = "robustness-annotation-api"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "robustness-annotations"
+database_id = "YOUR-D1-DATABASE-ID"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "robustness-annotation-files"
+
+[vars]
+ALLOWED_ORIGIN = "https://YOUR-USERNAME.github.io"
+PILOT_USERNAMES = ""
+PILOT_ANALYSIS_IDS = ""
+# "true" limits each annotator to the papers listed in the D1 assignments table (see roster.py).
+ENFORCE_ASSIGNMENTS = "true"
